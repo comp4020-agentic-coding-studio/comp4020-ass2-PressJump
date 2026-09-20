@@ -1,0 +1,138 @@
+---
+title: "Little's Law"
+description: Week 2 of SLOP3068. The one equation the rest of the course runs on.
+---
+
+# Little's Law
+
+**SLOP3068, week 2**
+
+Amos Redfern
+
+---
+
+## The claim
+
+You can work out how long people are waiting
+
+**without timing a single one of them**
+
+---
+
+{/* _class: impact */}
+
+## L = &lambda;W
+
+---
+
+## What the letters are
+
+| Symbol | What it is | How you get it |
+|---|---|---|
+| **L** | number in the system | count heads |
+| **&lambda;** | arrival rate | count arrivals, divide by time |
+| **W** | time in the system | the thing you wanted |
+
+Two of these are easy from thirty metres away.
+
+The third one is not, so we solve for it.
+
+---
+
+## Do it now
+
+Look at the queue downstairs.
+
+- twelve people in it
+- four joined in the last minute
+
+W = 12 / 4 = **three minutes**
+
+You have not followed anybody.
+
+---
+
+## Why it is strange
+
+It does not care about
+
+- the order you serve people in
+- how many servers there are
+- the shape of the arrival distribution
+- whether the thing queueing is a person, a packet or a kidney
+
+No assumptions about any of it.
+
+---
+
+{/* _class: quote */}
+
+> Any system. Any discipline. Any distribution.
+>
+> The price is that every letter is an average.
+
+---
+
+## The price
+
+**Stable.** Not filling up, not draining.
+
+Point it at a growing backlog and it returns a number that is true and useless.
+
+That number is a property of the snapshot, not of the queue.
+
+---
+
+## Failure one, instability
+
+A passport office with a two-year backlog
+
+- L is enormous
+- &lambda; looks normal
+- W comes out as two years
+
+Correct. Also not a wait; it is a debt.
+
+---
+
+## Failure two, the boundary
+
+Draw the box before you count.
+
+- who balked and never joined
+- who reneged and walked out
+- who was served without joining
+
+An arrival in one count and not the other breaks the law quietly.
+
+---
+
+## Failure three, the mismatch
+
+Arrivals counted during the rush.
+
+Residence time measured in the lull.
+
+Both numbers correct. The ratio is fiction.
+
+---
+
+## Wednesday
+
+Two people, one queue, thirty minutes, separate sheets.
+
+You will disagree with your partner on about one arrival in six.
+
+The disagreements are the session.
+
+---
+
+{/* _class: centered */}
+
+## Before you go
+
+Count a queue. Any queue.
+
+Get a W without a stopwatch.
+
+Bring the number and how you got it.
