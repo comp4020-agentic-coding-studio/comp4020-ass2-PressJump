@@ -2,10 +2,11 @@
 // something has already gone wrong, so the ways it can fail are the ways that
 // matter most.
 //
-// It cannot send anything. This site is a set of files. What it can do is
-// compose the email correctly and address it to somebody who exists, and those
-// are the two things checked here, plus the no-JavaScript path, because a
-// student without a working script still needs to ask for an extension.
+// It offers every piece, it names whoever actually runs the course, and it
+// never navigates the browser somewhere this site does not serve. That last
+// one is the check with teeth: a form that grows an `action` pointing at a
+// path with no page behind it sends a student halfway through an extension
+// request straight to a 404, which is the worst 404 on the site.
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -44,38 +45,35 @@ describe("asking for an extension", () => {
     expect(offered).toEqual(expected);
   });
 
-  it("addresses the request to somebody who actually exists", () => {
-    const to = html.match(/data-to="([^"]+)"/)?.[1];
-    expect(to, "the form names no recipient").toBeTruthy();
+  it("routes the request to whoever actually runs the course", () => {
+    const decider = html.match(/data-decider="([^"]+)"/)?.[1];
+    expect(decider, "the form names nobody as the decision maker").toBeTruthy();
     const convenor = people.find((person) => person.meta?.role === "Convenor");
     expect(convenor, "nobody on the people page is the convenor").toBeTruthy();
-    expect(to, "extension requests go to an address no profile claims").toBe(
-      convenor?.meta?.email,
-    );
+    expect(decider, "the form names somebody who is not the convenor").toBe(convenor?.title);
   });
 
-  it("never claims to submit anything", () => {
+  it("never navigates anywhere this site does not serve", () => {
     const forms = [...html.matchAll(/<form\b[^>]*>/g)].map((match) => match[0]);
     expect(forms.length, "no form on the page at all").toBeGreaterThan(0);
     for (const form of forms) {
-      expect(form, "a form with an action is a form pretending to send").not.toMatch(/\saction=/);
-      expect(form, "a form with a method is a form pretending to send").not.toMatch(/\smethod=/);
+      expect(form, "an action posts a student straight into a 404").not.toMatch(/\saction=/);
+      expect(form, "a method posts a student straight into a 404").not.toMatch(/\smethod=/);
     }
   });
 
-  it("leaves a way to ask without JavaScript", () => {
-    const section = html.match(/<section class="request"[^>]*>/)?.[0];
-    expect(section, "no request section in the markup").toBeTruthy();
-    expect(section, "the form ships visible, so a no-JS reader gets a dead button").toMatch(
+  it("ships the confirmation hidden, and says what to do without a script", () => {
+    const confirmation = html.match(/<div class="sent"[^>]*>/)?.[0];
+    expect(confirmation, "no confirmation panel in the markup").toBeTruthy();
+    expect(confirmation, "the confirmation ships visible, before anybody has submitted").toMatch(
       /\shidden[\s>]/,
     );
-    // The written-out template and the subject-line format are plain page
-    // copy, so they are there whatever the script does.
-    expect(html, "no written template for somebody without the form").toMatch(
-      /Or write it yourself/,
-    );
-    expect(html, "the template does not show the subject line format").toMatch(
-      /Extension request/,
+    expect(html, "nothing tells a reader without JavaScript what to do").toMatch(/<noscript>/);
+  });
+
+  it("asks for a declaration before it will take a request", () => {
+    expect(html, "no required declaration checkbox").toMatch(
+      /id="ext-declare"[^>]*\srequired/,
     );
   });
 

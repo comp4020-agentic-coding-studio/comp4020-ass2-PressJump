@@ -124,12 +124,20 @@ and the register is the tell.
   is the one thing here that touches the network, it is an authoring tool run by
   hand, and what it writes is committed.
 - **No form may have an `action` or a `method`.** There is no backend, so a
-  form that posts can only lie about where the data went. A form is allowed
-  when it hands the result back to the person who filled it in, which is what
-  the extension request does: it composes an email and you send it yourself.
-  `spec/extensions.test.ts` fails on an `action` or a `method` attribute.
-  Carried from C5, where the rule was a flat ban; a flat ban was easier and it
-  would have cost this course its extension page.
+  form that posts navigates the browser to a path this site does not serve,
+  and a student halfway through an extension request lands on a 404. The
+  submit handler takes over instead. `spec/extensions.test.ts` fails on either
+  attribute.
+- **A form may show a confirmation, and the extension form does.** I built it
+  first as an email composer, so that nothing on the page could claim to have
+  received anything, and that was the wrong instinct for this deliverable.
+  This is a course website for a university that does not exist, staffed by
+  people who do not exist, teaching a course nobody will sit. A submission
+  confirmation is the same fiction as the office numbers and the consultation
+  hours, and singling the form out for scruples made it the one part of the
+  site that stopped pretending. C5's flat ban on forms was the same mistake in
+  a stronger form. What the rule above still protects is the real failure: a
+  request that goes nowhere because the page navigated away from it.
 - **Every table column gets a non-empty header cell.** A markdown table opening
   `| | Weeks | Cost |` is a table whose first header is blank, and axe fails the
   build on it. Written down after making the identical mistake twice, once in
