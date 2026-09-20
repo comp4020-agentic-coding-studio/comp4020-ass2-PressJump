@@ -1,10 +1,10 @@
 // Site-wide chrome has to actually be site-wide.
 //
-// The nav "More" group is a script, and a script has to be placed on every
-// page that renders a nav. This site has three layouts, so that is nine entry
+// The nav grouping is a script, and a script has to be placed on every page
+// that renders a nav. This site has three layouts, so that is nine entry
 // points and nine chances to forget one. Forgetting one is invisible: the page
-// looks fine, it just has nine flat links where every other page has six and a
-// menu. This is the check that makes it not invisible.
+// looks fine, it just has nine flat links where every other page has five
+// items and three menus. This is the check that makes it not invisible.
 //
 // Same reasoning for the stylesheet, which is imported from site-config for
 // exactly this reason rather than from a layout.
@@ -44,27 +44,35 @@ describe("site chrome", () => {
     expect(navPages.length, "a page shipped with no site navigation").toBe(pages.length);
   });
 
-  it("puts the More menu script on every one of them", () => {
+  it("puts the grouping script on every one of them", () => {
     const missing = navPages
-      .filter((page) => !page.html.includes("at-nav-more"))
+      .filter((page) => !page.html.includes("at-nav-group"))
       .map((page) => page.path);
     expect(missing.join(", "), "these pages ship the nav ungrouped").toBe("");
   });
 
-  it("names the same folded links everywhere", () => {
-    // The group is defined once in site-config; if a page were passed a
-    // different list the bar would reorganise differently page to page.
-    const lists = new Set(
+  it("groups the same way on every page", () => {
+    // The groups are defined once in site-config; if a page were passed a
+    // different set the bar would reorganise differently page to page.
+    //
+    // Astro's define:vars emits `const groups = [...]`, not JSON. An earlier
+    // pattern here was loose enough to also match `align-items: baseline` in
+    // the inlined CSS, which is how it reported "none" on every page.
+    const sets = new Set(
       navPages.map((page) => {
-        // Astro's define:vars emits `const items = [...]`, not JSON. An
-        // earlier, looser pattern also matched the `align-items: baseline`
-        // in the inlined CSS, which is how it found "none" on every page.
-        const match = page.html.match(/const items\s*=\s*(\[[^\]]*\])/);
+        const match = page.html.match(/const groups\s*=\s*(\[[\s\S]*?\]);/);
         return match ? match[1].replace(/\s+/g, "") : "none";
       }),
     );
-    expect(lists.size, `the folded set differs between pages: ${[...lists].join(" vs ")}`).toBe(1);
-    expect([...lists][0], "no folded set found in the page").not.toBe("none");
+    expect(sets.size, `the grouping differs between pages: ${[...sets].join(" vs ")}`).toBe(1);
+    const only = [...sets][0];
+    expect(only, "no grouping found in the page").not.toBe("none");
+    // Named groups, not a single catch-all. "More" tells a reader nothing
+    // about what is behind it, which was the first version and the reason
+    // this assertion exists.
+    const labels = [...only.matchAll(/"label":"([^"]+)"/g)].map((m) => m[1]);
+    expect(labels.length, "fewer than two named groups").toBeGreaterThanOrEqual(2);
+    expect(labels, "a group is called More").not.toContain("More");
   });
 
   it("ships the nav flat, so a reader without a script gets every link", () => {
@@ -76,8 +84,8 @@ describe("site chrome", () => {
         `${href} is missing from the navigation the server sends`,
       ).toContain(href);
     }
-    expect(navPages[0].html, "the menu ships already built").not.toMatch(
-      /<li class="at-nav-more"/,
+    expect(navPages[0].html, "the menus ship already built").not.toMatch(
+      /<li class="at-nav-group"/,
     );
   });
 })

@@ -25,17 +25,18 @@ export const siteConfig = defineSiteConfig({
   ...slopBranding,
   name: "Slop University",
 
-  // Order matters: NavMore folds the tail of this list into a "More" menu, so
-  // the five a student opens weekly come first and the reference pages follow.
+  // Order matters: NavGroups folds each group in at the position of its first
+  // item, so grouped links sit together here and the flattened list a reader
+  // without JavaScript gets is in the same order as the grouped one.
   links: [
     { text: "Timetable", href: "/timetable/" },
     { text: "Lectures", href: "/lectures/" },
     { text: sessionLabels.plural, href: "/sessions/" },
+    { text: "Glossary", href: "/glossary/" },
     { text: "Assessment", href: "/assessments/" },
+    { text: "Extensions", href: "/extensions/" },
     { text: "Forum", href: "/forum/" },
     { text: "People", href: "/people/" },
-    { text: "Glossary", href: "/glossary/" },
-    { text: "Extensions", href: "/extensions/" },
     { text: "Policies", href: "/policies/" },
   ],
 
@@ -45,5 +46,11 @@ export const siteConfig = defineSiteConfig({
     `${courseMeta.code}. A single queue folded into five rows of gold blocks on a dark ground, each block one person, the line ending at one open counter with one server.`,
 });
 
-/** The tail of `links` above, folded into the nav's "More" menu by NavMore. */
-export const navMore = ["/people/", "/glossary/", "/extensions/", "/policies/"];
+/** How NavGroups folds the bar. Each label is named for what it holds, so a
+ *  reader can guess where the extension form lives without opening anything.
+ *  Timetable and Forum stay on the bar; they are the two opened weekly. */
+export const navGroups = [
+  { label: "Teaching", items: ["/lectures/", "/sessions/", "/glossary/"] },
+  { label: "Your work", items: ["/assessments/", "/extensions/"] },
+  { label: "Support", items: ["/people/", "/policies/"] },
+];

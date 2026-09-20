@@ -7,7 +7,7 @@ import Callout from "astro-theme-university/components/Callout.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import MarkingModel from "../../components/MarkingModel.astro";
 import { formatCourseDate } from "../../lib/dates";
-import { graphCollections, navMore, siteConfig } from "../../site-config";
+import { graphCollections, navGroups, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
   const assessments = await getPublishedCollection("assessments");
@@ -19,7 +19,7 @@ export async function getStaticPaths() {
 
 const { assessment } = Astro.props;
 const { Content } = await render(assessment);
-import NavMore from "../../components/NavMore.astro";
+import NavGroups from "../../components/NavGroups.astro";
 ---
 
 <ContentLayout
@@ -46,5 +46,5 @@ import NavMore from "../../components/NavMore.astro";
   {assessment.data.marking && <MarkingModel marking={assessment.data.marking} />}
   <RelatedContent entry={assessment} collections={graphCollections} />
 
-  <NavMore items={navMore} />
+  <NavGroups groups={navGroups} />
 </ContentLayout>

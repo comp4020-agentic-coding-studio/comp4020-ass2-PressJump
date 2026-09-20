@@ -1,0 +1,151 @@
+---
+// Folds the navigation into named groups.
+//
+// Not a single "More": a menu called More tells a reader nothing about what is
+// behind it, so they have to open it to find out, which is the cost the group
+// was supposed to save them. Each group here is named for what it holds, and a
+// reader looking for the extension form can guess "Your work" without opening
+// anything.
+//
+// The theme's NavLink is `{ text, href }` with no nesting and its Nav.astro is
+// fixed platform, so the grouping is done to the rendered list rather than
+// declared in `siteConfig`. What ships is the theme's flat list of links in a
+// nav landmark; with no JavaScript that is the whole navigation, just wider.
+//
+// Only from 44rem up. Below that the theme is either showing its own stacked
+// drawer, where a dropdown inside a drawer is two disclosures deep for
+// nothing, or scrolling the bar sideways in a container that would clip a
+// panel hanging out of it.
+
+interface Props {
+  /** Each group's button label and the hrefs it folds, base path not needed. */
+  groups: { label: string; items: string[] }[];
+}
+
+const { groups } = Astro.props;
+---
+
+<script is:inline define:vars={{ groups }}>
+  (() => {
+    const nav = document.querySelector(".at-nav-links");
+    if (!nav) return;
+
+    /** Match on the end of the href. There is no <base> tag on these pages and
+     *  stripping a prefix off the front needs to know the deployment path;
+     *  `href.replace("", "/")` does not strip, it inserts a slash at position
+     *  zero, which is how the first version matched nothing at all. */
+    const findItems = (hrefs) => {
+      const wanted = hrefs.map((href) => "/" + href.replace(/^\/|\/$/g, ""));
+      return [...nav.querySelectorAll(":scope > li")].filter((item) => {
+        const href = (item.querySelector("a")?.getAttribute("href") ?? "").replace(/\/$/, "");
+        return wanted.some((path) => href.endsWith(path));
+      });
+    };
+
+    const built = [];
+
+    for (const [index, group] of groups.entries()) {
+      const items = findItems(group.items);
+      if (items.length < 2) continue;
+
+      const holder = document.createElement("li");
+      holder.className = "at-nav-group";
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "at-nav-group-button";
+      button.setAttribute("aria-expanded", "false");
+      button.append(group.label);
+      const caret = document.createElement("span");
+      caret.className = "at-nav-group-caret";
+      caret.setAttribute("aria-hidden", "true");
+      caret.textContent = "▾";
+      button.append(caret);
+
+      const panel = document.createElement("ul");
+      panel.className = "at-nav-group-panel";
+      panel.id = `nav-group-${index}`;
+      panel.hidden = true;
+      button.setAttribute("aria-controls", panel.id);
+
+      holder.append(button, panel);
+      built.push({ holder, button, panel, items, anchor: items[0] });
+    }
+
+    if (built.length === 0) return;
+
+    // Where every folded item came from, so flattening restores the order the
+    // theme rendered rather than an order this script invented.
+    const home = built.flatMap(({ items }) =>
+      items.map((item) => [item, item.nextElementSibling]),
+    );
+
+    const closeAll = (except) => {
+      for (const group of built) {
+        if (group === except) continue;
+        group.button.setAttribute("aria-expanded", "false");
+        group.panel.hidden = true;
+      }
+    };
+
+    for (const group of built) {
+      group.button.addEventListener("click", () => {
+        const open = group.button.getAttribute("aria-expanded") !== "true";
+        // One at a time. Two open panels overlap each other on a bar this
+        // narrow, and a reader has not asked for the first one any more.
+        closeAll(group);
+        group.button.setAttribute("aria-expanded", String(open));
+        group.panel.hidden = !open;
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const open = built.find((group) => !group.panel.hidden);
+      if (!open) return;
+      closeAll();
+      open.button.focus();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (built.some((group) => group.holder.contains(event.target))) return;
+      closeAll();
+    });
+
+    document.addEventListener("focusin", (event) => {
+      if (built.some((group) => group.holder.contains(event.target))) return;
+      closeAll();
+    });
+
+    const group = () => {
+      for (const { holder, button, panel, items, anchor } of built) {
+        if (holder.isConnected) continue;
+        nav.insertBefore(holder, anchor);
+        for (const item of items) panel.append(item);
+        // A folded link that is the current page would otherwise hide the only
+        // "you are here" marker on the bar.
+        const current = items.some((item) =>
+          item.querySelector("a")?.getAttribute("aria-current"),
+        );
+        button.classList.toggle("at-nav-group-button--current", current);
+      }
+    };
+
+    const flatten = () => {
+      closeAll();
+      for (const { holder } of built) {
+        if (!holder.isConnected) continue;
+        holder.remove();
+      }
+      for (const [item, before] of home) {
+        if (before && before.parentNode === nav) nav.insertBefore(item, before);
+        else nav.append(item);
+      }
+    };
+
+    const wide = window.matchMedia("(min-width: 44rem)");
+    const apply = () => (wide.matches ? group() : flatten());
+    wide.addEventListener("change", apply);
+    apply();
+  })();
+</script>

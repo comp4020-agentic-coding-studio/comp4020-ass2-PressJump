@@ -4,7 +4,7 @@ import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
 import { postDate, posterLookup } from "../../lib/forum";
-import { navMore, siteConfig } from "../../site-config";
+import { navGroups, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
   const threads = await getPublishedCollection("forum");
@@ -18,7 +18,7 @@ const poster = await posterLookup();
 const opener = poster(thread.data);
 const replies = [...thread.data.replies].sort((a, b) => a.date.getTime() - b.date.getTime());
 const answer = replies.find((reply) => reply.answer);
-import NavMore from "../../components/NavMore.astro";
+import NavGroups from "../../components/NavGroups.astro";
 ---
 
 <ContentLayout title={thread.data.title} description={thread.data.description} {...siteConfig}>
@@ -114,7 +114,7 @@ import NavMore from "../../components/NavMore.astro";
     )
   }
 
-  <NavMore items={navMore} />
+  <NavGroups groups={navGroups} />
 </ContentLayout>
 
 <style>

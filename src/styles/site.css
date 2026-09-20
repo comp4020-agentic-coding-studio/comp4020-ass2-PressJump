@@ -60,81 +60,112 @@
   height: 1.9rem;
 }
 
-/* The "More" group NavMore.astro folds the tail of the nav into. Styled here
- * rather than in that component because the component ships only a script,
- * and a script that has to wait for its own stylesheet flashes unstyled. */
-/* The theme scrolls the nav horizontally with `overflow: auto hidden`, which
- * also clips anything that tries to hang below it, so the open menu was there
- * and invisible. CSS has no way to clip one axis and not the other: set either
- * to a non-visible value and the other computes to auto.
+/* The group buttons NavGroups.astro builds.
  *
- * So the clipping is lifted, but only from 44rem up, which is where the group
- * exists. Not from the theme's own 640px breakpoint: measured across that
- * band, the six items need 570px in a 535px container, and taking the scroll
- * away there pushed the whole page 35px wide. The theme's horizontal scroll
- * exists for exactly that gap, so it keeps it. From 44rem the bar fits and
- * nothing needs to scroll or be clipped. */
-@media (width >= 44rem) {
-  .at-nav-links {
-    overflow: visible;
-  }
-}
-
-.at-nav-more {
-  position: relative;
-}
-
-.at-nav-more-button {
-  display: inline-flex;
+ * Every declaration down to `transition` is the theme's own `.at-nav-links a`
+ * rule, restated because a <button> inherits none of it: `font: inherit` took
+ * the base body size rather than --at-font-size-sm, and padding: 0 skipped the
+ * link padding, so the buttons sat visibly larger than the links beside them.
+ * A control that sits in a row of links has to be the same size as them. */
+.at-nav-group-button {
+  display: flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0;
+  padding: var(--at-spacing-sm);
   border: 0;
+  border-radius: var(--at-border-radius);
   background: none;
-  color: inherit;
-  font: inherit;
+  color: var(--at-text-secondary);
+  font-family: inherit;
+  font-size: var(--at-font-size-sm);
+  font-weight: inherit;
+  line-height: inherit;
   cursor: pointer;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
 }
 
-.at-nav-more-button:hover,
-.at-nav-more-button[aria-expanded="true"],
-.at-nav-more-button--current {
-  color: var(--at-primary);
+.at-nav-group-button:hover {
+  color: var(--at-text);
+  background: var(--at-accent-soft);
 }
 
-.at-nav-more-caret {
+.at-nav-group-button[aria-expanded="true"],
+.at-nav-group-button--current {
+  color: var(--at-accent);
+}
+
+.at-nav-group-caret {
   font-size: 0.7em;
   line-height: 1;
 }
 
-.at-nav-more-button[aria-expanded="true"] .at-nav-more-caret {
+.at-nav-group-button[aria-expanded="true"] .at-nav-group-caret {
   transform: rotate(180deg);
 }
 
-.at-nav-more-panel {
+.at-nav-group {
+  position: relative;
+}
+
+.at-nav-group-panel {
   position: absolute;
   z-index: 20;
-  inset-inline-end: 0;
-  inset-block-start: calc(100% + 0.6rem);
+  inset-inline-start: 0;
+  inset-block-start: calc(100% + 0.35rem);
   min-width: 11rem;
   margin: 0;
-  padding: 0.4rem 0;
+  padding: 0.3rem 0;
   list-style: none;
   border: 1px solid var(--at-border);
   background: var(--at-bg);
 }
 
-.at-nav-more-panel li {
+.at-nav-group-panel li {
   display: block;
 }
 
-.at-nav-more-panel a {
-  display: block;
-  padding: 0.4rem 0.9rem;
+.at-nav-group-panel a {
   white-space: nowrap;
+  border-radius: 0;
 }
 
-.at-nav-more-panel a:hover,
-.at-nav-more-panel a:focus-visible {
-  background: var(--at-bg-alt);
+/* The last group sits at the end of the bar, so its panel opens leftwards
+   rather than off the edge of the page. */
+.at-nav-group:last-child .at-nav-group-panel {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+}
+
+/* From 44rem up, two things change together and they have to stay together.
+ *
+ * The theme scrolls the bar sideways with `overflow: auto hidden`, which also
+ * clips anything hanging below it, so an open panel was rendered and invisible.
+ * CSS cannot clip one axis and leave the other: set either to a non-visible
+ * value and the other computes to auto. So the clipping is lifted rather than
+ * narrowed, and only here. At the theme's own 640px breakpoint the bar needs
+ * 570px in a 535px container and taking the scroll away pushed the page 35px
+ * wide, which is exactly what that scroll is for.
+ *
+ * And the theme tightens its nav links to `--at-spacing-xs --at-spacing-sm` at
+ * this width. A button still carrying the stacked-drawer padding stands 43px
+ * tall in a row of 34px links, which is what made the group buttons look
+ * bigger than everything beside them. */
+@media (width >= 44rem) {
+  .at-nav-links {
+    overflow: visible;
+    /* And the mask has to go with it. The theme fades the ends of the bar with
+       a scroll-driven `mask-image`, and a mask clips its descendants to the
+       element's own box whatever `overflow` says, so lifting the overflow
+       alone left the panel rendered, correctly positioned and completely
+       invisible. The fade only means anything on a bar that scrolls, and from
+       here up this one does not. */
+    mask-image: none;
+    animation: none;
+  }
+
+  .at-nav-group-button {
+    padding: var(--at-spacing-xs) var(--at-spacing-sm);
+  }
 }

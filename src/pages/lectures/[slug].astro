@@ -6,7 +6,7 @@ import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
-import { graphCollections, navMore, siteConfig } from "../../site-config";
+import { graphCollections, navGroups, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
   const lectures = await getPublishedCollection("lectures");
@@ -16,7 +16,7 @@ export async function getStaticPaths() {
 const { lecture } = Astro.props;
 const { Content } = await render(lecture);
 const title = `Week ${lecture.data.week}: ${lecture.data.title}`;
-import NavMore from "../../components/NavMore.astro";
+import NavGroups from "../../components/NavGroups.astro";
 ---
 
 <ContentLayout title={title} description={lecture.data.description} {...siteConfig}>
@@ -26,5 +26,5 @@ import NavMore from "../../components/NavMore.astro";
   <TeachingTeam teachers={lecture.data.teachers} />
   <RelatedContent entry={lecture} collections={graphCollections} />
 
-  <NavMore items={navMore} />
+  <NavGroups groups={navGroups} />
 </ContentLayout>

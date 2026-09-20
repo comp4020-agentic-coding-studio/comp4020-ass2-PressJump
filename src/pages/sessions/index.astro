@@ -1,8 +1,8 @@
 ---
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import SessionsGrid from "../../components/SessionsGrid.astro";
-import { navMore, sessionLabels, siteConfig } from "../../site-config";
-import NavMore from "../../components/NavMore.astro";
+import { navGroups, sessionLabels, siteConfig } from "../../site-config";
+import NavGroups from "../../components/NavGroups.astro";
 ---
 
 <ContentLayout
@@ -17,5 +17,5 @@ import NavMore from "../../components/NavMore.astro";
   </p>
   <SessionsGrid />
 
-  <NavMore items={navMore} />
+  <NavGroups groups={navGroups} />
 </ContentLayout>

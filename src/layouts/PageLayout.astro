@@ -1,11 +1,11 @@
 ---
 import MdxPageLayout from "astro-theme-university/layouts/MdxPageLayout.astro";
-import { navMore, siteConfig } from "../site-config";
-import NavMore from "../components/NavMore.astro";
+import { navGroups, siteConfig } from "../site-config";
+import NavGroups from "../components/NavGroups.astro";
 ---
 
 <MdxPageLayout siteConfig={siteConfig} {...Astro.props}>
   <slot />
 
-  <NavMore items={navMore} />
+  <NavGroups groups={navGroups} />
 </MdxPageLayout>
