@@ -1,3 +1,8 @@
+// Site-wide CSS, imported here rather than from a layout because every page
+// imports this module and the pages render through three different layouts.
+// See the file for what it overrides and why.
+// oxlint-disable-next-line import/no-unassigned-import
+import "./styles/site.css";
 import { defineSiteConfig } from "astro-theme-university/types";
 import { slopBranding } from "astro-theme-slop";
 import { courseMeta } from "./course-config";
@@ -26,6 +31,7 @@ export const siteConfig = defineSiteConfig({
     { text: sessionLabels.plural, href: "/sessions/" },
     { text: "Assessment", href: "/assessments/" },
     { text: "People", href: "/people/" },
+    { text: "Glossary", href: "/glossary/" },
     { text: "Policies", href: "/policies/" },
   ],
 

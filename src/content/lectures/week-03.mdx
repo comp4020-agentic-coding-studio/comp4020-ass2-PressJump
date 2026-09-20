@@ -12,6 +12,8 @@ related:
   - week-04
 ---
 
+import Formula from "../../components/Formula.astro";
+
 Week 2 gave you averages. This week is about why averages are not enough, and
 it is the week most likely to change how you look at a workplace.
 
@@ -49,8 +51,18 @@ buys you four percent more throughput and costs you five times the wait.
 ## Kingman's formula
 
 An approximation, not an identity, and the most quietly devastating thing in
-the course. Waiting time scales with a utilisation term that goes to infinity
-as you approach full capacity, multiplied by a variability term.
+the course.
+
+<Formula
+  expression="W ≈ (ρ / (1 − ρ)) × variability × service time"
+  gloss="Waiting time is the utilisation term, multiplied by how uneven things are, multiplied by how long a customer takes."
+  terms={[
+    { symbol: "ρ", meaning: "utilisation, the fraction of capacity in use" },
+    { symbol: "ρ / (1 − ρ)", meaning: "the term that goes to infinity as you approach full capacity" },
+    { symbol: "variability", meaning: "how uneven arrivals and service times are" },
+  ]}
+  caveat="An approximation for a single queue with one server. You may use it, and you may not use it without saying you know it is one."
+/>
 
 Three consequences we work through on the board.
 

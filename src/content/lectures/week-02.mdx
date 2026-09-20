@@ -12,6 +12,8 @@ related:
   - assessments/the-measured-queue
 ---
 
+import Formula from "../../components/Formula.astro";
+
 The single most useful thing in this course, and the only equation you will be
 required to reach for without warning.
 
@@ -29,8 +31,16 @@ it when they first meet it.
 
 ## What it actually claims
 
-L equals lambda W. Average number in the system, average arrival rate, average
-time in the system.
+<Formula
+  expression="L = λ W"
+  gloss="The number of people in the queue equals how fast they arrive multiplied by how long each one stays."
+  terms={[
+    { symbol: "L", meaning: "average number in the system, which you count" },
+    { symbol: "λ", meaning: "average arrival rate, which you count over a known time" },
+    { symbol: "W", meaning: "average time in the system, which is the thing you wanted" },
+  ]}
+  caveat="Holds for any stable system, any queue discipline, any arrival distribution. Every letter is an average, and a system that is filling up is not stable."
+/>
 
 The word doing the work is average. Little's Law is a statement about the long
 run of a system that is not filling up and not draining. Point it at a queue

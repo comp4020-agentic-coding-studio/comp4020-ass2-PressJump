@@ -8,6 +8,7 @@ heroTitle: Assessment
 ---
 
 import AssessmentsGrid from "../../components/AssessmentsGrid.astro";
+import WeightBar from "../../components/WeightBar.astro";
 
 Four pieces, and they are all the same piece of work seen from different
 angles. You choose a queue in week 1, you measure it, you argue about it, you
@@ -17,12 +18,19 @@ were doing that.
 Nothing here is an exam and nothing here is a group project. Every deadline
 falls on a Friday at 17:00.
 
-| Piece | Weight | Due | What it is really testing |
-|---|---|---|---|
-| The Measured Queue | 25% | Week 5 | Whether your numbers survive being questioned |
-| Whose Time It Was | 20% | Week 8 | Whether you can argue against your own position first |
-| The Queue Journal | 20% | Week 11 | Whether the habit took |
-| The Redesign | 35% | Week 12 | Whether you can be wrong in public, in advance |
+<WeightBar />
+
+## What each one is really testing
+
+The weights and the dates are above. This is the column a brief cannot put in
+its own title.
+
+| Piece | What it is really testing |
+|---|---|
+| The Measured Queue | Whether your numbers survive being questioned |
+| Whose Time It Was | Whether you can argue against your own position first |
+| The Queue Journal | Whether the habit took |
+| The Redesign | Whether you can be wrong in public, in advance |
 
 <AssessmentsGrid />
 

@@ -110,6 +110,20 @@ and the register is the tell.
   the week 2 deck and once on the timetable page; if the first column has no
   name, it needs one, and the fact that it is hard to name usually means the
   table wants to be a list.
+- **No comparison operators inside a template expression.** `day <= end` in an
+  `.astro` template makes the scanner read the `<` as a tag and fail typecheck
+  with a fragment error pointing at a completely different line. Hoist the
+  comparison into the frontmatter and call it. Cost me a confusing fifteen
+  minutes on the calendar.
+- **Site-wide CSS goes in `src/styles/site.css`, imported from
+  `src/site-config.ts`.** Not from a layout. Pages here render through three
+  different layouts and a layout import silently reaches only some of them.
+  Every page imports the site config, so nothing can miss it.
+- **A hover detail must also open on focus, and its content must be in the
+  document.** No `title` attributes, and nothing a script inserts on mouseover.
+  Hover does not exist on a phone and half the marking happens there. A panel
+  attached to a link goes beside the link, never inside it, or every word of it
+  joins the link's accessible name.
 - **Never hand-edit anything under `dist/`.**
 
 ## Rules for working

@@ -1,0 +1,253 @@
+---
+// The course vocabulary, with the week each term arrives in.
+//
+// Every entry carries the week that teaches it and the component resolves that
+// to a real lecture link out of the collection. So a term cannot point at a
+// week the course does not run, and renumbering the semester cannot leave this
+// page quietly pointing at the wrong lecture. `spec/glossary.test.ts` fails
+// the build if any term names a week with no lecture in it.
+//
+// A definition list rather than a table: these are terms and meanings, which
+// is exactly what <dl> is for, and it reflows on a phone without becoming a
+// scroll region.
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+
+interface Term {
+  term: string;
+  symbol?: string;
+  week: number;
+  meaning: string;
+}
+
+// Ordered by week, then alphabetically, so the page reads as the order you
+// actually meet them rather than as a dictionary.
+const TERMS: Term[] = [
+  {
+    term: "Queue discipline",
+    week: 1,
+    meaning:
+      "The rule deciding who gets served next. First-come-first-served is one of several and it is a choice, not a default.",
+  },
+  {
+    term: "Balking",
+    week: 1,
+    meaning:
+      "Seeing the queue and deciding not to join it. Balkers never appear in your count, which is the first thing that will make your arrival rate wrong.",
+  },
+  {
+    term: "Reneging",
+    week: 1,
+    meaning:
+      "Joining the queue and then leaving before being served. Distinct from balking, and much harder to spot from thirty metres away.",
+  },
+  {
+    term: "Little's Law",
+    symbol: "L = λ W",
+    week: 2,
+    meaning:
+      "Queue length equals arrival rate times time in the system. It holds for any stable queue regardless of discipline, and it lets you measure a wait you never timed.",
+  },
+  {
+    term: "Arrival rate",
+    symbol: "λ",
+    week: 2,
+    meaning: "How many people join per unit time, averaged over a period you can state.",
+  },
+  {
+    term: "Stability",
+    week: 2,
+    meaning:
+      "A queue that is neither growing without bound nor draining. Little's Law says nothing useful about an unstable one, and a backlog is an unstable one.",
+  },
+  {
+    term: "Utilisation",
+    symbol: "ρ",
+    week: 3,
+    meaning:
+      "The fraction of capacity in use. Waiting time scales with the term it sits in, which goes to infinity as it approaches one.",
+  },
+  {
+    term: "Coefficient of variation",
+    week: 3,
+    meaning:
+      "How uneven a set of service times is, relative to their mean. The number that separates a production line from a walk-in clinic.",
+  },
+  {
+    term: "Kingman's approximation",
+    week: 3,
+    meaning:
+      "Waiting time as a utilisation term multiplied by a variability term. An approximation for a single-server queue, and usable if you say so.",
+  },
+  {
+    term: "Pooling",
+    week: 4,
+    meaning:
+      "One line feeding several servers instead of one line each. Wins on mean wait and on variance at every load, and there are five real reasons not to do it.",
+  },
+  {
+    term: "Serpentine queue",
+    week: 4,
+    meaning:
+      "A single pooled line folded back on itself so it fits a room. The thing banks and airports changed to and supermarkets did not.",
+  },
+  {
+    term: "Starvation",
+    week: 5,
+    meaning:
+      "A job at the back never being served because shorter work keeps arriving in front of it. Borrowed from computing, and it happens to people as readily as to processes.",
+  },
+  {
+    term: "Shortest-job-first",
+    week: 5,
+    meaning:
+      "Serving the quickest customer next. Optimal for the mean wait, brutal for the longest job, and the most common unstated discipline at a counter.",
+  },
+  {
+    term: "Triage",
+    week: 6,
+    meaning:
+      "A priority queue that ranks people by how much the waiting will cost them, not by how badly off they are. The only widely used discipline that publishes its promises in minutes.",
+  },
+  {
+    term: "Invisible queue",
+    week: 7,
+    meaning:
+      "A queue that publishes neither its length nor your position in it. You cannot balk from one, because leaving would be a decision made without information.",
+  },
+  {
+    term: "Perceived wait",
+    week: 8,
+    meaning:
+      "How long the wait felt. Reliably longer than the measured wait when the wait is unexplained, uncertain or unfair, and the gap is a finding rather than a failure of the customer.",
+  },
+  {
+    term: "Backpressure",
+    week: 9,
+    meaning:
+      "Pushing the pressure back to whoever is producing work when the queue fills, rather than absorbing it in a longer line. The counter equivalent is a sign saying come back tomorrow.",
+  },
+  {
+    term: "Ageing",
+    week: 9,
+    meaning:
+      "Raising a job's priority the longer it has waited. Removes starvation without giving up shortest-job-first, and almost no human queue uses it.",
+  },
+  {
+    term: "Admission control",
+    week: 9,
+    meaning: "Refusing work rather than queueing it. A feature, and weeks 5 and 6 are about who gets refused.",
+  },
+  {
+    term: "Convoy effect",
+    week: 10,
+    meaning:
+      "One slow job at the front serialising everything behind it, so throughput collapses well below capacity.",
+  },
+  {
+    term: "Bufferbloat",
+    week: 10,
+    meaning:
+      "A queue growing unboundedly because somebody added memory instead of a limit. The system becomes unusable while every capacity metric still looks healthy.",
+  },
+  {
+    term: "Progressive crowd collapse",
+    week: 10,
+    meaning:
+      "Density passing the threshold where individuals lose control of their footing and force travels through a crowd as a wave. A queueing failure, continuous with everything else here.",
+  },
+  {
+    term: "Market for position",
+    week: 11,
+    meaning:
+      "Letting people pay to move forward. Does not remove waiting, converts it into money, and willingness to pay is not the same thing as need.",
+  },
+];
+
+const lectures = await getPublishedCollection("lectures");
+const lectureFor = (week: number) => lectures.find((entry) => entry.data.week === week);
+
+const slug = (term: string): string =>
+  term
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+---
+
+<dl class="glossary">
+  {
+    TERMS.map((entry) => {
+      const lecture = lectureFor(entry.week);
+      return (
+        <div class="entry" id={slug(entry.term)}>
+          <dt>
+            <a class="anchor" href={`#${slug(entry.term)}`}>
+              {entry.term}
+            </a>
+            {entry.symbol && <span class="symbol">{entry.symbol}</span>}
+          </dt>
+          <dd>
+            <p class="meaning">{entry.meaning}</p>
+            {lecture && (
+              <p class="arrives">
+                Week {entry.week},{" "}
+                <a href={withBase(`/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
+              </p>
+            )}
+          </dd>
+        </div>
+      );
+    })
+  }
+</dl>
+
+<style>
+  .glossary {
+    margin-block: 1.5rem 0;
+  }
+
+  .entry {
+    padding-block: 0.9rem;
+    border-block-end: 1px solid var(--at-border);
+    scroll-margin-block-start: 5rem;
+  }
+
+  dt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .anchor {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .anchor:hover,
+  .anchor:focus-visible {
+    text-decoration: underline;
+  }
+
+  .symbol {
+    font-weight: 600;
+    color: var(--at-primary);
+    font-size: 0.95rem;
+  }
+
+  dd {
+    margin: 0.35rem 0 0;
+  }
+
+  .meaning {
+    margin: 0;
+  }
+
+  .arrives {
+    margin-block: 0.4rem 0;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+</style>

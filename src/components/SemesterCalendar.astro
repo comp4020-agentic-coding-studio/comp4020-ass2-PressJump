@@ -1,0 +1,439 @@
+---
+// The teaching period as four month grids, built from the collections.
+//
+// The detail panel opens on hover and on keyboard focus, and it is a real
+// element in the document rather than a title attribute or something a script
+// builds on mouseover. Three reasons, and they are the whole design:
+//
+//   - Hover does not exist on a phone, and half the marking happens there. So
+//     every chip is also a link to the page that holds the detail, and the
+//     panel is a shortcut for people who have a pointer rather than the only
+//     way to the content.
+//   - A `title` attribute is invisible to touch, unreliable to screen readers
+//     and cannot hold markup.
+//   - Content that a script inserts on mouseover is content that does not
+//     exist for anything that is not a mouse, including the search index.
+//
+// Nothing here is keyboard-trapped: the chip is an anchor, so tabbing through
+// the calendar reads each week in order and the panel follows the focus.
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+import { courseMeta } from "../course-config";
+
+const [lectures, sessions, assessments] = await Promise.all([
+  getPublishedCollection("lectures"),
+  getPublishedCollection("sessions"),
+  getPublishedCollection("assessments"),
+]);
+
+type Kind = "lecture" | "session" | "due";
+
+interface Entry {
+  kind: Kind;
+  week: number;
+  title: string;
+  detail: string;
+  href: string;
+  badge?: string;
+}
+
+const iso = (date: Date): string => date.toISOString().slice(0, 10);
+
+// One flat list of everything that happens on a day, keyed by date. The three
+// collections carry different date fields, which is the only reason this is
+// three passes rather than one.
+const byDay = new Map<string, Entry[]>();
+const add = (date: Date, entry: Entry): void => {
+  const key = iso(date);
+  byDay.set(key, [...(byDay.get(key) ?? []), entry]);
+};
+
+for (const lecture of lectures) {
+  add(lecture.data.date, {
+    kind: "lecture",
+    week: lecture.data.week,
+    title: lecture.data.title,
+    detail: lecture.data.description ?? "",
+    href: `/lectures/${lecture.id}/`,
+  });
+}
+for (const session of sessions) {
+  add(session.data.date, {
+    kind: "session",
+    week: session.data.week,
+    title: session.data.title,
+    detail: session.data.description ?? "",
+    href: `/sessions/${session.id}/`,
+  });
+}
+for (const assessment of assessments) {
+  add(assessment.data.due, {
+    kind: "due",
+    week: assessment.data.week,
+    title: assessment.data.title,
+    detail: assessment.data.description ?? "",
+    href: `/assessments/${assessment.id}/`,
+    badge: `${assessment.data.weight}%`,
+  });
+}
+
+const start = new Date(`${courseMeta.startDate}T00:00:00Z`);
+const end = new Date(`${courseMeta.endDate}T00:00:00Z`);
+
+const monthLabel = new Intl.DateTimeFormat("en-AU", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const dayLabel = new Intl.DateTimeFormat("en-AU", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  timeZone: "UTC",
+});
+
+/** Every month the teaching period touches, as a grid of week rows starting
+ *  Monday, padded with blanks so the columns line up. */
+function buildMonths() {
+  const months: { label: string; weeks: (Date | null)[][] }[] = [];
+  const cursor = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1));
+
+  while (cursor <= end) {
+    const year = cursor.getUTCFullYear();
+    const month = cursor.getUTCMonth();
+    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    // getUTCDay is Sunday-first; the grid is Monday-first.
+    const firstWeekday = (new Date(Date.UTC(year, month, 1)).getUTCDay() + 6) % 7;
+
+    const cells: (Date | null)[] = Array.from({ length: firstWeekday }, () => null);
+    for (let day = 1; day <= daysInMonth; day++) cells.push(new Date(Date.UTC(year, month, day)));
+    while (cells.length % 7 !== 0) cells.push(null);
+
+    const weeks: (Date | null)[][] = [];
+    for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+    months.push({ label: monthLabel.format(cursor), weeks });
+
+    cursor.setUTCMonth(month + 1);
+  }
+  return months;
+}
+
+const months = buildMonths();
+
+// Hoisted out of the template on purpose. Written inline as
+// `day >= start && day <= end`, the Astro template scanner reads the `<` of
+// `<=` as the start of a tag and fails typecheck with a fragment error
+// pointing at the wrong thing entirely. Comparisons live in the frontmatter.
+const withinTerm = (day: Date): boolean =>
+  day.getTime() >= start.getTime() && day.getTime() <= end.getTime();
+const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const kindLabel: Record<Kind, string> = {
+  lecture: "Lecture",
+  session: "Field session",
+  due: "Due",
+};
+---
+
+<div class="calendar">
+  <p class="key" aria-hidden="true">
+    <span class="swatch swatch--lecture"></span> Lecture
+    <span class="swatch swatch--session"></span> Field session
+    <span class="swatch swatch--due"></span> Assessment due
+  </p>
+
+  {
+    months.map((month) => (
+      <section class="month" aria-label={month.label}>
+        <h3 class="month-name">{month.label}</h3>
+        <table class="grid">
+          <caption class="visually-hidden">{month.label}</caption>
+          <thead>
+            <tr>
+              {weekdays.map((day) => (
+                <th scope="col" abbr={day}>
+                  <span aria-hidden="true">{day.slice(0, 1)}</span>
+                  <span class="visually-hidden">{day}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {month.weeks.map((week) => (
+              <tr>
+                {week.map((day) => {
+                  const events = day ? (byDay.get(iso(day)) ?? []) : [];
+                  const inTerm = day !== null && withinTerm(day);
+                  return (
+                    <td
+                      class:list={[
+                        "day",
+                        { "day--empty": day === null },
+                        { "day--off": day !== null && !inTerm },
+                        { "day--busy": events.length > 0 },
+                      ]}
+                    >
+                      {day && <span class="date">{day.getUTCDate()}</span>}
+                      {events.map((event) => (
+                        <>
+                          <a
+                            class:list={["chip", `chip--${event.kind}`]}
+                            href={withBase(event.href)}
+                          >
+                            <span class="visually-hidden">
+                              {kindLabel[event.kind]}, {dayLabel.format(day!)}:{" "}
+                            </span>
+                            <span class="chip-title">{event.title}</span>
+                            {event.badge && <span class="chip-badge">{event.badge}</span>}
+                          </a>
+                          {/* A sibling of the link rather than a child of it.
+                              Nested, every word below joins the link's
+                              accessible name, so a screen reader announces the
+                              whole description before it gets to where the
+                              link goes. */}
+                          <span class="panel">
+                            <span class="panel-kind">
+                              {kindLabel[event.kind]} &middot; Week {event.week}
+                            </span>
+                            <span class="panel-title">{event.title}</span>
+                            <span class="panel-detail">{event.detail}</span>
+                            <span class="panel-go">Read the page</span>
+                          </span>
+                        </>
+                      ))}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .calendar {
+    margin-block: 1.5rem 2.5rem;
+  }
+
+  .key {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.9rem;
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
+    margin-block-end: 1.25rem;
+  }
+
+  .swatch {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 2px;
+    margin-inline-end: 0.15rem;
+    border: 1px solid var(--at-primary);
+  }
+
+  /* One hue, three fills. Weight and fill carry the difference rather than a
+     second colour, per the harness rule. */
+  .swatch--lecture {
+    background: var(--at-primary);
+  }
+
+  .swatch--session {
+    background: color-mix(in srgb, var(--at-primary) 30%, transparent);
+  }
+
+  .swatch--due {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--at-primary) 0 2px,
+      transparent 2px 4px
+    );
+  }
+
+  .month + .month {
+    margin-block-start: 2rem;
+  }
+
+  .month-name {
+    font-size: 1rem;
+    margin-block: 0 0.5rem;
+  }
+
+  .grid {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  /* The theme stripes table rows, which on a month grid reads as a fortnightly
+     pattern that means nothing. A calendar's rows are weeks, not records. */
+  .grid tbody tr,
+  .grid tbody tr:nth-child(even) {
+    background: transparent;
+  }
+
+  .grid thead th {
+    padding-block-end: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--at-text-secondary);
+    text-align: center;
+  }
+
+  .day {
+    position: relative;
+    vertical-align: top;
+    height: 4.25rem;
+    padding: 0.2rem;
+    border: 1px solid var(--at-border);
+  }
+
+  .day--empty {
+    border-color: transparent;
+  }
+
+  .day--off .date {
+    opacity: 0.35;
+  }
+
+  .date {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--at-text-secondary);
+    text-align: right;
+    line-height: 1;
+  }
+
+  .chip {
+    display: block;
+    margin-block-start: 0.2rem;
+    padding: 0.15rem 0.3rem;
+    border: 1px solid var(--at-primary);
+    border-radius: 3px;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .chip--lecture {
+    background: color-mix(in srgb, var(--at-primary) 22%, transparent);
+    font-weight: 600;
+  }
+
+  .chip--session {
+    background: color-mix(in srgb, var(--at-primary) 8%, transparent);
+  }
+
+  .chip--due {
+    background: color-mix(in srgb, var(--at-primary) 40%, transparent);
+    font-weight: 600;
+  }
+
+  .chip-badge {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chip:hover,
+  .chip:focus-visible {
+    background: var(--at-primary);
+    color: var(--at-bg);
+    outline: none;
+  }
+
+  /* The panel. Present in the document always, revealed on hover or focus, so
+     a screen reader and the search index see it whatever the pointer does. */
+  .panel {
+    position: absolute;
+    z-index: 5;
+    inset-inline-start: 0;
+    inset-block-start: calc(100% - 0.2rem);
+    width: max(15rem, 100%);
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--at-primary);
+    background: var(--at-bg);
+    color: var(--at-text);
+    box-shadow: none;
+    white-space: normal;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 120ms ease;
+  }
+
+  .chip:hover + .panel,
+  .chip:focus-visible + .panel,
+  .panel:hover {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* The last two columns open their panel to the left so it cannot push the
+     page wider than the viewport. */
+  .day:nth-child(n + 6) .panel {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+  }
+
+  .panel-kind {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--at-text-secondary);
+  }
+
+  .panel-title {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-block: 0.15rem 0.35rem;
+  }
+
+  .panel-detail {
+    display: block;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .panel-go {
+    display: block;
+    margin-block-start: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--at-primary);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel {
+      transition: none;
+    }
+  }
+
+  /* A seven-column month grid at 390px gives each day about 48px, which is not
+     a calendar, it is a colour-coded grid you cannot read. Below the phone
+     breakpoint the calendar is withdrawn and the list under it is the view.
+     The list is always in the document, so nothing is lost. */
+  @media (width < 48rem) {
+    .calendar {
+      display: none;
+    }
+  }
+</style>

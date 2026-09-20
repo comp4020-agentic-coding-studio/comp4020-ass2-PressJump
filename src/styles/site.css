@@ -1,0 +1,51 @@
+/* Site-wide overrides, on top of the theme and the Slop brand tokens.
+ *
+ * Imported from src/site-config.ts rather than from a layout. Pages here
+ * render through three different layouts (ContentLayout for the home page and
+ * the collection pages, MdxPageLayout for the markdown pages, and the deck
+ * pages through neither), so a layout import reaches some pages and not
+ * others, and the gap is invisible until somebody puts a callout on the one
+ * page that missed out. Every page imports siteConfig; none can miss this.
+ *
+ * Nothing here restates a brand colour. Everything derives from --at-primary,
+ * because a colour restated is how two stylesheets start to disagree. */
+
+/* Callouts, brought into the house palette.
+ *
+ * The theme gives each callout type its own hue (tip green, info blue, error
+ * red) and a hairline rule along the top edge only. Two rules in CLAUDE.md say
+ * no to both: one accent hue plus the neutrals, and no accent bar on any edge
+ * of a panel, a panel being a fill plus a hairline border. A green panel on a
+ * gold site is the loudest available way to look like four components from
+ * four places, which is the thing the harness exists to prevent.
+ *
+ * So every type keeps the gold and differs by how much of it fills the panel.
+ * Two levels rather than four: quiet for info and tip, loud for warning and
+ * error. Colour was never the only signal, because every callout on this site
+ * carries a written label, and a student looking for the week 10 content
+ * warning finds it by the words. */
+.at-callout {
+  border: 1px solid var(--at-accent);
+  border-radius: 0;
+}
+
+.at-callout--info,
+.at-callout--tip {
+  --at-accent: color-mix(in srgb, var(--at-primary) 45%, transparent);
+  --at-accent-soft: color-mix(in srgb, var(--at-primary) 6%, transparent);
+}
+
+.at-callout--warning,
+.at-callout--error {
+  --at-accent: var(--at-primary);
+  --at-accent-soft: color-mix(in srgb, var(--at-primary) 15%, transparent);
+}
+
+.at-callout--details {
+  --at-accent: var(--at-divider);
+  --at-accent-soft: transparent;
+}
+
+.at-callout__title {
+  color: var(--at-text);
+}

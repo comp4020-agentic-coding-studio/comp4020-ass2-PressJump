@@ -11,6 +11,9 @@ related:
   - assessments/the-redesign
 ---
 
+import Figure from "../../components/Figure.astro";
+import pooling from "../../assets/diagrams/pooling.svg";
+
 The first structural decision anybody makes about a queue. Five counters with
 five lines, or five counters with one line feeding all of them.
 
@@ -23,6 +26,12 @@ pays for it alone.
 So why does a supermarket still have you choosing a till. That is the
 interesting half of the hour, and the answer is not that supermarkets are
 badly run.
+
+<Figure
+  src={pooling}
+  alt="Two arrangements side by side. On the left, five counters each with its own line, of three, one, four, two and two people. On the right, the same five counters fed by a single line of twelve."
+  caption="The same twelve people and the same five counters, arranged two ways. On the left the person behind the four-deep line waits while a counter on the right sits idle. On the right that cannot happen, which is the entire argument."
+/>
 
 ## The arithmetic
 

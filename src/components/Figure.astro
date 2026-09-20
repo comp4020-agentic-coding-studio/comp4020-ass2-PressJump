@@ -1,0 +1,59 @@
+---
+// An image with a caption that is allowed to argue.
+//
+// The alt text describes what is drawn, for somebody who cannot see it. The
+// caption says what it means, for everybody. They are different jobs and
+// collapsing them into one is how a diagram ends up captioned "Figure 1".
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  src: ImageMetadata;
+  /** What is drawn. Written for somebody who cannot see the picture. */
+  alt: string;
+  /** What it means. Written for everybody, and allowed to make a claim. */
+  caption: string;
+  /** Optional source note, for a figure derived from somewhere. */
+  source?: string;
+}
+
+const { src, alt, caption, source } = Astro.props;
+---
+
+<figure class="figure">
+  <Image src={src} alt={alt} format={src.format === "svg" ? "svg" : "avif"} loading="lazy" />
+  <figcaption>
+    <span class="caption">{caption}</span>
+    {source && <span class="source">{source}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .figure {
+    margin-block: 1.75rem;
+  }
+
+  .figure :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--at-border);
+  }
+
+  figcaption {
+    margin-block-start: 0.6rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--at-text-secondary);
+  }
+
+  .caption {
+    display: block;
+  }
+
+  .source {
+    display: block;
+    margin-block-start: 0.3rem;
+    font-size: 0.8rem;
+  }
+</style>

@@ -1,0 +1,114 @@
+---
+// An equation, set apart, with the sentence it means underneath it.
+//
+// There are four pieces of maths in this course and a student who bounces off
+// the notation has lost the week. So the gloss is a required prop rather than
+// an optional one: if a formula cannot be said in a sentence, it does not go
+// on a page here.
+//
+// Deliberately not MathJax or KaTeX. Both are a network dependency or a
+// hundred kilobytes of font to set five symbols, and the harness says
+// everything ships in the build.
+interface Props {
+  /** The equation itself, as plain text. Keep it short. */
+  expression: string;
+  /** What it says, in words. Required on purpose. */
+  gloss: string;
+  /** Optional per-symbol key, rendered as a definition list. */
+  terms?: { symbol: string; meaning: string }[];
+  /** A caveat the formula does not carry on its face. */
+  caveat?: string;
+}
+
+const { expression, gloss, terms = [], caveat } = Astro.props;
+---
+
+<figure class="formula">
+  {/* role="img" so the aria-label is legal here: a bare <p> has no role that
+      permits one, and axe fails the build on aria-prohibited-attr. The label
+      is the gloss, because "L = lambda W" read character by character is worse
+      than the sentence it stands for. */}
+  <p class="expression" role="img" aria-label={gloss}>{expression}</p>
+  <figcaption>
+    <p class="gloss">{gloss}</p>
+    {
+      terms.length > 0 && (
+        <dl class="terms">
+          {terms.map((term) => (
+            <>
+              <dt>{term.symbol}</dt>
+              <dd>{term.meaning}</dd>
+            </>
+          ))}
+        </dl>
+      )
+    }
+    {caveat && <p class="caveat">{caveat}</p>}
+  </figcaption>
+</figure>
+
+<style>
+  .formula {
+    margin-block: 1.75rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--at-border);
+    background: var(--at-bg-alt);
+  }
+
+  .expression {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: center;
+    color: var(--at-primary);
+  }
+
+  .gloss {
+    margin-block: 0.85rem 0;
+    text-align: center;
+    font-size: 1rem;
+  }
+
+  .terms {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 0.9rem;
+    margin-block: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  .terms dt {
+    font-weight: 700;
+    color: var(--at-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .terms dd {
+    margin: 0;
+    color: var(--at-text-secondary);
+  }
+
+  .caveat {
+    margin-block: 0.9rem 0;
+    padding-block-start: 0.7rem;
+    border-block-start: 1px solid var(--at-border);
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  @media (width < 44rem) {
+    .expression {
+      font-size: 1.35rem;
+    }
+
+    .terms {
+      grid-template-columns: 1fr;
+      gap: 0 0;
+    }
+
+    .terms dd {
+      margin-block-end: 0.5rem;
+    }
+  }
+</style>
