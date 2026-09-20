@@ -155,3 +155,37 @@ describe("a field session is a thing you go and do", () => {
     }
   });
 });
+
+describe("the timetable agrees with the twelve weeks", () => {
+  // The timetable is generated from the collections, so today it cannot lie.
+  // This exists for the day somebody decides a hand-written table would be
+  // easier to style. A stale timetable is the worst page on a course site to
+  // get wrong, because it is the one students plan a semester against and the
+  // one they believe without checking.
+  const html = readFileSync(resolve("dist/timetable/index.html"), "utf8");
+  const hrefs = new Set(
+    [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1].replace(/^.*?(?=\/(?:lectures|sessions|assessments)\/)/, "")),
+  );
+
+  it("names every teaching week", () => {
+    for (const week of WEEKS) {
+      expect(html, `week ${week} is missing from the timetable`).toMatch(
+        new RegExp(`>\s*${week}\s*<`),
+      );
+    }
+  });
+
+  it("links every lecture and every field session", () => {
+    for (const node of [...lectures, ...sessions]) {
+      const slug = node.id.replace(/^(lectures|sessions)\//, "");
+      const path = `/${node.type}/${slug}/`;
+      expect([...hrefs].some((href) => href.endsWith(path)), `${node.id} is not linked`).toBe(
+        true,
+      );
+    }
+  });
+
+  it("shows the mid-semester break", () => {
+    expect(html).toMatch(/Mid-semester break/i);
+  });
+});

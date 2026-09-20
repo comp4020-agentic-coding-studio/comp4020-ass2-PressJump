@@ -104,6 +104,12 @@ and the register is the tell.
 - **Everything ships in the build.** No CDN scripts, no remote fonts, no remote
   images, no runtime `fetch`. A network dependency is a way for the deployed
   site to be broken while the local one looks fine.
+- **Every table column gets a non-empty header cell.** A markdown table opening
+  `| | Weeks | Cost |` is a table whose first header is blank, and axe fails the
+  build on it. Written down after making the identical mistake twice, once in
+  the week 2 deck and once on the timetable page; if the first column has no
+  name, it needs one, and the fact that it is hard to name usually means the
+  table wants to be a list.
 - **Never hand-edit anything under `dist/`.**
 
 ## Rules for working

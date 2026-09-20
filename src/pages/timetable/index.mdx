@@ -1,0 +1,70 @@
+---
+layout: ../../layouts/PageLayout.astro
+title: Timetable
+description: "The whole semester on one page. Twelve weeks, what is taught, what you go and do, and what falls due."
+heroTitle: Timetable
+---
+
+import SemesterTable from "../../components/SemesterTable.astro";
+
+Everything in one place, because the question students actually arrive with is
+not what the course is about, it is whether they can fit it around a Wednesday
+shift.
+
+<SemesterTable />
+
+:::info[The shape of a week]
+Two contact hours plus a third you spend outside on your own queue. The
+Monday lecture is an hour and it is an argument, not a worked example. The
+Wednesday field session is two hours and most of them are not in a room.
+:::
+
+## What the dates commit to
+
+Nothing on this page is typed out. The table is built from the lecture,
+session and assessment pages themselves, so a date can only be wrong here if it
+is wrong there too, and `spec/course-shape.test.ts` fails the build if the
+twelve weeks stop lining up with the course record.
+
+That is not a small thing on a course website. A timetable is the page students
+plan a semester against, and a stale one is worse than no timetable at all,
+because it is believed.
+
+## Reading the load
+
+| Load | Weeks | What it costs you |
+|---|---|---|
+| Light | 1, 2, 12 | Choosing a queue, one clipboard exercise, the defence |
+| Steady | 3, 4, 8, 9, 10 | A lecture, a field session, one journal entry |
+| Heavy | 5, 6, 7, 11 | The above plus an assessment inside two weeks |
+
+The two genuinely busy stretches are weeks 4 to 5, when The Measured Queue
+lands on top of the pooling material, and weeks 10 to 12, when the journal, the
+studio and the defence arrive together. Neither is an accident and both are
+survivable, but plan the second one before week 9 rather than during it.
+
+:::warning[Week 10 comes with a warning]
+The week 10 lecture works from published inquiry reports, several of which
+concern deaths in crowd failures. There is a written version that carries the
+same material, and the [policies page](/policies/) says how to take it. You do
+not have to give a reason.
+:::
+
+## If you miss a week
+
+:::details[What to do, in order]
+Field sessions are where the data comes from, so a missed one costs you more
+than a missed lecture. In order of what to do about it.
+
+1. Tell Priya the same week. Most sessions can be repeated with another group
+   or done alone with a sheet she will send you.
+2. Get the week's measurements anyway, even roughly. An entry in the journal
+   saying you collected thirty arrivals instead of sixty is worth far more than
+   a gap.
+3. If the site itself has fallen through rather than your attendance, that is a
+   different problem and the [policies page](/policies/) covers it. It is not a
+   penalty and it happens most years.
+
+Lectures are recorded, with one exception. Week 7 is a guest lecture and it is
+not recorded at the guest's request.
+:::

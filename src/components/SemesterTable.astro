@@ -1,0 +1,211 @@
+---
+// The semester at a glance, generated from the collections rather than typed
+// out. A hand-written timetable is the first thing on a course site to go
+// stale, and it goes stale silently: every other page keeps telling the truth
+// while this one quietly disagrees with all of them. Nothing here is a fact of
+// its own, so there is nothing for it to be wrong about.
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+import { formatCourseDate } from "../lib/dates";
+
+const [lectures, sessions, assessments] = await Promise.all([
+  getPublishedCollection("lectures"),
+  getPublishedCollection("sessions"),
+  getPublishedCollection("assessments"),
+]);
+
+const weeks = [...new Set(lectures.map((lecture) => lecture.data.week))].sort((a, b) => a - b);
+
+const shortDate = new Intl.DateTimeFormat("en-AU", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
+const rows = weeks.map((week) => ({
+  week,
+  lecture: lectures.find((entry) => entry.data.week === week),
+  session: sessions.find((entry) => entry.data.week === week),
+  due: assessments.filter((entry) => entry.data.week === week),
+}));
+
+// Where the mid-semester break falls, worked out from the gap between
+// consecutive teaching weeks rather than stated. Change the dates in the
+// content and the break moves with them.
+const breakAfter = rows.findIndex((row, index) => {
+  const next = rows[index + 1];
+  if (!row.lecture || !next?.lecture) return false;
+  const gapDays =
+    (next.lecture.data.date.getTime() - row.lecture.data.date.getTime()) / 86_400_000;
+  return gapDays > 7;
+});
+---
+
+<table class="semester">
+  <caption>
+    Lectures are Mondays, field sessions the Wednesday of the same week. Every
+    assessment is due at 17:00 on the Friday.
+  </caption>
+  <thead>
+    <tr>
+      <th scope="col">Week</th>
+      <th scope="col">Lecture</th>
+      <th scope="col">Field session</th>
+      <th scope="col">Due</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      rows.map((row, index) => (
+        <>
+          <tr>
+            <th scope="row">
+              {row.week}
+              {row.lecture && (
+                <span class="when">{shortDate.format(row.lecture.data.date)}</span>
+              )}
+            </th>
+            <td data-label="Lecture">
+              {row.lecture && (
+                <a href={withBase(`/lectures/${row.lecture.id}/`)}>{row.lecture.data.title}</a>
+              )}
+            </td>
+            <td data-label="Field session">
+              {row.session && (
+                <a href={withBase(`/sessions/${row.session.id}/`)}>{row.session.data.title}</a>
+              )}
+            </td>
+            <td data-label="Due">
+              {row.due.length === 0 ? (
+                <span class="nothing" aria-label="nothing due">
+                  &ndash;
+                </span>
+              ) : (
+                row.due.map((entry) => (
+                  <a href={withBase(`/assessments/${entry.id}/`)}>
+                    {entry.data.title} <small>{entry.data.weight}%</small>
+                  </a>
+                ))
+              )}
+            </td>
+          </tr>
+          {index === breakAfter && (
+            <tr class="break">
+              <td colspan="4">Mid-semester break, two weeks. Nothing is due.</td>
+            </tr>
+          )}
+        </>
+      ))
+    }
+  </tbody>
+</table>
+
+<style>
+  .semester {
+    width: 100%;
+    border-collapse: collapse;
+    margin-block: 1.5rem 2.5rem;
+  }
+
+  .semester caption {
+    caption-side: top;
+    text-align: left;
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+    margin-block-end: 0.85rem;
+  }
+
+  .semester th,
+  .semester td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.6rem 0.75rem 0.6rem 0;
+    border-block-end: 1px solid var(--at-border);
+  }
+
+  .semester thead th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--at-text-secondary);
+  }
+
+  .semester tbody th {
+    white-space: nowrap;
+    padding-inline-end: 1.25rem;
+  }
+
+  .when {
+    display: block;
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--at-text-secondary);
+  }
+
+  .semester td a {
+    display: block;
+  }
+
+  .nothing {
+    color: var(--at-text-secondary);
+  }
+
+  .break td {
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+    background: var(--at-bg-alt);
+    padding-inline: 0.75rem;
+  }
+
+  /* Under the phone breakpoint the four columns stop being a table and become
+     one block per week. A four-column timetable at 390px is either a scroll
+     region nobody scrolls or four columns of one word each. */
+  @media (width < 44rem) {
+    .semester,
+    .semester tbody,
+    .semester tr,
+    .semester th,
+    .semester td {
+      display: block;
+    }
+
+    .semester thead {
+      display: none;
+    }
+
+    /* Turning the table into blocks leaves the caption as an anonymous table
+       box that shrink-wraps to its longest word, so it has to be told to be a
+       block too. Caught by looking at it at 390px; it reads perfectly on a
+       desktop. */
+    .semester caption {
+      display: block;
+      width: 100%;
+    }
+
+    .semester tbody tr {
+      padding-block: 0.75rem;
+      border-block-end: 1px solid var(--at-border);
+    }
+
+    .semester th,
+    .semester td {
+      border: 0;
+      padding: 0.15rem 0;
+    }
+
+    .semester tbody th {
+      font-size: 1.05rem;
+    }
+
+    .when {
+      display: inline;
+      margin-inline-start: 0.5rem;
+    }
+
+    .semester td::before {
+      content: attr(data-label) " ";
+      color: var(--at-text-secondary);
+      font-size: 0.8rem;
+    }
+  }
+</style>
