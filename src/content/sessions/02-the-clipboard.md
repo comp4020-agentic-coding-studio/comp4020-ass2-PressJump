@@ -1,0 +1,62 @@
+---
+title: The clipboard
+description:
+  Learning to record arrivals and services by hand, badly, and then learning
+  what the errors were.
+week: 2
+date: 2027-03-03
+teachers:
+  - priya-raghunathan
+related:
+  - lectures/week-02
+  - assessments/the-measured-queue
+spec:
+  - you record 30 minutes of arrivals and services at a queue in the building
+  - your counts are compared against a second observer's
+  - you can state your own error rate
+---
+
+Little's Law on Monday. Now the part nobody writes down, which is that the
+numbers have to come from somewhere and a human being is a poor instrument.
+
+## What happens
+
+**Twenty minutes, in the room.** The observation sheet. Why it has the columns
+it has, why the time column is in seconds since you started rather than clock
+time, and why you tick rather than write.
+
+**Sixty minutes, in pairs, at the cafe queue downstairs.** Both of you record
+the same queue independently for thirty minutes. You do not compare notes
+while you are doing it.
+
+**Forty minutes, back in the room.** You compare. This is the session.
+
+## What you will find
+
+Pairs typically disagree on ten to twenty percent of arrivals in their first
+half hour. The disagreements are not random and that is the lesson. They
+cluster on the boundary cases, which are the same four every time.
+
+- Someone joins, leaves, and rejoins.
+- Two people arrive together and one of them orders.
+- A customer is served without ever joining the line.
+- The server does something that is not serving, and you have to decide
+  whether the counter is busy or idle.
+
+None of these have right answers. What matters is that you decide in advance
+and write the decision at the top of the sheet, and that you do not change it
+in week 6 because a different rule would make your numbers tidier.
+
+## Bring
+
+- A clipboard or a hard-backed notebook. Not a phone. You cannot tally and
+  timestamp on a phone as fast as you can with a pen, and you will drop
+  arrivals.
+- Two pens.
+- A watch or phone you can leave running without unlocking it.
+
+## What leaves the room
+
+A completed thirty-minute observation sheet, your partner's sheet for the same
+period, and one written rule for each of the four boundary cases. That rule
+sheet goes in the appendix of The Measured Queue.
