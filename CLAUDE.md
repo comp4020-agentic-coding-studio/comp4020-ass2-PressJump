@@ -65,17 +65,21 @@ on me; see the rule on invented numbers below.
   allowed to be dishonest about evidence.
 - **The fiction may have its own publications; it may never borrow real ones.**
   Staff profiles list papers, because a staff profile without them is not a
-  staff profile. Every one of them names an invented venue, no entry names a
-  real journal, a real author or a real paper, and the page says in writing
-  that none of it exists. The rule above is about not dressing invention up as
-  evidence for a claim the course makes; a fictional academic's fictional
-  bibliography is not that, as long as nobody could mistake it for real.
-- **A portrait of a fictional person says it is not a photograph of anybody.**
-  The faces on the people page are machine-generated and the page says so. A
-  photograph is the one thing on a course site a reader believes without
-  checking, so the site is the one that tells them. Alt text describes what is
-  actually in the image, checked against the file, and does not assert an
-  identity the picture cannot have.
+  staff profile. Every one names an invented venue, and no entry names a real
+  journal, a real author or a real paper. The rule above is about not dressing
+  invention up as evidence for a claim the course makes; a fictional academic's
+  fictional bibliography is not that, as long as it borrows nothing real.
+- **The site does not break character to explain itself.** It reads as a course
+  website, not as an exercise with footnotes about being one. I had put a
+  disclaimer on the people page saying the portraits were machine-generated and
+  a line under the publications saying none of them exist, and both went: the
+  brief asks for a course website, nothing in it asks for disclaimers, and no
+  real course site carries them. Slop University is fiction all the way down
+  and the fiction does not need a label on one page of it.
+- **Alt text describes the file, checked against the file.** Written from
+  memory it drifts, and on this site it did: two profiles carried a description
+  of the wrong portrait because the faces did not land in the order I assumed.
+  It also does not assert an identity a picture cannot carry.
 - **Second person, present tense, for anything a student does.** "You time
   thirty arrivals." Not "students will be required to time arrivals."
 

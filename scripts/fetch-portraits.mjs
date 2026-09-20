@@ -12,17 +12,70 @@
 // nobody. That is the point, and it is also why the people page says so in
 // writing: a photograph is the one thing on a course site a reader believes
 // without checking, so the site has to be the one telling them.
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import sharp from "sharp";
 
 const SOURCE = "https://thispersondoesnotexist.com/random-person.jpeg";
 const SIZE = 800;
+// The head sits inside this, and the rest is mat. The generator aligns every
+// face the same way and crops it at the hairline and the chin, so a portrait
+// used as-is is a head with its top and bottom shaved off. Shrinking the
+// photo inside a mat is the only way to get the margin back; there are no
+// pixels above the hairline to recover.
+const INNER = 660;
+const PAD = (SIZE - INNER) / 2;
+
+/** The mat colour, taken from the two top corners.
+ *
+ * Those two squares are background in an aligned portrait in a way nothing
+ * else is: the sides catch hair and the bottom catches shoulders. Sampling the
+ * edges instead produced a muddy brown on all four faces, which looked like a
+ * border rather than like more of the photograph.
+ *
+ * `stats()` reads the source image and ignores the pipeline, so the crop has
+ * to be written out before it can be measured. */
+async function cornerColour(source) {
+  const meta = await sharp(source).metadata();
+  const box = Math.round(Math.min(meta.width, meta.height) * 0.12);
+  const corners = [
+    { left: 0, top: 0 },
+    { left: meta.width - box, top: 0 },
+  ];
+  const means = [];
+  for (const corner of corners) {
+    const crop = await sharp(source)
+      .extract({ ...corner, width: box, height: box })
+      .png()
+      .toBuffer();
+    const stats = await sharp(crop).stats();
+    means.push(stats.channels.slice(0, 3).map((channel) => channel.mean));
+  }
+  const average = [0, 1, 2].map((i) =>
+    Math.round(means.reduce((total, mean) => total + mean[i], 0) / means.length),
+  );
+  return { r: average[0], g: average[1], b: average[2] };
+}
+
+/** A square portrait with breathing room, matted in the photo's own backdrop. */
+async function toPortrait(source) {
+  const background = await cornerColour(source);
+  return sharp(source)
+    .resize(INNER, INNER, { fit: "cover", position: "attention" })
+    .extend({ top: PAD, bottom: PAD, left: PAD, right: PAD, background })
+    .avif({ quality: 62 })
+    .toBuffer();
+}
 
 // Slugs must match the person entries in src/content/people/.
 const people = ["tessa-varga", "amos-redfern", "priya-raghunathan", "marta-ilves"];
 
 const force = process.argv.includes("--force");
+// Re-mat the portraits already in the repo instead of downloading new faces,
+// which is what you want after changing the framing. Run it once and only
+// once per change: it mats whatever it is given, so a second run mats an
+// already-matted portrait and the face shrinks again.
+const repad = process.argv.includes("--repad");
 // Named slugs replace only those. The generator hands out a random face and
 // some of them are children or heavily artefacted, so refetching one person
 // without disturbing the other three is the normal case, not an edge case.
@@ -31,8 +84,16 @@ const wanted = only.length > 0 ? only : people;
 
 for (const slug of wanted) {
   const out = resolve(`src/content/people/${slug}.avif`);
-  if (existsSync(out) && !force && only.length === 0) {
+  if (existsSync(out) && !force && !repad && only.length === 0) {
     console.log(`skip  ${slug} (already there; pass --force to replace)`);
+    continue;
+  }
+
+  if (repad) {
+    const existing = readFileSync(out);
+    const portrait = await toPortrait(existing);
+    writeFileSync(out, portrait);
+    console.log(`re-matted src/content/people/${slug}.avif (${portrait.length} bytes)`);
     continue;
   }
 
@@ -54,10 +115,7 @@ for (const slug of wanted) {
   }
 
   const source = Buffer.from(await response.arrayBuffer());
-  const avif = await sharp(source)
-    .resize(SIZE, SIZE, { fit: "cover", position: "attention" })
-    .avif({ quality: 62 })
-    .toBuffer();
+  const avif = await toPortrait(source);
 
   writeFileSync(out, avif);
   console.log(`wrote src/content/people/${slug}.avif (${SIZE}x${SIZE}, ${avif.length} bytes)`);

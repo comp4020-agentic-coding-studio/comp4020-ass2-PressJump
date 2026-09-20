@@ -28,7 +28,8 @@ const visible = people.sort((a, b) => {
 });
 ---
 
-<CardGrid columns={2}>
+<div class="people">
+  <CardGrid columns={2}>
   {
     visible.map((person) => (
       <Card
@@ -48,3 +49,14 @@ const visible = people.sort((a, b) => {
     ))
   }
 </CardGrid>
+</div>
+
+<style>
+  /* The theme crops every card image to 16/9. That is right for a photograph
+     of a place and wrong for a photograph of a person: at 16/9 a headshot
+     loses the top of the head and the chin, which is what these looked like
+     before. Square is the shape a staff photo wants and it crops nothing. */
+  .people :global(.at-card-image) {
+    aspect-ratio: 1 / 1;
+  }
+</style>
