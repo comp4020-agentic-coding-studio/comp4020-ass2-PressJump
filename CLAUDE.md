@@ -108,7 +108,11 @@ and the register is the tell.
 
 ## Rules for working
 
-- **Never commit a red state.** `pnpm check` passes before every commit.
+- **Never commit a red state, with one exception.** `pnpm check` passes
+  before every commit, except the commit that introduces a spec test for
+  content that does not exist yet. A spec test is a promise written down
+  before it is kept, so its first commit is red by design and its message
+  has to say so and say which test. Nothing else gets that exemption.
 - **A new test must first catch a deliberate bug.** Green on first run proves
   nothing about a test's teeth. Break the thing the test forbids, watch it
   fail, then restore. Added in A1 after four property tests all stayed green
