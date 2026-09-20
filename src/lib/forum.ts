@@ -64,3 +64,14 @@ export function lastActivity(thread: {
     thread.data.date,
   );
 }
+
+/** The most recent post in a thread, opening post included, with who made it.
+ *  A forum index shows the last reply and its author, not just a timestamp. */
+export function lastPost<T extends Post & { date: Date }>(thread: {
+  data: Post & { date: Date; replies: T[] };
+}): Post & { date: Date } {
+  return thread.data.replies.reduce<Post & { date: Date }>(
+    (latest, reply) => (reply.date > latest.date ? reply : latest),
+    thread.data,
+  );
+}

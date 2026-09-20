@@ -2,7 +2,7 @@
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
 import { getPublishedCollection } from "astro-course-university/content";
-import { lastActivity, postDate, posterLookup } from "../../lib/forum";
+import { lastActivity, lastPost, postDate, posterLookup } from "../../lib/forum";
 import { siteConfig } from "../../site-config";
 
 const [threads, poster] = await Promise.all([
@@ -10,19 +10,24 @@ const [threads, poster] = await Promise.all([
   posterLookup(),
 ]);
 
-// Pinned first, then most recently active. That is the order every forum
-// uses and the order a student arriving in week 6 needs: the announcement
-// that is still true, then whatever moved today.
+// One list, pinned at the top, then whatever moved most recently. Split into a
+// "Pinned" section and a "Discussion" section it read as a notice board with a
+// comments box rather than as a forum; a forum is one index where the pinned
+// rows happen to be stuck to the top.
 const sorted = [...threads].sort((a, b) => {
   if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
   return lastActivity(b).getTime() - lastActivity(a).getTime();
 });
 
-const pinned = sorted.filter((thread) => thread.data.pinned);
-const rest = sorted.filter((thread) => !thread.data.pinned);
+const rows = sorted.map((thread) => ({
+  thread,
+  started: poster(thread.data),
+  latest: lastPost(thread),
+  answered: thread.data.replies.some((reply) => reply.answer),
+}));
 
-const answered = (thread: (typeof threads)[number]): boolean =>
-  thread.data.replies.some((reply) => reply.answer);
+const categories = [...new Set(threads.map((thread) => thread.data.category))].sort();
+const totalPosts = threads.reduce((sum, thread) => sum + 1 + thread.data.replies.length, 0);
 ---
 
 <ContentLayout
@@ -31,88 +36,91 @@ const answered = (thread: (typeof threads)[number]): boolean =>
   {...siteConfig}
 >
   <p>
-    Announcements are pinned and everything else is in the order it last moved.
-    Staff read this daily during the teaching period and most questions here get
-    answered by another student first, which is usually the better answer.
+    Announcements stay at the top and everything else is in the order it last
+    moved. Staff read this daily during the teaching period, and most questions
+    here get answered by another student first, which is usually the better
+    answer.
   </p>
 
   <p class="rules">
     One rule. Post the numbers, not the summary of the numbers. Half the
     questions on this page were solved by somebody pasting their actual counts
-    and seeing the mistake on the way.
+    and spotting the mistake on the way.
   </p>
 
-  {
-    pinned.length > 0 && (
-      <>
-        <h2>Pinned</h2>
-        <ul class="threads">
-          {pinned.map((thread) => {
-            const who = poster(thread.data);
-            return (
-              <li class="thread thread--pinned">
+  <p class="totals">
+    {threads.length} topics &middot; {totalPosts} posts &middot; {categories.join(", ")}
+  </p>
+
+  <div class="board">
+    <div class="head" aria-hidden="true">
+      <span>Topic</span>
+      <span class="num">Replies</span>
+      <span class="num">Views</span>
+      <span>Last reply</span>
+    </div>
+
+    <ul class="threads">
+      {
+        rows.map(({ thread, started, latest, answered }) => {
+          const latestWho = poster(latest);
+          return (
+            <li class:list={["thread", { "thread--pinned": thread.data.pinned }]}>
+              <div class="topic">
                 <p class="flags">
-                  <span class="pin" aria-hidden="true">
-                    &#9733;
+                  {thread.data.pinned && (
+                    <>
+                      <span class="pin" aria-hidden="true">
+                        &#9733;
+                      </span>
+                      <span class="visually-hidden">Pinned.</span>
+                    </>
+                  )}
+                  <span
+                    class:list={[
+                      "tag",
+                      { "tag--announcement": thread.data.category === "Announcements" },
+                    ]}
+                  >
+                    {thread.data.category}
                   </span>
-                  <span class="visually-hidden">Pinned.</span>
-                  <span class="tag tag--announcement">{thread.data.category}</span>
+                  {answered && <span class="tag tag--answered">Answered</span>}
                   {thread.data.locked && <span class="tag">Locked</span>}
                 </p>
-                <h3>
+                <h2>
                   <a href={withBase(`/forum/${thread.id}/`)}>{thread.data.title}</a>
-                </h3>
+                </h2>
                 <p class="excerpt">{thread.data.description}</p>
-                <p class="meta">
-                  {who.name}
-                  {who.role && <span class="badge">{who.role}</span>}
-                  <span class="sep">&middot;</span> Week {thread.data.week},{" "}
-                  {postDate.format(thread.data.date)}
-                  <span class="sep">&middot;</span>
-                  {thread.data.replies.length}{" "}
-                  {thread.data.replies.length === 1 ? "reply" : "replies"}
+                <p class="started">
+                  Started by {started.name}
+                  {started.role && <span class="badge">{started.role}</span>}
+                  <span class="sep">&middot;</span> week {thread.data.week}
                 </p>
-              </li>
-            );
-          })}
-        </ul>
-      </>
-    )
-  }
+              </div>
 
-  <h2>Discussion</h2>
-  <ul class="threads">
-    {
-      rest.map((thread) => {
-        const who = poster(thread.data);
-        const moved = lastActivity(thread);
-        return (
-          <li class="thread">
-            <p class="flags">
-              <span class="tag">{thread.data.category}</span>
-              {answered(thread) && <span class="tag tag--answered">Answered</span>}
-              {thread.data.locked && <span class="tag">Locked</span>}
-            </p>
-            <h3>
-              <a href={withBase(`/forum/${thread.id}/`)}>{thread.data.title}</a>
-            </h3>
-            <p class="excerpt">{thread.data.description}</p>
-            <p class="meta">
-              {who.name}
-              {who.role && <span class="badge">{who.role}</span>}
-              <span class="sep">&middot;</span> Week {thread.data.week}
-              <span class="sep">&middot;</span>
-              {thread.data.replies.length}{" "}
-              {thread.data.replies.length === 1 ? "reply" : "replies"}
-              <span class="sep">&middot;</span>
-              {thread.data.views} views
-              <span class="sep">&middot;</span> last reply {postDate.format(moved)}
-            </p>
-          </li>
-        );
-      })
-    }
-  </ul>
+              <p class="num">
+                <span class="figure">{thread.data.replies.length}</span>{" "}
+                <span class="unit">
+                  {thread.data.replies.length === 1 ? "reply" : "replies"}
+                </span>
+              </p>
+
+              <p class="num">
+                <span class="figure">{thread.data.views}</span>{" "}
+                <span class="unit">views</span>
+              </p>
+
+              <p class="latest">
+                <span class="visually-hidden">Last reply </span>
+                <span class="when">{postDate.format(latest.date)}</span>{" "}
+                <span class="who">by {latestWho.name}</span>
+              </p>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
 </ContentLayout>
 
 <style>
@@ -133,25 +141,55 @@ const answered = (thread: (typeof threads)[number]): boolean =>
     font-size: 0.95rem;
   }
 
+  .totals {
+    margin-block: 1.5rem 0.5rem;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  .board {
+    border: 1px solid var(--at-border);
+  }
+
+  /* Topic on the left, the counts and the last reply on the right. The four
+     columns are the shape every forum index has had for twenty-five years,
+     and they are the reason it reads as a forum rather than as a list of
+     notices. */
+  .head,
+  .thread {
+    display: grid;
+    grid-template-columns: 1fr 4.5rem 4.5rem 9rem;
+    gap: 1.1rem;
+    align-items: start;
+  }
+
+  .head {
+    padding: 0.55rem 1rem;
+    background: var(--at-bg-alt);
+    border-block-end: 1px solid var(--at-border);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--at-text-secondary);
+  }
+
   .threads {
     list-style: none;
-    margin: 1rem 0 2rem;
+    margin: 0;
     padding: 0;
   }
 
   .thread {
-    padding-block: 1rem;
-    border-block-end: 1px solid var(--at-border);
+    padding: 1rem;
+  }
+
+  .thread + .thread {
+    border-block-start: 1px solid var(--at-border);
   }
 
   .thread--pinned {
-    padding-inline: 1rem;
-    border: 1px solid var(--at-primary);
     background: color-mix(in srgb, var(--at-primary) 5%, transparent);
-  }
-
-  .thread--pinned + .thread--pinned {
-    margin-block-start: 0.6rem;
   }
 
   .flags {
@@ -169,7 +207,7 @@ const answered = (thread: (typeof threads)[number]): boolean =>
   .tag {
     padding: 0.1rem 0.5rem;
     border: 1px solid var(--at-border);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--at-text-secondary);
@@ -182,38 +220,140 @@ const answered = (thread: (typeof threads)[number]): boolean =>
     font-weight: 600;
   }
 
-  .thread h3 {
+  .topic h2 {
     margin: 0 0 0.3rem;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+    line-height: 1.35;
   }
 
-  .thread h3 a {
+  .topic h2 a {
     color: inherit;
   }
 
   .excerpt {
     margin: 0 0 0.4rem;
+    font-size: 0.92rem;
     color: var(--at-text-secondary);
   }
 
-  .meta {
+  .started {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--at-text-secondary);
+  }
+
+  .num {
+    margin: 0;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .head .num {
+    text-align: center;
+  }
+
+  .figure {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--at-text);
+  }
+
+  .unit {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--at-text-secondary);
+  }
+
+  .latest {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--at-text-secondary);
+  }
+
+  .when {
+    display: block;
+    font-weight: 600;
+    color: var(--at-text);
+  }
+
+  .who {
+    display: block;
   }
 
   .badge {
-    margin-inline-start: 0.35rem;
-    padding: 0.05rem 0.4rem;
+    display: inline-block;
+    white-space: nowrap;
+    margin-inline-start: 0.3rem;
+    padding: 0.05rem 0.35rem;
     border: 1px solid var(--at-primary);
     color: var(--at-primary);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     font-weight: 600;
   }
 
   .sep {
-    margin-inline: 0.4rem;
+    margin-inline: 0.3rem;
+  }
+
+  /* Four columns need about 52rem before the counts start squeezing the
+     titles. Under that the topic takes a full row and the three stats share
+     the row beneath it.
+
+     Named areas rather than `display: inline`, because these are grid
+     children and a grid child cannot be inline: setting it gave three stats
+     on three separate lines, which is a worse version of the desktop layout
+     rather than a phone one. */
+  @media (width < 52rem) {
+    .head {
+      display: none;
+    }
+
+    .thread {
+      grid-template-columns: auto auto 1fr;
+      grid-template-areas:
+        "topic topic topic"
+        "replies views latest";
+      gap: 0.5rem 1rem;
+      align-items: baseline;
+    }
+
+    .topic {
+      grid-area: topic;
+    }
+
+    .num:first-of-type {
+      grid-area: replies;
+    }
+
+    .num:nth-of-type(2) {
+      grid-area: views;
+    }
+
+    .latest {
+      grid-area: latest;
+      text-align: end;
+    }
+
+    .num {
+      text-align: start;
+    }
+
+    .figure,
+    .unit,
+    .when,
+    .who {
+      display: inline;
+      font-size: 0.82rem;
+      font-weight: 400;
+    }
+
+    .figure {
+      font-weight: 700;
+      color: var(--at-text);
+    }
   }
 </style>

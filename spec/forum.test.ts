@@ -115,23 +115,39 @@ describe("the forum", () => {
     expect(checked, "no dated posts found to check").toBeGreaterThan(10);
   });
 
-  it("pins the announcements and puts them first", () => {
-    // Matching the full class attribute, not the bare class name: the page
-    // inlines its own stylesheet, so `/thread--pinned/` counts the CSS rules
-    // as well as the markup and quietly inflates every total.
-    const count = (pattern: string): number =>
-      (index.match(new RegExp(pattern, "g")) ?? []).length;
+  it("pins the announcements and puts them at the top of the one list", () => {
+    // The index is a single list now, not a Pinned section above a Discussion
+    // section, so "first" is a fact about row order rather than about which
+    // heading a row sits under.
+    const rows = [...index.matchAll(/<li class="thread( thread--pinned)?"/g)].map((match) =>
+      Boolean(match[1]),
+    );
+    expect(rows.length, "no threads listed").toBeGreaterThanOrEqual(5);
 
-    const pinned = count('class="thread thread--pinned"');
-    const announcements = count('class="tag tag--announcement"');
-
+    const pinned = rows.filter(Boolean).length;
     expect(pinned, "nothing is pinned").toBeGreaterThan(0);
+    expect(
+      rows.slice(0, pinned).every(Boolean),
+      "a pinned thread is listed below an unpinned one",
+    ).toBe(true);
+
+    const announcements = (index.match(/class="tag tag--announcement"/g) ?? []).length;
     expect(announcements, "an announcement is not pinned, or a pin is not an announcement").toBe(
       pinned,
     );
-    // And they are above the discussion list rather than merely styled as if.
-    const heading = index.indexOf("Discussion");
-    expect(index.slice(0, heading)).toContain('class="thread thread--pinned"');
-    expect(index.slice(heading)).not.toContain('class="thread thread--pinned"');
+  });
+
+  it("puts the counts and the last reply beside every topic", () => {
+    // What makes it read as a forum rather than as a notice board: each row
+    // carries its own reply count, view count and last reply.
+    const rows = (index.match(/<li class="thread/g) ?? []).length;
+    const replies = (index.match(/<span class="unit"[^>]*>(?:reply|replies)<\/span>/g) ?? [])
+      .length;
+    const views = (index.match(/<span class="unit"[^>]*>views<\/span>/g) ?? []).length;
+    const latest = (index.match(/<span class="when"[^>]*>/g) ?? []).length;
+
+    expect(replies, "a topic has no reply count").toBe(rows);
+    expect(views, "a topic has no view count").toBe(rows);
+    expect(latest, "a topic does not say when it last moved").toBe(rows);
   });
 });
