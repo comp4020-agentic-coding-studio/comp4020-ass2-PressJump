@@ -1,0 +1,55 @@
+---
+title: When the queue is the hazard
+description:
+  A crowd crush is a queueing failure, and the arithmetic that predicts it is
+  the arithmetic from week 3.
+week: 10
+date: 2027-05-10
+teachers:
+  - amos-redfern
+related:
+  - week-03
+  - week-09
+---
+
+The hardest lecture in the course, and the one that has to be here.
+
+Most of the semester treats waiting as a cost measured in minutes and
+annoyance. There is a region of the state space where that stops being true.
+When arrivals exceed the rate at which a space can drain and the space has a
+fixed volume, the queue stops behaving like a line and starts behaving like a
+fluid, and people die.
+
+This is not a metaphor and it is not a separate subject. Density, flow rate
+and the drain rate of an exit are the same quantities you have been measuring
+since week 2. The failure is continuous with everything else you know.
+
+## Three failures, one shape
+
+- Bufferbloat. A network queue grows unboundedly because somebody added memory
+  instead of a limit, and the system becomes unusable while looking healthy on
+  every capacity metric.
+- The convoy effect. One slow job at the front of a queue serialises everything
+  behind it, and throughput collapses far below capacity.
+- Progressive crowd collapse. Density passes a threshold, individual control of
+  footing is lost, and force propagates through the crowd as a wave. The people
+  at the front cannot move and the people at the back cannot know that.
+
+The third is different in consequence and identical in structure. All three are
+what a queue does when it is allowed to grow without a bound.
+
+## Handled carefully
+
+We work from published inquiry findings and the crowd science literature, on a
+named historical case, and we stay with the engineering. This is a lecture
+about how an authority measures the safe capacity of a space and what happens
+when the measurement is not made.
+
+If you would rather not be in the room for it, tell Tessa beforehand. There is
+a written version and it carries the same material.
+
+## After this lecture
+
+You know the region where a longer queue is not a worse experience but a
+different category of event, and you know the quantity that tells you where
+the boundary is.
