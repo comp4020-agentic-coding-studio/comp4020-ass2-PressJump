@@ -31,6 +31,28 @@ const holisticMarking = z.object({
   description: z.string().trim().min(40),
 });
 
+// A reply on a forum thread. Staff replies name a person slug instead of a
+// display name, so a badge cannot claim somebody is the convenor after they
+// stop being one; the page resolves it against the people collection.
+const forumReply = z
+  .object({
+    body: z.string().trim().min(1),
+    date: z.coerce.date(),
+    week: weekSchema,
+    author: z.string().trim().min(1).optional(),
+    person: z.string().trim().min(1).optional(),
+    answer: z.coerce.boolean().default(false),
+  })
+  .superRefine((reply, ctx) => {
+    if (!reply.author && !reply.person) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["author"],
+        message: "a reply needs either an author name or a person slug",
+      });
+    }
+  });
+
 export const collections = {
   sessions: defineCollection({
     loader: courseNodeLoader("sessions"),
@@ -84,6 +106,46 @@ export const collections = {
   // not declare, so a staff profile needs its fields declared here or they
   // vanish silently between the markdown and the page. Everything added below
   // is optional and nothing shipped was removed.
+  // Declared here and deliberately kept out of `graphCollections`. A forum is
+  // part of running the course, not part of the course record the programs and
+  // courses page ingests, so it gets pages and no API nodes.
+  forum: defineCollection({
+    loader: courseNodeLoader("forum"),
+    schema: z
+      .object({
+        title: z.string().trim().min(1),
+        description: z.string().trim().min(20),
+        category: z.enum(["Announcements", "Fieldwork", "Arithmetic", "Assessment", "Ethics"]),
+        week: weekSchema,
+        date: z.coerce.date(),
+        author: z.string().trim().min(1).optional(),
+        person: z.string().trim().min(1).optional(),
+        pinned: z.coerce.boolean().default(false),
+        locked: z.coerce.boolean().default(false),
+        views: z.coerce.number().int().positive(),
+        replies: z.array(forumReply).default([]),
+        published: z.coerce.boolean().default(true),
+      })
+      .superRefine((thread, ctx) => {
+        if (!thread.author && !thread.person) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["author"],
+            message: "a thread needs either an author name or a person slug",
+          });
+        }
+        // An announcement is a thing staff post. If it carries a student name
+        // the badge on the page would be lying about who said it.
+        if (thread.category === "Announcements" && !thread.person) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["person"],
+            message: "an announcement must be posted by a member of staff",
+          });
+        }
+      }),
+  }),
+
   people: defineCollection({
     loader: courseNodeLoader("people"),
     schema: ({ image }) =>

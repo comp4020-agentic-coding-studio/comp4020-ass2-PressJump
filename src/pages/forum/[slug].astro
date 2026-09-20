@@ -1,0 +1,357 @@
+---
+import { render } from "astro:content";
+import { getPublishedCollection } from "astro-course-university/content";
+import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { withBase } from "astro-theme-university/url";
+import { postDate, posterLookup } from "../../lib/forum";
+import { siteConfig } from "../../site-config";
+
+export async function getStaticPaths() {
+  const threads = await getPublishedCollection("forum");
+  return threads.map((thread) => ({ params: { slug: thread.id }, props: { thread } }));
+}
+
+const { thread } = Astro.props;
+const { Content } = await render(thread);
+const poster = await posterLookup();
+
+const opener = poster(thread.data);
+const replies = [...thread.data.replies].sort((a, b) => a.date.getTime() - b.date.getTime());
+const answer = replies.find((reply) => reply.answer);
+---
+
+<ContentLayout title={thread.data.title} description={thread.data.description} {...siteConfig}>
+  <p class="back">
+    <a href={withBase("/forum/")}>Back to the forum</a>
+  </p>
+
+  <p class="flags">
+    <span class="tag">{thread.data.category}</span>
+    {answer && <span class="tag tag--answered">Answered</span>}
+    {thread.data.locked && <span class="tag">Locked</span>}
+    <span class="views">{thread.data.views} views</span>
+  </p>
+
+  <article class="post post--opening">
+    <p class="byline">
+      {opener.href ? <a href={withBase(opener.href)}>{opener.name}</a> : opener.name}
+      {opener.role && <span class="badge">{opener.role}</span>}
+      <span class="when">
+        Week {thread.data.week}, {postDate.format(thread.data.date)}
+      </span>
+    </p>
+    <div class="body">
+      <Content />
+    </div>
+  </article>
+
+  <h2 class="count">
+    {replies.length === 0
+      ? "No replies yet"
+      : `${replies.length} ${replies.length === 1 ? "reply" : "replies"}`}
+  </h2>
+
+  <ol class="replies" data-replies>
+    {
+      replies.map((reply) => {
+        const who = poster(reply);
+        return (
+          <li class:list={["post", { "post--answer": reply.answer }]}>
+            {reply.answer && (
+              <p class="answer-flag">
+                <span aria-hidden="true">&check;</span> Marked as the answer
+              </p>
+            )}
+            <p class="byline">
+              {who.href ? <a href={withBase(who.href)}>{who.name}</a> : who.name}
+              {who.role && <span class="badge">{who.role}</span>}
+              <span class="when">
+                Week {reply.week}, {postDate.format(reply.date)}
+              </span>
+            </p>
+            <div class="body">
+              <p>{reply.body}</p>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ol>
+
+  {
+    thread.data.locked ? (
+      <p class="closed">
+        This thread is locked. Announcements are not discussion threads; ask in
+        the relevant category or bring it to a field session.
+      </p>
+    ) : (
+      <section class="composer" data-composer>
+        <h2>Reply</h2>
+        <form data-reply-form novalidate>
+          <label for="reply-body">Your reply</label>
+          <textarea
+            id="reply-body"
+            name="body"
+            rows="4"
+            placeholder="Post the numbers, not the summary of the numbers."
+            required
+          />
+          <p class="error" data-reply-error role="alert" hidden />
+          <div class="actions">
+            <button type="submit" class="primary">
+              Post reply
+            </button>
+          </div>
+        </form>
+        <noscript>
+          <p class="closed">
+            Posting needs JavaScript. Bring it to the field session instead, or
+            email whoever the thread is addressed to.
+          </p>
+        </noscript>
+      </section>
+    )
+  }
+</ContentLayout>
+
+<style>
+  .back {
+    margin-block: 0 1rem;
+    font-size: 0.9rem;
+  }
+
+  .flags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-block: 0 1.25rem;
+  }
+
+  .tag {
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--at-border);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--at-text-secondary);
+  }
+
+  .tag--answered {
+    border-color: var(--at-primary);
+    color: var(--at-primary);
+    font-weight: 600;
+  }
+
+  .views {
+    margin-inline-start: auto;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  .post {
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--at-border);
+    margin-block-end: 0.75rem;
+  }
+
+  .post--opening {
+    background: var(--at-bg-alt);
+  }
+
+  .post--answer {
+    border-color: var(--at-primary);
+  }
+
+  .answer-flag {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--at-primary);
+  }
+
+  .byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem;
+    margin: 0 0 0.6rem;
+    font-weight: 600;
+  }
+
+  .badge {
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--at-primary);
+    color: var(--at-primary);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .when {
+    margin-inline-start: auto;
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  .body :global(p:first-child) {
+    margin-block-start: 0;
+  }
+
+  .body :global(p:last-child) {
+    margin-block-end: 0;
+  }
+
+  .count {
+    margin-block: 2rem 1rem;
+    font-size: 1.1rem;
+  }
+
+  .replies {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .closed {
+    margin-block-start: 1.5rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--at-border);
+    background: var(--at-bg-alt);
+    font-size: 0.9rem;
+    color: var(--at-text-secondary);
+  }
+
+  .composer {
+    margin-block-start: 2rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--at-border);
+  }
+
+  .composer h2 {
+    margin-block: 0 0.75rem;
+    font-size: 1.1rem;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-block-end: 0.3rem;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid var(--at-border);
+    border-radius: 0;
+    background: var(--at-bg);
+    color: var(--at-text);
+    font: inherit;
+  }
+
+  textarea:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 1px;
+  }
+
+  textarea[aria-invalid="true"] {
+    border-color: var(--at-primary);
+    border-width: 2px;
+  }
+
+  .error {
+    margin-block: 0.5rem 0;
+    font-weight: 600;
+    color: var(--at-primary);
+  }
+
+  .actions {
+    margin-block-start: 0.75rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--at-primary);
+    border-radius: 0;
+    background: var(--at-primary);
+    color: var(--at-bg);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:hover {
+    filter: brightness(0.93);
+  }
+
+  @media (width < 44rem) {
+    .when,
+    .views {
+      margin-inline-start: 0;
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Posting appends the reply to the thread on this page, the way a forum
+  // does before the server has answered. Nothing is stored and a reload
+  // returns the thread to what is in the repo, which is the honest behaviour
+  // for a site that is a set of files: no `action`, so nothing navigates to a
+  // path that is not served.
+  for (const composer of document.querySelectorAll<HTMLElement>("[data-composer]")) {
+    const form = composer.querySelector<HTMLFormElement>("[data-reply-form]");
+    const list = document.querySelector<HTMLOListElement>("[data-replies]");
+    const error = composer.querySelector<HTMLElement>("[data-reply-error]");
+    const count = document.querySelector<HTMLElement>(".count");
+    if (!form || !list || !error) continue;
+
+    const field = form.querySelector<HTMLTextAreaElement>("#reply-body")!;
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const body = field.value.trim();
+      if (!body) {
+        field.setAttribute("aria-invalid", "true");
+        error.hidden = false;
+        error.textContent = "A reply needs something in it.";
+        field.focus();
+        return;
+      }
+      field.removeAttribute("aria-invalid");
+      error.hidden = true;
+
+      const item = document.createElement("li");
+      item.className = "post";
+
+      const byline = document.createElement("p");
+      byline.className = "byline";
+      byline.append("You");
+      const when = document.createElement("span");
+      when.className = "when";
+      when.textContent = "just now";
+      byline.append(when);
+
+      const text = document.createElement("div");
+      text.className = "body";
+      const paragraph = document.createElement("p");
+      // textContent, never innerHTML: this is the one place on the site where
+      // text a visitor typed is put back into the page.
+      paragraph.textContent = body;
+      text.append(paragraph);
+
+      item.append(byline, text);
+      list.append(item);
+
+      const total = list.children.length;
+      if (count) count.textContent = `${total} ${total === 1 ? "reply" : "replies"}`;
+
+      form.reset();
+      item.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+</script>

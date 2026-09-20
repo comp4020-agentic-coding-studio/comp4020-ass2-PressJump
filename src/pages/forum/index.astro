@@ -1,0 +1,219 @@
+---
+import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { withBase } from "astro-theme-university/url";
+import { getPublishedCollection } from "astro-course-university/content";
+import { lastActivity, postDate, posterLookup } from "../../lib/forum";
+import { siteConfig } from "../../site-config";
+
+const [threads, poster] = await Promise.all([
+  getPublishedCollection("forum"),
+  posterLookup(),
+]);
+
+// Pinned first, then most recently active. That is the order every forum
+// uses and the order a student arriving in week 6 needs: the announcement
+// that is still true, then whatever moved today.
+const sorted = [...threads].sort((a, b) => {
+  if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+  return lastActivity(b).getTime() - lastActivity(a).getTime();
+});
+
+const pinned = sorted.filter((thread) => thread.data.pinned);
+const rest = sorted.filter((thread) => !thread.data.pinned);
+
+const answered = (thread: (typeof threads)[number]): boolean =>
+  thread.data.replies.some((reply) => reply.answer);
+---
+
+<ContentLayout
+  title="Forum"
+  description="Where the course argues with itself. Announcements, fieldwork problems, and the arithmetic questions everybody turns out to have."
+  {...siteConfig}
+>
+  <p>
+    Announcements are pinned and everything else is in the order it last moved.
+    Staff read this daily during the teaching period and most questions here get
+    answered by another student first, which is usually the better answer.
+  </p>
+
+  <p class="rules">
+    One rule. Post the numbers, not the summary of the numbers. Half the
+    questions on this page were solved by somebody pasting their actual counts
+    and seeing the mistake on the way.
+  </p>
+
+  {
+    pinned.length > 0 && (
+      <>
+        <h2>Pinned</h2>
+        <ul class="threads">
+          {pinned.map((thread) => {
+            const who = poster(thread.data);
+            return (
+              <li class="thread thread--pinned">
+                <p class="flags">
+                  <span class="pin" aria-hidden="true">
+                    &#9733;
+                  </span>
+                  <span class="visually-hidden">Pinned.</span>
+                  <span class="tag tag--announcement">{thread.data.category}</span>
+                  {thread.data.locked && <span class="tag">Locked</span>}
+                </p>
+                <h3>
+                  <a href={withBase(`/forum/${thread.id}/`)}>{thread.data.title}</a>
+                </h3>
+                <p class="excerpt">{thread.data.description}</p>
+                <p class="meta">
+                  {who.name}
+                  {who.role && <span class="badge">{who.role}</span>}
+                  <span class="sep">&middot;</span> Week {thread.data.week},{" "}
+                  {postDate.format(thread.data.date)}
+                  <span class="sep">&middot;</span>
+                  {thread.data.replies.length}{" "}
+                  {thread.data.replies.length === 1 ? "reply" : "replies"}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    )
+  }
+
+  <h2>Discussion</h2>
+  <ul class="threads">
+    {
+      rest.map((thread) => {
+        const who = poster(thread.data);
+        const moved = lastActivity(thread);
+        return (
+          <li class="thread">
+            <p class="flags">
+              <span class="tag">{thread.data.category}</span>
+              {answered(thread) && <span class="tag tag--answered">Answered</span>}
+              {thread.data.locked && <span class="tag">Locked</span>}
+            </p>
+            <h3>
+              <a href={withBase(`/forum/${thread.id}/`)}>{thread.data.title}</a>
+            </h3>
+            <p class="excerpt">{thread.data.description}</p>
+            <p class="meta">
+              {who.name}
+              {who.role && <span class="badge">{who.role}</span>}
+              <span class="sep">&middot;</span> Week {thread.data.week}
+              <span class="sep">&middot;</span>
+              {thread.data.replies.length}{" "}
+              {thread.data.replies.length === 1 ? "reply" : "replies"}
+              <span class="sep">&middot;</span>
+              {thread.data.views} views
+              <span class="sep">&middot;</span> last reply {postDate.format(moved)}
+            </p>
+          </li>
+        );
+      })
+    }
+  </ul>
+</ContentLayout>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .rules {
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--at-border);
+    background: var(--at-bg-alt);
+    font-size: 0.95rem;
+  }
+
+  .threads {
+    list-style: none;
+    margin: 1rem 0 2rem;
+    padding: 0;
+  }
+
+  .thread {
+    padding-block: 1rem;
+    border-block-end: 1px solid var(--at-border);
+  }
+
+  .thread--pinned {
+    padding-inline: 1rem;
+    border: 1px solid var(--at-primary);
+    background: color-mix(in srgb, var(--at-primary) 5%, transparent);
+  }
+
+  .thread--pinned + .thread--pinned {
+    margin-block-start: 0.6rem;
+  }
+
+  .flags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.35rem;
+  }
+
+  .pin {
+    color: var(--at-primary);
+  }
+
+  .tag {
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--at-border);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--at-text-secondary);
+  }
+
+  .tag--announcement,
+  .tag--answered {
+    border-color: var(--at-primary);
+    color: var(--at-primary);
+    font-weight: 600;
+  }
+
+  .thread h3 {
+    margin: 0 0 0.3rem;
+    font-size: 1.1rem;
+  }
+
+  .thread h3 a {
+    color: inherit;
+  }
+
+  .excerpt {
+    margin: 0 0 0.4rem;
+    color: var(--at-text-secondary);
+  }
+
+  .meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  .badge {
+    margin-inline-start: 0.35rem;
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--at-primary);
+    color: var(--at-primary);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .sep {
+    margin-inline: 0.4rem;
+  }
+</style>
