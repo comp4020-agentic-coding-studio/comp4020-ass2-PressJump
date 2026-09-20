@@ -4,7 +4,7 @@ import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
-import { sessionLabels, siteConfig } from "../../site-config";
+import { navMore, sessionLabels, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
   const people = await getPublishedCollection("people");
@@ -52,6 +52,7 @@ const facts: { label: string; value: unknown; href?: string }[] = [
   { label: "Consultation", value: data.consultation },
   { label: "At Slop since", value: data.joined },
 ];
+import NavMore from "../../components/NavMore.astro";
 ---
 
 {/* The portrait is not the hero. The hero crops to a wide letterbox and a
@@ -194,6 +195,8 @@ const facts: { label: string; value: unknown; href?: string }[] = [
       </>
     )
   }
+
+  <NavMore items={navMore} />
 </ContentLayout>
 
 <style>

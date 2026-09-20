@@ -1,0 +1,124 @@
+---
+// Folds the tail of the navigation into a "More" menu.
+//
+// The theme's NavLink is `{ text, href }` with no nesting, and its Nav.astro
+// is fixed platform, so grouping cannot be declared in `siteConfig`. This
+// regroups the rendered list instead, which means the shipped HTML is still
+// nine plain links in a nav landmark: with no JavaScript you get the full nav
+// the theme built, which is a worse layout and a complete one.
+//
+// Only from 44rem up, which is the same threshold site.css uses to stop the
+// nav clipping its own dropdown. Below it the bar is either the theme's
+// stacked drawer, where a dropdown inside a drawer is two disclosures deep for
+// no reason, or the narrow band where the theme scrolls the bar sideways and
+// a menu hanging out of a scroll container would be clipped anyway.
+
+interface Props {
+  /** Button label for the collapsed group. */
+  label?: string;
+  /** Hrefs to fold away, without the base path. */
+  items: string[];
+}
+
+const { label = "More", items } = Astro.props;
+---
+
+<script is:inline define:vars={{ label, items }}>
+  (() => {
+    const nav = document.querySelector(".at-nav-links");
+    if (!nav) return;
+
+    // Match on the end of the href, not by stripping a base prefix off the
+    // front. There is no <base> tag on these pages, and `href.replace("", "/")`
+    // does not strip anything: it inserts a slash at position zero, so every
+    // path came out one segment wrong and nothing matched. Suffix matching
+    // needs to know nothing about the deployment path.
+    const wanted = items.map((href) => "/" + href.replace(/^\/|\/$/g, ""));
+
+    /** The nav items to fold, in the order the theme rendered them. */
+    const targets = [...nav.querySelectorAll("li")].filter((item) => {
+      const href = (item.querySelector("a")?.getAttribute("href") ?? "").replace(/\/$/, "");
+      return wanted.some((path) => href.endsWith(path));
+    });
+    if (targets.length < 2) return;
+
+    const home = targets.map((item) => [item, item.nextElementSibling]);
+    const wide = window.matchMedia("(min-width: 44rem)");
+
+    const holder = document.createElement("li");
+    holder.className = "at-nav-more";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "at-nav-more-button";
+    button.setAttribute("aria-expanded", "false");
+    button.append(label);
+    const caret = document.createElement("span");
+    caret.setAttribute("aria-hidden", "true");
+    caret.className = "at-nav-more-caret";
+    caret.textContent = "▾";
+    button.append(caret);
+
+    const panel = document.createElement("ul");
+    panel.className = "at-nav-more-panel";
+    panel.hidden = true;
+    const panelId = "nav-more-panel";
+    panel.id = panelId;
+    button.setAttribute("aria-controls", panelId);
+
+    holder.append(button, panel);
+
+    const open = (state) => {
+      button.setAttribute("aria-expanded", String(state));
+      panel.hidden = !state;
+    };
+
+    button.addEventListener("click", () => {
+      open(button.getAttribute("aria-expanded") !== "true");
+    });
+
+    // Escape closes and returns focus to the button, and a click anywhere
+    // else closes without stealing it. Both are what a menu that opened on
+    // click is expected to do.
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || panel.hidden) return;
+      open(false);
+      button.focus();
+    });
+    document.addEventListener("click", (event) => {
+      if (panel.hidden || holder.contains(event.target)) return;
+      open(false);
+    });
+    panel.addEventListener("focusout", (event) => {
+      if (holder.contains(event.relatedTarget)) return;
+      open(false);
+    });
+
+    const group = () => {
+      if (holder.isConnected) return;
+      nav.append(holder);
+      for (const item of targets) panel.append(item);
+      // A folded link that is the current page would otherwise hide the only
+      // "you are here" marker on the bar.
+      const current = targets.some((item) =>
+        item.querySelector("a")?.getAttribute("aria-current"),
+      );
+      button.classList.toggle("at-nav-more-button--current", current);
+    };
+
+    const flatten = () => {
+      if (!holder.isConnected) return;
+      open(false);
+      // Back where they were, in their original order.
+      for (const [item, before] of home) {
+        if (before && before.parentNode === nav) nav.insertBefore(item, before);
+        else nav.append(item);
+      }
+      holder.remove();
+    };
+
+    const apply = () => (wide.matches ? group() : flatten());
+    wide.addEventListener("change", apply);
+    apply();
+  })();
+</script>

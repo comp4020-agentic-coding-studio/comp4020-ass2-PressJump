@@ -13,7 +13,8 @@ import CourseStats from "../components/CourseStats.astro";
 import LittlesLaw from "../components/LittlesLaw.astro";
 import Photo from "../components/Photo.astro";
 import { courseMeta } from "../course-config";
-import { sessionLabels, siteConfig } from "../site-config";
+import { navMore, sessionLabels, siteConfig } from "../site-config";
+import NavMore from "../components/NavMore.astro";
 ---
 
 <ContentLayout
@@ -185,6 +186,8 @@ import { sessionLabels, siteConfig } from "../site-config";
     <a href={withBase("/extensions/")}>Ask for an extension</a>, or read the
     <a href={withBase("/policies/")}>policies</a> before you need them.
   </p>
+
+  <NavMore items={navMore} />
 </ContentLayout>
 
 <style>

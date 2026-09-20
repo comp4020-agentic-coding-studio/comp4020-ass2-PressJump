@@ -25,13 +25,15 @@ export const siteConfig = defineSiteConfig({
   ...slopBranding,
   name: "Slop University",
 
+  // Order matters: NavMore folds the tail of this list into a "More" menu, so
+  // the five a student opens weekly come first and the reference pages follow.
   links: [
     { text: "Timetable", href: "/timetable/" },
     { text: "Lectures", href: "/lectures/" },
     { text: sessionLabels.plural, href: "/sessions/" },
     { text: "Assessment", href: "/assessments/" },
-    { text: "People", href: "/people/" },
     { text: "Forum", href: "/forum/" },
+    { text: "People", href: "/people/" },
     { text: "Glossary", href: "/glossary/" },
     { text: "Extensions", href: "/extensions/" },
     { text: "Policies", href: "/policies/" },
@@ -42,3 +44,6 @@ export const siteConfig = defineSiteConfig({
   socialImageAlt:
     `${courseMeta.code}. A single queue folded into five rows of gold blocks on a dark ground, each block one person, the line ending at one open counter with one server.`,
 });
+
+/** The tail of `links` above, folded into the nav's "More" menu by NavMore. */
+export const navMore = ["/people/", "/glossary/", "/extensions/", "/policies/"];

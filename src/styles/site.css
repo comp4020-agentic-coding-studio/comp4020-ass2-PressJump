@@ -49,3 +49,92 @@
 .at-callout__title {
   color: var(--at-text);
 }
+
+/* The lockup, smaller.
+ *
+ * The theme sets the nav logo at 2.5rem, which on a bar carrying this many
+ * links makes the crest the loudest thing on every page. The brand asset is
+ * untouched and so is the palette; this is the size it is drawn at, which the
+ * README puts under visual treatment along with the rest of the styling. */
+.at-nav-logo {
+  height: 1.9rem;
+}
+
+/* The "More" group NavMore.astro folds the tail of the nav into. Styled here
+ * rather than in that component because the component ships only a script,
+ * and a script that has to wait for its own stylesheet flashes unstyled. */
+/* The theme scrolls the nav horizontally with `overflow: auto hidden`, which
+ * also clips anything that tries to hang below it, so the open menu was there
+ * and invisible. CSS has no way to clip one axis and not the other: set either
+ * to a non-visible value and the other computes to auto.
+ *
+ * So the clipping is lifted, but only from 44rem up, which is where the group
+ * exists. Not from the theme's own 640px breakpoint: measured across that
+ * band, the six items need 570px in a 535px container, and taking the scroll
+ * away there pushed the whole page 35px wide. The theme's horizontal scroll
+ * exists for exactly that gap, so it keeps it. From 44rem the bar fits and
+ * nothing needs to scroll or be clipped. */
+@media (width >= 44rem) {
+  .at-nav-links {
+    overflow: visible;
+  }
+}
+
+.at-nav-more {
+  position: relative;
+}
+
+.at-nav-more-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.at-nav-more-button:hover,
+.at-nav-more-button[aria-expanded="true"],
+.at-nav-more-button--current {
+  color: var(--at-primary);
+}
+
+.at-nav-more-caret {
+  font-size: 0.7em;
+  line-height: 1;
+}
+
+.at-nav-more-button[aria-expanded="true"] .at-nav-more-caret {
+  transform: rotate(180deg);
+}
+
+.at-nav-more-panel {
+  position: absolute;
+  z-index: 20;
+  inset-inline-end: 0;
+  inset-block-start: calc(100% + 0.6rem);
+  min-width: 11rem;
+  margin: 0;
+  padding: 0.4rem 0;
+  list-style: none;
+  border: 1px solid var(--at-border);
+  background: var(--at-bg);
+}
+
+.at-nav-more-panel li {
+  display: block;
+}
+
+.at-nav-more-panel a {
+  display: block;
+  padding: 0.4rem 0.9rem;
+  white-space: nowrap;
+}
+
+.at-nav-more-panel a:hover,
+.at-nav-more-panel a:focus-visible {
+  background: var(--at-bg-alt);
+}

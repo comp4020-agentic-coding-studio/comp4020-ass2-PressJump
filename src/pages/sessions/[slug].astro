@@ -6,7 +6,7 @@ import SpecList from "astro-course-university/components/SpecList.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
-import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
+import { graphCollections, navMore, sessionLabels, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
   const sessions = await getPublishedCollection("sessions");
@@ -15,6 +15,7 @@ export async function getStaticPaths() {
 
 const { session } = Astro.props;
 const { Content } = await render(session);
+import NavMore from "../../components/NavMore.astro";
 ---
 
 <ContentLayout
@@ -30,4 +31,6 @@ const { Content } = await render(session);
   </SpecList>
   <TeachingTeam teachers={session.data.teachers} />
   <RelatedContent entry={session} collections={graphCollections} />
+
+  <NavMore items={navMore} />
 </ContentLayout>

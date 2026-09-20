@@ -1,7 +1,8 @@
 ---
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import SessionsGrid from "../../components/SessionsGrid.astro";
-import { sessionLabels, siteConfig } from "../../site-config";
+import { navMore, sessionLabels, siteConfig } from "../../site-config";
+import NavMore from "../../components/NavMore.astro";
 ---
 
 <ContentLayout
@@ -15,4 +16,6 @@ import { sessionLabels, siteConfig } from "../../site-config";
     the language your course deserves everywhere readers see it.
   </p>
   <SessionsGrid />
+
+  <NavMore items={navMore} />
 </ContentLayout>
