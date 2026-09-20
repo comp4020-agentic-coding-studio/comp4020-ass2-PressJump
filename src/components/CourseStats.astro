@@ -1,0 +1,106 @@
+---
+// The course in four numbers, counted rather than typed.
+//
+// Every figure here is derived, because these are exactly the numbers a
+// prospective student checks against the timetable, and a home page claiming
+// twelve weeks over a timetable with eleven is the cheapest possible way to
+// look careless. Change the content and these change with it.
+import { getPublishedCollection } from "astro-course-university/content";
+
+interface Props {
+  /** Contact hours per lecture and per field session. */
+  lectureHours?: number;
+  sessionHours?: number;
+}
+
+const { lectureHours = 1, sessionHours = 2 } = Astro.props;
+
+const [lectures, sessions, assessments] = await Promise.all([
+  getPublishedCollection("lectures"),
+  getPublishedCollection("sessions"),
+  getPublishedCollection("assessments"),
+]);
+
+const weeks = new Set([...lectures, ...sessions].map((entry) => entry.data.week)).size;
+const contact = lectures.length * lectureHours + sessions.length * sessionHours;
+const weight = assessments.reduce((total, entry) => total + entry.data.weight, 0);
+
+const stats = [
+  { value: String(weeks), label: "teaching weeks", note: "one lecture and one field session each" },
+  { value: String(contact), label: "contact hours", note: "two thirds of them outdoors" },
+  {
+    value: String(assessments.length),
+    label: "pieces of assessment",
+    note: `${weight}% between them, no exam`,
+  },
+  { value: "1", label: "queue", note: "chosen in week 1, kept until week 12" },
+];
+---
+
+<dl class="stats">
+  {
+    stats.map((stat) => (
+      <div class="stat">
+        <dt>
+          <span class="value">{stat.value}</span>
+          <span class="label">{stat.label}</span>
+        </dt>
+        <dd>{stat.note}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    margin-block: 0 2.5rem;
+    background: var(--at-border);
+    border: 1px solid var(--at-border);
+  }
+
+  .stat {
+    padding: 1rem 1.1rem;
+    background: var(--at-bg);
+  }
+
+  dt {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .value {
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--at-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0.45rem 0 0;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--at-text-secondary);
+  }
+
+  @media (width < 60rem) {
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width < 30rem) {
+    .stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

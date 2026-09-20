@@ -12,6 +12,7 @@ related:
 ---
 
 import Figure from "../../components/Figure.astro";
+import Photo from "../../components/Photo.astro";
 import pooling from "../../assets/diagrams/pooling.svg";
 
 The first structural decision anybody makes about a queue. Five counters with
@@ -41,6 +42,11 @@ against one queue feeding several servers, at the same total capacity.
 The pooled system wins on mean wait at every load, and the gap widens as you
 approach capacity. It also wins on fairness in a way we can define precisely,
 because the variance of the wait collapses. Nobody has a catastrophic day.
+
+<Photo
+  name="checkout"
+  caption="The belt is doing something a serpentine queue cannot. It is selling you the wait, and that is the second of the five reasons not to pool."
+/>
 
 ## The reasons not to pool
 

@@ -1,0 +1,290 @@
+---
+// Little's Law, live, on the home page.
+//
+// The point of putting it here rather than on the week 2 page is that it is
+// the fastest honest answer to "what is this course actually like". A visitor
+// counts heads in a queue they can picture, types two numbers, and gets a
+// waiting time they never measured. That is the whole first half of the
+// course in about fifteen seconds.
+//
+// The initial numbers and the first answer are rendered server-side, so the
+// panel reads as a worked example with no script and becomes live with one.
+// Nothing here fetches; the arithmetic is one division.
+import { withBase } from "astro-theme-university/url";
+
+interface Props {
+  /** Starting queue length, in people. */
+  people?: number;
+  /** Starting arrival rate, in people per minute. */
+  rate?: number;
+}
+
+const { people = 12, rate = 4 } = Astro.props;
+
+/** Minutes as the sentence a person would say. */
+function spoken(minutes: number): string {
+  if (!Number.isFinite(minutes) || minutes <= 0) return "no wait at all";
+  if (minutes < 1) return `${Math.round(minutes * 60)} seconds`;
+  const whole = Math.floor(minutes);
+  const seconds = Math.round((minutes - whole) * 60);
+  if (seconds === 0) return `${whole} minute${whole === 1 ? "" : "s"}`;
+  return `${whole} min ${seconds} sec`;
+}
+
+const initial = spoken(people / rate);
+
+// Three queues a reader can picture, with plausible shapes. The numbers are
+// illustrative and the panel says so; nothing here is presented as measured.
+const presets = [
+  { label: "Coffee cart", people: 6, rate: 3 },
+  { label: "Supermarket till", people: 9, rate: 2 },
+  { label: "Passport counter", people: 40, rate: 2 },
+];
+---
+
+<section class="calc" data-littles data-presets={JSON.stringify(presets)}>
+  <h2>Try the only equation that matters</h2>
+  <p class="intro">
+    Stand where you can see a queue. Count how many people are in it, then count
+    how many join in a minute. That is enough.
+  </p>
+
+  <div class="presets">
+    <span class="presets-label" id="preset-label">Or borrow a queue</span>
+    <div class="preset-buttons" role="group" aria-labelledby="preset-label">
+      {presets.map((preset, index) => (
+        <button type="button" data-preset={String(index)}>{preset.label}</button>
+      ))}
+    </div>
+  </div>
+
+  <div class="inputs">
+    <div class="field">
+      <label for="ll-people">People in the queue</label>
+      <input id="ll-people" type="number" min="1" max="999" step="1" value={people} data-people />
+    </div>
+    <div class="field">
+      <label for="ll-rate">Joining per minute</label>
+      <input id="ll-rate" type="number" min="0.1" max="120" step="0.1" value={rate} data-rate />
+    </div>
+  </div>
+
+  <p class="answer">
+    <span class="answer-label">Each of them waits about</span>
+    <output class="answer-value" for="ll-people ll-rate" aria-live="polite" data-answer>
+      {initial}
+    </output>
+  </p>
+
+  <p class="working" data-working>
+    <strong>{people}</strong> in the queue divided by <strong>{rate}</strong> joining
+    per minute.
+  </p>
+
+  <p class="caveat">
+    That is Little's Law, and it holds for any queue that is neither growing
+    without bound nor draining, whatever order it serves people in. Week 2 is
+    about the three ways it goes wrong. The numbers behind the buttons above are
+    illustrative, not measured; measuring your own is{" "}
+    <a href={withBase("/sessions/02-the-clipboard/")}>the week 2 field session</a>.
+  </p>
+</section>
+
+<style>
+  .calc {
+    margin-block: 2rem 2.5rem;
+    padding: 1.4rem 1.5rem;
+    border: 1px solid var(--at-primary);
+    background: color-mix(in srgb, var(--at-primary) 5%, transparent);
+  }
+
+  .calc h2 {
+    margin-block: 0 0.4rem;
+  }
+
+  .intro {
+    margin-block: 0 1.25rem;
+    color: var(--at-text-secondary);
+  }
+
+  .presets {
+    margin-block-end: 1.25rem;
+  }
+
+  .presets-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--at-text-secondary);
+    margin-block-end: 0.5rem;
+  }
+
+  .preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  button {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--at-primary);
+    border-radius: 0;
+    background: transparent;
+    color: var(--at-primary);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:hover,
+  button:focus-visible {
+    background: var(--at-primary);
+    color: var(--at-bg);
+  }
+
+  button[aria-pressed="true"] {
+    background: var(--at-primary);
+    color: var(--at-bg);
+  }
+
+  .inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-block-end: 0.3rem;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--at-border);
+    border-radius: 0;
+    background: var(--at-bg);
+    color: var(--at-text);
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+
+  input:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 1px;
+  }
+
+  .answer {
+    margin-block: 1.4rem 0.3rem;
+    padding-block-start: 1.2rem;
+    border-block-start: 1px solid var(--at-border);
+  }
+
+  .answer-label {
+    display: block;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--at-text-secondary);
+  }
+
+  .answer-value {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--at-primary);
+  }
+
+  .working {
+    margin-block: 0 1rem;
+    font-size: 0.9rem;
+    color: var(--at-text-secondary);
+  }
+
+  .caveat {
+    margin-block: 0;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  @media (width < 44rem) {
+    .inputs {
+      grid-template-columns: 1fr;
+    }
+
+    .answer-value {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+
+<script>
+  interface Preset {
+    label: string;
+    people: number;
+    rate: number;
+  }
+
+  function spoken(minutes: number): string {
+    if (!Number.isFinite(minutes) || minutes <= 0) return "no wait at all";
+    if (minutes < 1) return `${Math.round(minutes * 60)} seconds`;
+    const whole = Math.floor(minutes);
+    const seconds = Math.round((minutes - whole) * 60);
+    if (seconds === 0) return `${whole} minute${whole === 1 ? "" : "s"}`;
+    return `${whole} min ${seconds} sec`;
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-littles]")) {
+    const peopleInput = root.querySelector<HTMLInputElement>("[data-people]");
+    const rateInput = root.querySelector<HTMLInputElement>("[data-rate]");
+    const answer = root.querySelector<HTMLElement>("[data-answer]");
+    const working = root.querySelector<HTMLElement>("[data-working]");
+    if (!peopleInput || !rateInput || !answer || !working) continue;
+
+    const presets: Preset[] = JSON.parse(root.dataset.presets ?? "[]");
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-preset]")];
+
+    const update = (): void => {
+      const people = Number(peopleInput.value);
+      const rate = Number(rateInput.value);
+      answer.textContent = spoken(people / rate);
+      working.innerHTML = "";
+      working.append(
+        Object.assign(document.createElement("strong"), { textContent: String(people) }),
+        " in the queue divided by ",
+        Object.assign(document.createElement("strong"), { textContent: String(rate) }),
+        " joining per minute.",
+      );
+
+      // A preset stays lit only while both numbers still match it, so typing
+      // over one of them does not leave a button claiming these are its
+      // numbers.
+      for (const button of buttons) {
+        const preset = presets[Number(button.dataset.preset)];
+        const matches = preset && preset.people === people && preset.rate === rate;
+        button.setAttribute("aria-pressed", String(Boolean(matches)));
+      }
+    };
+
+    for (const button of buttons) {
+      button.setAttribute("aria-pressed", "false");
+      button.addEventListener("click", () => {
+        const preset = presets[Number(button.dataset.preset)];
+        if (!preset) return;
+        peopleInput.value = String(preset.people);
+        rateInput.value = String(preset.rate);
+        update();
+      });
+    }
+
+    peopleInput.addEventListener("input", update);
+    rateInput.addEventListener("input", update);
+    update();
+  }
+</script>
