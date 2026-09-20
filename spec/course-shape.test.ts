@@ -116,12 +116,28 @@ describe("no week is another week wearing a different hat", () => {
 });
 
 describe("a field session is a thing you go and do", () => {
+  // The generated API carries frontmatter, not page bodies, so this reads the
+  // page that shipped. That is the better source anyway: a heading that exists
+  // in the markdown and never reaches the page is not a promise kept.
+  const headingsOf = (id: string): string[] => {
+    const slug = id.replace(/^sessions\//, "");
+    const html = readFileSync(resolve("dist", "sessions", slug, "index.html"), "utf8");
+    // The theme appends a "#" permalink anchor inside every content heading,
+    // so the tag strip leaves it behind.
+    return [...html.matchAll(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi)].map((match) =>
+      match[1]
+        .replace(/<[^>]+>/g, "")
+        .replace(/#\s*$/, "")
+        .trim(),
+    );
+  };
+
   it("tells every student what to bring and what leaves the room", () => {
     for (const session of sessions) {
-      const body = session.body ?? "";
-      expect(body, `${session.id} never says what to bring`).toMatch(/^#+\s*Bring\b/im);
-      expect(body, `${session.id} never says what leaves the room`).toMatch(
-        /^#+\s*What leaves the room\b/im,
+      const headings = headingsOf(session.id);
+      expect(headings, `${session.id} never says what to bring`).toContain("Bring");
+      expect(headings, `${session.id} never says what leaves the room`).toContain(
+        "What leaves the room",
       );
     }
   });

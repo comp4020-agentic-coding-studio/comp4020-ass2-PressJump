@@ -33,9 +33,15 @@ async function htmlFiles(dir: string): Promise<string[]> {
   return found;
 }
 
-/** The words a reader actually sees, with the machinery stripped out. */
+/** The words a reader actually sees, with the machinery stripped out.
+ *
+ * <head> goes first. The theme builds the document title as "<page> - <site>"
+ * with an em dash in the middle, and the theme is fixed platform. An em dash
+ * there is not this course's prose, and a check that fails on it only teaches
+ * me to weaken the check. Everything a visitor reads is in the body. */
 function visibleText(html: string): string {
   return html
+    .replace(/<head\b[\s\S]*?<\/head>/i, " ")
     .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
     .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
     .replace(/<!--[\s\S]*?-->/g, " ")
