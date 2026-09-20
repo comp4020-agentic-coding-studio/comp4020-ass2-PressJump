@@ -5,8 +5,8 @@ import { courseMeta } from "./course-config";
 // The underlying collection and URL remain `sessions`; these labels are the
 // language students see. Change them to Studios, Tutorials, Expeditions, etc.
 export const sessionLabels = {
-  singular: "Session",
-  plural: "Sessions",
+  singular: "Field session",
+  plural: "Field sessions",
 } as const;
 
 export const graphCollections = ["sessions", "assessments", "lectures", "people"];
@@ -30,5 +30,8 @@ export const siteConfig = defineSiteConfig({
 
   licence: "CC-BY-NC-SA-4.0",
   socialImage: "/src/assets/images/card.png",
-  socialImageAlt: `A preview card for ${courseMeta.code}: ${courseMeta.title}`,
+  socialImageAlt:
+    `${courseMeta.code}, Please Wait. A serpentine queue drawn as one folded ` +
+    `line of gold blocks on black, each block a person, the line doubling ` +
+    `back on itself five times before it reaches a single open counter.`,
 });
