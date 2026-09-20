@@ -3,6 +3,11 @@ import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import heroImage from "../assets/images/hero-home.avif";
+import assessmentIcon from "../assets/icons/assessment.svg";
+import lecturesIcon from "../assets/icons/lectures.svg";
+import peopleIcon from "../assets/icons/people.svg";
+import sessionsIcon from "../assets/icons/sessions.svg";
+import timetableIcon from "../assets/icons/timetable.svg";
 import { courseMeta } from "../course-config";
 import { sessionLabels, siteConfig } from "../site-config";
 ---
@@ -84,16 +89,44 @@ import { sessionLabels, siteConfig } from "../site-config";
 
   <h2>Where to go next</h2>
   <CardGrid columns={2}>
-    <Card title="Lectures" href="/lectures/">
+    <Card
+      title="Timetable"
+      href="/timetable/"
+      image={timetableIcon}
+      imageAlt="A grid of twelve weeks, one of them outlined"
+    >
+      <p>The whole semester on one page, and the two busy stretches marked.</p>
+    </Card>
+    <Card
+      title="Lectures"
+      href="/lectures/"
+      image={lecturesIcon}
+      imageAlt="A board with three lines of writing, faced by a row of people"
+    >
       <p>The twelve weeks, and the claim each one makes.</p>
     </Card>
-    <Card title={sessionLabels.plural} href="/sessions/">
+    <Card
+      title={sessionLabels.plural}
+      href="/sessions/"
+      image={sessionsIcon}
+      imageAlt="A clipboard with two struck tally groups and a third in progress"
+    >
       <p>Two hours a week, mostly outdoors, mostly with a stopwatch.</p>
     </Card>
-    <Card title="Assessment" href="/assessments/">
+    <Card
+      title="Assessment"
+      href="/assessments/"
+      image={assessmentIcon}
+      imageAlt="Four bars of different heights standing on a rule"
+    >
       <p>Four pieces, all of them about the same queue.</p>
     </Card>
-    <Card title="People" href="/people/">
+    <Card
+      title="People"
+      href="/people/"
+      image={peopleIcon}
+      imageAlt="Four figures side by side, the last one drawn as an outline"
+    >
       <p>Who teaches it, which weeks, and when they are free.</p>
     </Card>
   </CardGrid>

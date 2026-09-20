@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180" role="img" aria-label="Four figures side by side, the last one drawn as an outline">
+<rect width="320" height="180" fill="#14110c"/>
+<rect x="76" y="58" width="26" height="58" rx="2" fill="#b97d1c"/>
+<rect x="122" y="58" width="26" height="58" rx="2" fill="#b97d1c"/>
+<rect x="168" y="58" width="26" height="58" rx="2" fill="#b97d1c"/>
+<rect x="214" y="58" width="26" height="58" rx="2" fill="none" stroke="#b97d1c" stroke-width="3"/>
+<path d="M 66 132 L 200 132" stroke="#b97d1c" stroke-width="3" stroke-opacity="0.45" fill="none"/>
+</svg>

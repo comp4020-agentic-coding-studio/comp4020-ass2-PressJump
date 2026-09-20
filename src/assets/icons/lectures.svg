@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180" role="img" aria-label="A board with three lines of writing, faced by a row of people">
+<rect width="320" height="180" fill="#14110c"/>
+<rect x="60" y="24" width="200" height="74" rx="3" fill="none" stroke="#b97d1c" stroke-width="3"/>
+<path d="M 78 44 L 238 44" stroke="#b97d1c" stroke-width="3" stroke-opacity="0.55" fill="none"/>
+<path d="M 78 62 L 198 62" stroke="#b97d1c" stroke-width="3" stroke-opacity="0.55" fill="none"/>
+<path d="M 78 80 L 218 80" stroke="#b97d1c" stroke-width="3" stroke-opacity="0.55" fill="none"/>
+<rect x="64" y="122" width="16" height="30" rx="2" fill="#b97d1c"/>
+<rect x="92" y="122" width="16" height="30" rx="2" fill="#b97d1c"/>
+<rect x="120" y="122" width="16" height="30" rx="2" fill="#b97d1c"/>
+<rect x="148" y="122" width="16" height="30" rx="2" fill="#b97d1c"/>
+<rect x="176" y="122" width="16" height="30" rx="2" fill="#b97d1c"/>
+<rect x="204" y="122" width="16" height="30" rx="2" fill="#b97d1c"/>
+<rect x="232" y="122" width="16" height="30" rx="2" fill="#b97d1c"/>
+</svg>

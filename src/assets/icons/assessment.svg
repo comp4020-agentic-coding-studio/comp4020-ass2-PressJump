@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180" role="img" aria-label="Four bars of different heights standing on a rule">
+<rect width="320" height="180" fill="#14110c"/>
+<rect x="44" y="75.5" width="40" height="72.5" rx="2" fill="#b97d1c"/>
+<rect x="108" y="90" width="40" height="58" rx="2" fill="#b97d1c"/>
+<rect x="172" y="90" width="40" height="58" rx="2" fill="#b97d1c"/>
+<rect x="236" y="46.5" width="40" height="101.5" rx="2" fill="#b97d1c"/>
+<path d="M 32 154 L 288 154" stroke="#b97d1c" stroke-width="3" stroke-opacity="0.45" fill="none"/>
+</svg>
