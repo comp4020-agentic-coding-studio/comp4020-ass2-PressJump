@@ -5,45 +5,98 @@ import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import heroImage from "../assets/images/hero-home.avif";
 import { courseMeta } from "../course-config";
 import { sessionLabels, siteConfig } from "../site-config";
-
-// STARTER_CONTENT: replace the hero artwork and its alt text below, then
-// remove this comment.
 ---
 
 <ContentLayout
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
   heroImage={heroImage}
-  heroImageAlt="A lecture theatre reduced to flat gold and black shapes, rows of seats sweeping past the frame, in a two-ink risograph print"
+  heroImageAlt="A serpentine queue drawn as one folded line of gold blocks on black, each block a person, doubling back on itself five times before it reaches a single open counter"
   {...siteConfig}
 >
   <ul class="course-tags" aria-label="Course tags">
     {courseMeta.tags.map((tag) => <li>{tag}</li>)}
   </ul>
 
-  <!-- STARTER_CONTENT: replace the authored page below, then remove this comment. -->
+  <p class="lede">
+    A queue is a machine for handing out waiting. It has settings, somebody
+    chose them, and every setting is a decision about whose time counts for
+    less. Twelve weeks working out what those settings are, how to measure
+    them, and whether they can be defended.
+  </p>
+
   <h2>What you will do</h2>
   <p>
-    Say what a student spends their time on — the making, reading, arguing or
-    measuring that fills the weeks. Name the artefact they walk out with.
+    In week 1 you pick a queue. A till, a counter, a platform, a help desk,
+    something you can physically stand next to twice a week. It is yours for
+    the semester.
+  </p>
+  <p>
+    You measure it by hand, with a pen, badly at first. You work out its
+    arrival rate and its service distribution and how much of the wait is the
+    tax you pay for variability. You record every time somebody is served out
+    of order and what it cost the people behind them. You write down what it
+    would take to change it, predict the effect before anybody tells you, and
+    then say out loud who waits longer after your change, because somebody
+    always does.
+  </p>
+  <p>
+    In week 12 you defend that change in front of the room, and if you can
+    persuade them, in front of whoever runs the queue.
+  </p>
+
+  <h2>What the course thinks</h2>
+  <p>
+    That the arithmetic is the easy half. There are four pieces of it here,
+    and they are enough to embarrass most people who design queues
+    professionally. Little's Law will tell you how long a line is waiting
+    without you timing anybody in it. Kingman will tell you why the counter got
+    worse after the efficiency drive.
+  </p>
+  <p>
+    The hard half is the question none of the equations answer. A queue
+    discipline is a ranking of people, and nearly every one you meet was set
+    without saying so. Emergency triage is the honourable exception, which is
+    why we spend a week on it, and why we spend the week after that on the
+    queues that publish nothing at all.
   </p>
 
   <h2>Who it is for</h2>
   <p>
-    Say who this is aimed at and what they need to already know. Be specific
-    enough that someone can rule themselves in or out without emailing you.
+    Third-year students in any degree. You need to be comfortable with
+    algebra, averages and a spreadsheet, and that is genuinely the whole
+    prerequisite; there is no calculus and no proof in the assessment. You
+    also need to be willing to stand outside a shop for an hour with a
+    clipboard, in the cold, being looked at.
+  </p>
+  <p>
+    It suits people heading for operations, service design, health
+    administration, transport, systems performance and public policy. It has
+    also been taken by a lot of people who were simply annoyed about something
+    and wanted to know whether they were right.
+  </p>
+
+  <h2>What it is not</h2>
+  <p>
+    It is not a queueing theory course. A queueing theory course would spend
+    the semester on Markov chains and never send you outside. Four results
+    appear here, each one because you need it to say something about a real
+    line, and the exam that would test them does not exist.
   </p>
 
   <h2>Where to go next</h2>
   <CardGrid columns={2}>
+    <Card title="Lectures" href="/lectures/">
+      <p>The twelve weeks, and the claim each one makes.</p>
+    </Card>
     <Card title={sessionLabels.plural} href="/sessions/">
-      <p>The weekly schedule and what happens in each teaching session.</p>
+      <p>Two hours a week, mostly outdoors, mostly with a stopwatch.</p>
     </Card>
     <Card title="Assessment" href="/assessments/">
-      <p>What is marked, what it is worth, and when it is due.</p>
+      <p>Four pieces, all of them about the same queue.</p>
     </Card>
     <Card title="People" href="/people/">
-      <p>Who teaches the course and how to reach them.</p>
+      <p>Who teaches it, which weeks, and when they are free.</p>
     </Card>
   </CardGrid>
 </ContentLayout>
@@ -64,5 +117,19 @@ import { sessionLabels, siteConfig } from "../site-config";
     color: var(--at-text-secondary);
     background: var(--at-bg-alt);
     font-size: 0.9rem;
+  }
+
+  /* The opening paragraph carries the whole argument, so it gets the weight
+     the headings would otherwise take. One size step, no second colour. */
+  .lede {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    margin-block-end: 2.5rem;
+  }
+
+  @media (width < 44rem) {
+    .lede {
+      font-size: 1.05rem;
+    }
   }
 </style>

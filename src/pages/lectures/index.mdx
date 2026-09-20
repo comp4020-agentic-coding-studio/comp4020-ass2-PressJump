@@ -1,15 +1,47 @@
 ---
 layout: ../../layouts/PageLayout.astro
 title: Lectures
-description: "What is covered, week by week, and which topics each lecture draws on."
+description: "Twelve weeks, twelve claims, and the four pieces of arithmetic that hold them together."
 heroTitle: Lectures
 ---
 
 import LecturesGrid from "../../components/LecturesGrid.astro";
 
-Every lecture the course claims to run gets a dated page and a teaching-team
-reference. A course decides how many lectures it needs; one of them carries a
-real deck. `related:` connects lectures to the sessions and assessments they
-feed.
+One hour a week, Mondays. Each week makes one claim, and the claim is the line
+under the title. You should be able to disagree with it before you have heard
+the lecture.
+
+The order is not a survey and it does not reshuffle. Weeks 2 to 4 are the
+arithmetic, and you need them before week 5 will mean anything. Weeks 5 to 7
+are about who the arithmetic gets done to. Weeks 8 to 11 are the consequences.
+Week 12 is the week 1 argument again with everything attached.
+
+Week 2 carries a deck. The rest are chalk.
 
 <LecturesGrid />
+
+## The four results
+
+There are four pieces of maths in this course and this is all of them.
+
+- **Little's Law**, week 2. Queue length equals arrival rate times waiting
+  time. It lets you measure a wait you never timed.
+- **Kingman's approximation**, week 3. Waiting explodes as utilisation
+  approaches one, and variability sets the multiplier.
+- **Pooling**, week 4. One line into many servers beats many lines into one
+  server each, at the same total capacity.
+- **Ageing**, week 9. Raise a job's priority the longer it has waited, and
+  starvation goes away without losing the benefit of serving short jobs first.
+
+If you have met all four before, this is still not a course you have taken,
+because none of the four answers the question in week 6.
+
+## Two weeks that need warning
+
+Week 10 works from published inquiry reports, several of which concern deaths
+in crowd failures. We stay with the engineering findings and the timeline.
+There is a written version and the [policies page](/policies/) says how to take
+it.
+
+Week 7 is a guest lecture and it is the only one that is not recorded, at the
+guest's request.
