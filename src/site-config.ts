@@ -32,6 +32,7 @@ export const siteConfig = defineSiteConfig({
     { text: "Assessment", href: "/assessments/" },
     { text: "People", href: "/people/" },
     { text: "Glossary", href: "/glossary/" },
+    { text: "Extensions", href: "/extensions/" },
     { text: "Policies", href: "/policies/" },
   ],
 

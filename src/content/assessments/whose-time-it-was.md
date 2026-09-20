@@ -19,6 +19,7 @@ marking:
       weight: 30
     - name: Fair treatment of the strongest case against you
       weight: 30
+lateness: standard
 related:
   - the-redesign
 spec:

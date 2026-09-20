@@ -22,6 +22,9 @@ marking:
       weight: 20
     - name: The defence
       weight: 15
+lateness: event
+latenessNote: >-
+  The written proposal takes the ordinary per-day penalty. The defence is a room full of people in the week 12 field session and cannot be handed in late, so if you cannot attend that is an extension question rather than a late one.
 related:
   - the-measured-queue
   - whose-time-it-was

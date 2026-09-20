@@ -1,0 +1,424 @@
+---
+// Writes an extension request email. It does not send one, and it does not
+// pretend to.
+//
+// This site is static and has no backend, so a form with an action could only
+// lie about where the data went, and "the site must not lie about the work" is
+// the fourth position in CLAUDE.md. What this does instead is real: you fill
+// it in, it composes the email, and you send it yourself from your own address
+// through your own mail client. Nothing leaves the page until you press send
+// in the program that is actually going to send it.
+//
+// Everything it knows comes out of the assessment collection. The deadline it
+// counts from, the piece you pick, how lateness works for that piece: one
+// source, so this form cannot promise a rule the policies page does not have.
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+
+interface Props {
+  /** The longest extension the convenor grants by email, in days. */
+  maxDays: number;
+}
+
+const { maxDays } = Astro.props;
+
+const [assessmentEntries, people] = await Promise.all([
+  getPublishedCollection("assessments"),
+  getPublishedCollection("people"),
+]);
+const assessments = assessmentEntries.sort((a, b) => a.data.week - b.data.week);
+
+// Who it goes to is read off the people page, not typed here. An address typed
+// in two places is an address that goes stale in one of them, and the failure
+// mode is a student sending a request that nobody receives. Failing the build
+// is the right answer if nobody is the convenor.
+const convenorEntry = people.find((person) => person.data.role === "Convenor");
+if (!convenorEntry?.data.email) {
+  throw new Error(
+    "ExtensionRequest: no person with role \"Convenor\" and an email address. " +
+      "Extension requests have nowhere to go.",
+  );
+}
+const to = convenorEntry.data.email;
+const convenor = convenorEntry.data.title.split(" ")[0];
+
+const dueLabel = new Intl.DateTimeFormat("en-AU", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "Australia/Canberra",
+});
+
+const options = assessments.map((entry) => ({
+  id: entry.id,
+  title: entry.data.title,
+  due: entry.data.due.toISOString(),
+  dueLabel: dueLabel.format(entry.data.due),
+  lateness: entry.data.lateness,
+  note: entry.data.latenessNote ?? "",
+  href: withBase(`/assessments/${entry.id}/`),
+}));
+---
+
+<section
+  class="request"
+  data-extension-form
+  data-to={to}
+  data-convenor={convenor}
+  data-max-days={String(maxDays)}
+  data-options={JSON.stringify(options)}
+  hidden
+>
+  <h2>Write the request</h2>
+  <p class="intro">
+    Fill this in and it composes the email. It does not send anything; this site
+    is a set of files and has nowhere to send it to. You press send yourself,
+    from your own address, which is also the only way the reply reaches you.
+  </p>
+
+  <form data-form novalidate>
+    <div class="field">
+      <label for="ext-name">Your name</label>
+      <input id="ext-name" name="name" type="text" autocomplete="name" required />
+    </div>
+
+    <div class="field">
+      <label for="ext-id">Student number</label>
+      <input id="ext-id" name="student" type="text" inputmode="numeric" required />
+    </div>
+
+    <div class="field">
+      <label for="ext-piece">Which piece</label>
+      <select id="ext-piece" name="piece" required>
+        {options.map((option) => <option value={option.id}>{option.title}</option>)}
+      </select>
+      <p class="hint" data-due></p>
+    </div>
+
+    <div class="field">
+      <label for="ext-days">How many days</label>
+      <input id="ext-days" name="days" type="number" min="1" max="21" value="3" required />
+      <p class="hint" data-newdate></p>
+    </div>
+
+    <div class="field">
+      <label for="ext-reason">
+        Reason <span class="optional">optional</span>
+      </label>
+      <textarea id="ext-reason" name="reason" rows="3"></textarea>
+      <p class="hint">
+        A sentence is enough and it does not have to be documented. You do not
+        have to explain a medical or personal matter to anybody in this course.
+      </p>
+    </div>
+
+    <p class="warn" data-warn hidden></p>
+
+    <div class="actions">
+      <button type="submit" class="primary">Compose the email</button>
+    </div>
+  </form>
+
+  <div class="composed" data-output hidden>
+    <h3>Your email</h3>
+    <dl class="head">
+      <dt>To</dt>
+      <dd data-out-to></dd>
+      <dt>Subject</dt>
+      <dd data-out-subject></dd>
+    </dl>
+    <pre data-out-body></pre>
+    <div class="actions">
+      <a class="primary" data-mailto href="#">Open in your mail app</a>
+      <button type="button" data-copy>Copy the text</button>
+      <span class="said" role="status" aria-live="polite" data-said></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .request {
+    margin-block: 2rem;
+    padding: 1.25rem 1.4rem;
+    border: 1px solid var(--at-border);
+  }
+
+  .request h2 {
+    margin-block-start: 0;
+  }
+
+  .intro {
+    color: var(--at-text-secondary);
+  }
+
+  .field {
+    margin-block-end: 1.1rem;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-block-end: 0.3rem;
+  }
+
+  .optional {
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    max-width: 28rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--at-border);
+    border-radius: 0;
+    background: var(--at-bg);
+    color: var(--at-text);
+    font: inherit;
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 1px;
+  }
+
+  input[aria-invalid="true"] {
+    border-color: var(--at-primary);
+    border-width: 2px;
+  }
+
+  .hint {
+    margin-block: 0.3rem 0;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  .warn {
+    margin-block: 0 1rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--at-primary);
+    background: color-mix(in srgb, var(--at-primary) 15%, transparent);
+    font-size: 0.9rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  button,
+  .actions a {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--at-primary);
+    border-radius: 0;
+    background: transparent;
+    color: var(--at-primary);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .primary {
+    background: var(--at-primary);
+    color: var(--at-bg);
+  }
+
+  button:hover,
+  .actions a:hover {
+    filter: brightness(0.93);
+  }
+
+  .composed {
+    margin-block-start: 1.75rem;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--at-border);
+  }
+
+  .head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 1rem;
+    margin-block: 0 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .head dt {
+    font-weight: 600;
+    color: var(--at-text-secondary);
+  }
+
+  .head dd {
+    margin: 0;
+    word-break: break-word;
+  }
+
+  pre {
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--at-border);
+    background: var(--at-bg-alt);
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .said {
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+</style>
+
+<script>
+  interface Option {
+    id: string;
+    title: string;
+    due: string;
+    dueLabel: string;
+    lateness: "standard" | "none" | "event";
+    note: string;
+    href: string;
+  }
+
+  const day = 86_400_000;
+  const longDate = new Intl.DateTimeFormat("en-AU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Australia/Canberra",
+  });
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-extension-form]")) {
+    const form = root.querySelector<HTMLFormElement>("[data-form]");
+    const output = root.querySelector<HTMLElement>("[data-output]");
+    if (!form || !output) continue;
+
+    const options: Option[] = JSON.parse(root.dataset.options ?? "[]");
+    const to = root.dataset.to ?? "";
+    const convenor = root.dataset.convenor ?? "";
+    const maxDays = Number(root.dataset.maxDays ?? "5");
+
+    const piece = form.querySelector<HTMLSelectElement>("#ext-piece")!;
+    const days = form.querySelector<HTMLInputElement>("#ext-days")!;
+    const dueHint = root.querySelector<HTMLElement>("[data-due]")!;
+    const newDateHint = root.querySelector<HTMLElement>("[data-newdate]")!;
+    const warn = root.querySelector<HTMLElement>("[data-warn]")!;
+    const said = root.querySelector<HTMLElement>("[data-said]")!;
+
+    const chosen = (): Option => options.find((o) => o.id === piece.value) ?? options[0];
+
+    const newDate = (): Date => new Date(Date.parse(chosen().due) + Number(days.value || 0) * day);
+
+    /** The hints and the warning, recomputed on every change. */
+    const refresh = (): void => {
+      const option = chosen();
+      dueHint.textContent = `Due ${option.dueLabel} at 17:00.`;
+      newDateHint.textContent = `You would be asking until ${longDate.format(newDate())}.`;
+
+      const reasons: string[] = [];
+      if (Number(days.value) > maxDays) {
+        reasons.push(
+          `More than ${maxDays} days is beyond what the convenor grants by email, so this one goes through the university's standard process instead. Send it anyway and you will be pointed at the form.`,
+        );
+      }
+      if (option.lateness === "none") {
+        reasons.push(
+          `${option.title} is not accepted late at all, so this has to be agreed before the deadline rather than after it.`,
+        );
+      }
+      if (option.lateness === "event") {
+        reasons.push(
+          `Part of ${option.title} happens in a room at a fixed time, so say in the email whether you are asking about the written work, the scheduled part, or both.`,
+        );
+      }
+      if (option.note) reasons.push(option.note);
+
+      warn.hidden = reasons.length === 0;
+      warn.textContent = reasons.join(" ");
+    };
+
+    const compose = (): { subject: string; body: string } => {
+      const data = new FormData(form);
+      const option = chosen();
+      const name = String(data.get("name") ?? "").trim();
+      const student = String(data.get("student") ?? "").trim();
+      const count = Number(data.get("days") ?? 0);
+      const reason = String(data.get("reason") ?? "").trim();
+
+      const subject = `Extension request, ${option.title}, ${student}`;
+      const lines = [
+        `Dear ${convenor},`,
+        "",
+        `I am asking for an extension of ${count} day${count === 1 ? "" : "s"} on ${option.title}.`,
+        "",
+        `Currently due: ${option.dueLabel}, 17:00`,
+        `Asking until: ${longDate.format(newDate())}, 17:00`,
+        "",
+        reason ? `Reason: ${reason}` : "Reason: personal circumstances.",
+        "",
+        `${name}`,
+        `${student}`,
+      ];
+      return { subject, body: lines.join("\n") };
+    };
+
+    form.addEventListener("input", refresh);
+    form.addEventListener("change", refresh);
+
+    form.addEventListener("submit", (event) => {
+      // Never let this submit. There is nowhere for it to go, and a page that
+      // reloads on Enter reads as broken.
+      event.preventDefault();
+
+      const required = [...form.querySelectorAll<HTMLInputElement>("[required]")];
+      const missing = required.filter((input) => !input.value.trim());
+      for (const input of required) {
+        input.setAttribute("aria-invalid", String(!input.value.trim()));
+      }
+      if (missing.length > 0) {
+        missing[0].focus();
+        said.textContent = "Fill in the highlighted fields first.";
+        return;
+      }
+
+      const { subject, body } = compose();
+      root.querySelector<HTMLElement>("[data-out-to]")!.textContent = to;
+      root.querySelector<HTMLElement>("[data-out-subject]")!.textContent = subject;
+      root.querySelector<HTMLElement>("[data-out-body]")!.textContent = body;
+      root
+        .querySelector<HTMLAnchorElement>("[data-mailto]")!
+        .setAttribute(
+          "href",
+          `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+        );
+      output.hidden = false;
+      said.textContent = "";
+      output.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+
+    root.querySelector<HTMLButtonElement>("[data-copy]")!.addEventListener("click", async () => {
+      const body = root.querySelector<HTMLElement>("[data-out-body]")!.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(body);
+        said.textContent = "Copied.";
+      } catch {
+        // Clipboard access is refused often enough that failing silently here
+        // would look like a broken button.
+        said.textContent = "Could not copy. Select the text above instead.";
+      }
+    });
+
+    // Only now: the markup ships hidden, so a reader with no JavaScript is
+    // never shown a form whose button does nothing.
+    root.hidden = false;
+    refresh();
+  }
+</script>

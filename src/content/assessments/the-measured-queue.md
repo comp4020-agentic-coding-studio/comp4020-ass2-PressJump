@@ -19,6 +19,7 @@ marking:
       weight: 30
     - name: Honesty about what the numbers cannot tell you
       weight: 25
+lateness: standard
 related:
   - the-redesign
 spec:

@@ -18,6 +18,9 @@ marking:
     whose entries get sharper as the vocabulary arrives. Eleven honest short
     entries beat four polished ones and seven written the night before, and
     both of those are easy to tell apart.
+lateness: none
+latenessNote: >-
+  A journal handed in after the deadline is not evidence of a habit, it is evidence of a weekend. Ask for an extension before the deadline instead.
 related:
   - the-measured-queue
 spec:

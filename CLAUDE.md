@@ -116,7 +116,16 @@ and the register is the tell.
   hand-written ones in components are not.
 - **Everything ships in the build.** No CDN scripts, no remote fonts, no remote
   images, no runtime `fetch`. A network dependency is a way for the deployed
-  site to be broken while the local one looks fine.
+  site to be broken while the local one looks fine. `scripts/fetch-portraits.mjs`
+  is the one thing here that touches the network, it is an authoring tool run by
+  hand, and what it writes is committed.
+- **No form may have an `action` or a `method`.** There is no backend, so a
+  form that posts can only lie about where the data went. A form is allowed
+  when it hands the result back to the person who filled it in, which is what
+  the extension request does: it composes an email and you send it yourself.
+  `spec/extensions.test.ts` fails on an `action` or a `method` attribute.
+  Carried from C5, where the rule was a flat ban; a flat ban was easier and it
+  would have cost this course its extension page.
 - **Every table column gets a non-empty header cell.** A markdown table opening
   `| | Weeks | Cost |` is a table whose first header is blank, and axe fails the
   build on it. Written down after making the identical mistake twice, once in

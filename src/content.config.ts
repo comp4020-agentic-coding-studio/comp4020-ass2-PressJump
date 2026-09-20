@@ -51,6 +51,15 @@ export const collections = {
         due: z.coerce.date(),
         weight: z.coerce.number().positive().max(100),
         marking: z.discriminatedUnion("mode", [weightedMarking, holisticMarking]).optional(),
+
+        // How lateness works for this piece. Declared here so the policies
+        // page, the assessment page and the extension request form all read
+        // one source instead of three copies that drift.
+        //   standard - the ordinary per-day penalty
+        //   none     - not accepted late at all
+        //   event    - happens in a room at a time, so it cannot be handed in
+        lateness: z.enum(["standard", "none", "event"]).default("standard"),
+        latenessNote: z.string().trim().min(1).optional(),
       })
       .loose(),
   }),

@@ -1,0 +1,158 @@
+---
+// What lateness costs, per piece, read out of the assessment collection.
+//
+// This replaced a table typed by hand on the policies page. The extension
+// request form needs the same facts, and two hand-written copies of a penalty
+// is how a student ends up reading one rule on one page and a different one on
+// another. `lateness` is declared in the assessment's frontmatter; this is a
+// rendering of it and holds no rules of its own.
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+
+interface Props {
+  /** The ordinary penalty, in percent of available marks per day. */
+  perDay?: number;
+  /** How many days before the piece stops being marked. */
+  cutoffDays?: number;
+}
+
+const { perDay = 5, cutoffDays = 7 } = Astro.props;
+
+const assessments = (await getPublishedCollection("assessments")).sort(
+  (a, b) => a.data.week - b.data.week,
+);
+
+const rules: Record<string, { penalty: string; stop: string }> = {
+  standard: {
+    penalty: `${perDay}% of available marks per day`,
+    stop: `${cutoffDays} days, then zero`,
+  },
+  none: { penalty: "Not accepted late", stop: "The deadline" },
+  event: { penalty: "Mixed, see the note", stop: "The session it happens in" },
+};
+
+const dueLabel = new Intl.DateTimeFormat("en-AU", {
+  day: "numeric",
+  month: "short",
+  timeZone: "Australia/Canberra",
+});
+---
+
+<table class="late">
+  <caption>Days are calendar days, counted from 17:00 on the due date.</caption>
+  <thead>
+    <tr>
+      <th scope="col">Piece</th>
+      <th scope="col">Due</th>
+      <th scope="col">Late penalty</th>
+      <th scope="col">Hard stop</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      assessments.map((entry) => {
+        const rule = rules[entry.data.lateness];
+        return (
+          <>
+            <tr>
+              <th scope="row">
+                <a href={withBase(`/assessments/${entry.id}/`)}>{entry.data.title}</a>
+              </th>
+              <td data-label="Due">{dueLabel.format(entry.data.due)}</td>
+              <td data-label="Late penalty">{rule.penalty}</td>
+              <td data-label="Hard stop">{rule.stop}</td>
+            </tr>
+            {entry.data.latenessNote && (
+              <tr class="note">
+                <td colspan="4">{entry.data.latenessNote}</td>
+              </tr>
+            )}
+          </>
+        );
+      })
+    }
+  </tbody>
+</table>
+
+<style>
+  .late {
+    width: 100%;
+    border-collapse: collapse;
+    margin-block: 1.25rem 2rem;
+  }
+
+  .late caption {
+    caption-side: top;
+    text-align: left;
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+    margin-block-end: 0.75rem;
+  }
+
+  .late th,
+  .late td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.55rem 0.75rem 0.55rem 0;
+    border-block-end: 1px solid var(--at-border);
+  }
+
+  .late thead th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--at-text-secondary);
+  }
+
+  .note td {
+    padding-block: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+    border-block-end: 1px solid var(--at-border);
+  }
+
+  /* Four columns at 390px is four columns of one word each, so below the phone
+     breakpoint each piece becomes a labelled block. */
+  @media (width < 44rem) {
+    .late,
+    .late tbody,
+    .late tr,
+    .late th,
+    .late td {
+      display: block;
+    }
+
+    .late thead {
+      display: none;
+    }
+
+    .late caption {
+      display: block;
+      width: 100%;
+    }
+
+    .late tbody tr {
+      padding-block: 0.6rem;
+    }
+
+    .late th,
+    .late td {
+      border: 0;
+      padding: 0.1rem 0;
+    }
+
+    .late tbody > tr:not(.note) {
+      border-block-end: 1px solid var(--at-border);
+    }
+
+    .late td::before {
+      content: attr(data-label) " ";
+      color: var(--at-text-secondary);
+      font-size: 0.8rem;
+    }
+
+    .note td::before {
+      content: none;
+    }
+  }
+</style>
