@@ -126,6 +126,13 @@ const months = buildMonths();
 // pointing at the wrong thing entirely. Comparisons live in the frontmatter.
 const withinTerm = (day: Date): boolean =>
   day.getTime() >= start.getTime() && day.getTime() <= end.getTime();
+// The month teaching starts in, so the calendar opens on the first month that
+// has anything in it rather than on whatever January happens to be.
+const startIndex = Math.max(
+  0,
+  months.findIndex((month) => month.label === monthLabel.format(start)),
+);
+
 const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const kindLabel: Record<Kind, string> = {
   lecture: "Lecture",
@@ -134,7 +141,24 @@ const kindLabel: Record<Kind, string> = {
 };
 ---
 
-<div class="calendar">
+<div class="calendar" data-calendar data-start={String(startIndex)}>
+  {/* Hidden until the script runs. Without JavaScript every month stays on
+      the page and these buttons would be three dead controls above them. */}
+  <div class="toolbar" hidden data-toolbar>
+    <button type="button" class="step" data-prev>
+      <span aria-hidden="true">&larr;</span>
+      <span class="visually-hidden">Previous month</span>
+    </button>
+    {/* The month name moves here once paging is on, and announces itself when
+        it changes; a button press that silently swaps the grid underneath is
+        a change a screen reader never hears about. */}
+    <p class="current" data-current aria-live="polite" aria-atomic="true"></p>
+    <button type="button" class="step" data-next>
+      <span aria-hidden="true">&rarr;</span>
+      <span class="visually-hidden">Next month</span>
+    </button>
+  </div>
+
   <p class="key" aria-hidden="true">
     <span class="swatch swatch--lecture"></span> Lecture
     <span class="swatch swatch--session"></span> Field session
@@ -143,7 +167,7 @@ const kindLabel: Record<Kind, string> = {
 
   {
     months.map((month) => (
-      <section class="month" aria-label={month.label}>
+      <section class="month" data-month={month.label} aria-label={month.label}>
         <h3 class="month-name">{month.label}</h3>
         <table class="grid">
           <caption class="visually-hidden">{month.label}</caption>
@@ -265,8 +289,58 @@ const kindLabel: Record<Kind, string> = {
     );
   }
 
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-block-end: 1rem;
+  }
+
+  .step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid var(--at-primary);
+    border-radius: 0;
+    background: transparent;
+    color: var(--at-primary);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .step:hover:not(:disabled),
+  .step:focus-visible {
+    background: var(--at-primary);
+    color: var(--at-bg);
+  }
+
+  .step:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .current {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
   .month + .month {
     margin-block-start: 2rem;
+  }
+
+  /* Once the script has taken over, the month names live in the toolbar and
+     only one month is on the page at a time. */
+  .calendar--paged .month-name {
+    display: none;
+  }
+
+  .calendar--paged .month + .month {
+    margin-block-start: 0;
   }
 
   .month-name {
@@ -437,3 +511,36 @@ const kindLabel: Record<Kind, string> = {
     }
   }
 </style>
+
+<script>
+  // Progressive enhancement, and the order matters. The markup already holds
+  // every month, so the no-JavaScript page is the whole teaching period in one
+  // scroll, which was the version before this and is a perfectly good fallback.
+  // This narrows it to one month and reveals the controls that do the paging.
+  for (const root of document.querySelectorAll<HTMLElement>("[data-calendar]")) {
+    const months = [...root.querySelectorAll<HTMLElement>("[data-month]")];
+    const toolbar = root.querySelector<HTMLElement>("[data-toolbar]");
+    const current = root.querySelector<HTMLElement>("[data-current]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-next]");
+    if (months.length < 2 || !toolbar || !current || !prev || !next) continue;
+
+    let index = Number(root.dataset.start ?? "0");
+
+    const show = (wanted: number): void => {
+      index = Math.min(Math.max(wanted, 0), months.length - 1);
+      months.forEach((month, position) => {
+        month.hidden = position !== index;
+      });
+      current.textContent = months[index].dataset.month ?? "";
+      prev.disabled = index === 0;
+      next.disabled = index === months.length - 1;
+    };
+
+    root.classList.add("calendar--paged");
+    toolbar.hidden = false;
+    prev.addEventListener("click", () => show(index - 1));
+    next.addEventListener("click", () => show(index + 1));
+    show(index);
+  }
+</script>

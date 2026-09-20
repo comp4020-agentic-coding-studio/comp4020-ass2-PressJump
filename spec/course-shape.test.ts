@@ -188,4 +188,31 @@ describe("the timetable agrees with the twelve weeks", () => {
   it("shows the mid-semester break", () => {
     expect(html).toMatch(/Mid-semester break/i);
   });
+
+  // The calendar pages one month at a time, which is a script doing it. The
+  // contract is that the shipped HTML is still the whole teaching period and
+  // the controls are inert until the script runs, so a reader with no
+  // JavaScript gets every month instead of one month and two dead buttons.
+  it("ships every month in the markup, not just the one on screen", () => {
+    const rendered = [...html.matchAll(/data-month="([^"]+)"/g)].map((match) => match[1]);
+    const monthsInTerm = new Set(
+      [...lectures, ...sessions].map((node) =>
+        dateOnly(node.meta?.date).slice(0, 7),
+      ),
+    );
+    expect(rendered.length, "the calendar renders no months").toBeGreaterThanOrEqual(
+      monthsInTerm.size,
+    );
+    expect(new Set(rendered).size, "a month is rendered twice").toBe(rendered.length);
+  });
+
+  it("hides the paging controls until the script turns them on", () => {
+    const toolbar = html.match(/<div class="toolbar"[^>]*>/);
+    expect(toolbar, "no calendar toolbar in the markup").not.toBeNull();
+    expect(toolbar?.[0], "the toolbar ships visible, so a no-JS reader gets dead buttons").toMatch(
+      /\shidden[\s>]/,
+    );
+    expect(html, "no previous-month control").toMatch(/data-prev/);
+    expect(html, "no next-month control").toMatch(/data-next/);
+  });
 });
