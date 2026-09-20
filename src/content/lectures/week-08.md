@@ -23,16 +23,18 @@ ones. An unfair wait feels much longer than a fair one of the same length.
 
 ## The propositions
 
-We work through the standard set, and then we argue about which of them are
-about perception and which are about the wait genuinely being worse.
+The standard set, sorted into the column that matters. The right-hand column is
+the argument of this lecture and you are allowed to disagree with any row of it.
 
-- Unoccupied time feels longer.
-- Pre-process waits feel longer than in-process waits.
-- Anxiety makes waits feel longer.
-- Uncertain waits feel longer than finite known waits.
-- Unexplained waits feel longer than explained ones.
-- Unfair waits feel longer than equitable waits.
-- Solo waits feel longer than group waits.
+| Proposition | Illusion, or the wait is genuinely worse |
+|---|---|
+| Unoccupied time feels longer | Illusion, and correctable |
+| Pre-process waits feel longer than in-process waits | Illusion, mostly |
+| Anxiety makes waits feel longer | Genuinely worse |
+| Uncertain waits feel longer than known ones | Genuinely worse, you cannot plan |
+| Unexplained waits feel longer than explained ones | Genuinely worse |
+| Unfair waits feel longer than equitable ones | Genuinely worse, and correctly so |
+| Solo waits feel longer than group waits | Illusion |
 
 ## The honest distinction
 

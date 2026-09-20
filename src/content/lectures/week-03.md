@@ -27,6 +27,25 @@ by an eighth. It roughly doubles. Push it to ninety-five and it doubles again.
 Every organisation that has ever been told to sweat its assets has walked into
 this, and most of them concluded they had a staff problem.
 
+> Spare capacity is not waste. It is what you are bought instead of a queue.
+
+## The shape of the wall
+
+The utilisation term on its own, relative to a counter running at half
+capacity. This is arithmetic rather than measurement, so it is exact and it is
+also only half the story; the variability term is the multiplier on top.
+
+| Utilisation | Waiting time, relative to 50% |
+|---|---|
+| 50% | 1x |
+| 80% | 4x |
+| 90% | 9x |
+| 95% | 19x |
+| 99% | 99x |
+
+The last row is the one to sit with. Going from 95 to 99 percent utilisation
+buys you four percent more throughput and costs you five times the wait.
+
 ## Kingman's formula
 
 An approximation, not an identity, and the most quietly devastating thing in

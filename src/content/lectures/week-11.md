@@ -41,6 +41,18 @@ arrivals. Staggered opening, dynamic pricing, published wait times that shift
 demand. Week 3 says this is the cheapest lever and almost nobody pulls it
 first.
 
+## The menu on one page
+
+| Instead of a queue | Where the waiting goes | Who it costs |
+|---|---|---|
+| Appointments | Into the calendar, at home, invisible and free to the provider | Anyone whose schedule is not their own |
+| Lotteries | Nowhere. It becomes chance instead of time | Whoever is both urgent and unlucky |
+| Paid position | Into money | Anyone who cannot pay, plus everybody behind |
+| Smoothing demand | It genuinely shrinks | Whoever gets pushed into the off-peak slot |
+
+Only the fourth row removes waiting rather than moving it, and it is the one
+almost nobody tries first.
+
 ## The thing they have in common
 
 None of them removes the waiting. Each one relocates it, hides it, or converts

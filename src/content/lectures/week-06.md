@@ -27,9 +27,20 @@ combination is rare enough to be worth a lecture on its own.
 
 ## What a triage category actually is
 
-We work through a five-category scale. What each category promises, what
-evidence it was set from, how the promise is audited, and what happens to the
-categories under load.
+We work through a five-category scale of the kind used in Australian emergency
+departments. Note what the right-hand column is. It is not a description or a
+priority number, it is a promise in minutes, published, and audited against.
+
+| Category | Description | The promise |
+|---|---|---|
+| 1 | Immediately life-threatening | Seen immediately |
+| 2 | Imminently life-threatening | Within 10 minutes |
+| 3 | Potentially life-threatening | Within 30 minutes |
+| 4 | Potentially serious | Within 60 minutes |
+| 5 | Less urgent | Within 120 minutes |
+
+What each category promises, what evidence it was set from, how the promise is
+audited, and what happens to the categories under load.
 
 Then the part that is never in the summary. Triage does not rank people by how
 sick they are. It ranks them by how much the waiting will cost them, which is

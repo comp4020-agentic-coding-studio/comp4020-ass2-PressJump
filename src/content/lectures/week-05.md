@@ -25,15 +25,22 @@ and brutal for the long job, which can wait forever while short work keeps
 arriving in front of it. Computing people call this starvation, which is a
 good word, and it happens to people as readily as to processes.
 
-## The disciplines, and what each one optimises
+## The disciplines, and who pays for each
 
-- First-come-first-served. Optimises for nothing except the variance of the
-  wait, which is to say it optimises for fairness.
-- Shortest-job-first. Optimises the mean, starves the tail.
-- Priority classes. Optimises for whatever the classes were drawn around, and
-  the drawing is where the politics lives.
-- Last-come-first-served. Sounds absurd; it is what a stack of paperwork on a
-  desk does by default, and it is what happens to your claim form.
+| Discipline | What it optimises | Who pays for it |
+|---|---|---|
+| First-come-first-served | The variance of the wait, which is to say fairness | Everybody a little, nobody a lot |
+| Shortest-job-first | The mean wait, sometimes enormously | The longest job, potentially forever |
+| Priority classes | Whatever the classes were drawn around | Everybody outside the top class |
+| Last-come-first-served | Nothing at all | Whoever arrived first |
+
+The fourth one sounds absurd until you notice it is what a stack of paperwork
+on a desk does by default. Nobody chooses it. It is what you get when nobody
+chooses, and it is what happens to your claim form.
+
+> First-come-first-served is the only discipline on that list that optimises
+> for a property of the people in the queue rather than a property of the
+> queue.
 
 ## Paid priority
 
