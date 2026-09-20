@@ -12,7 +12,8 @@ contact: Message me before a field session if your site has fallen through. I ke
 I plan crowd movement for stations and stadiums, which is the same job as
 planning a queue except that the consequences of being wrong are worse. I run
 most of the field sessions, which means I am the person who will tell you that
-your sample of eleven arrivals is not a sample.
+your sample of eleven arrivals is not a sample. I also give the week 8 lecture,
+on the difference between a shorter wait and a wait that feels shorter.
 
 Two things I will say to nearly everyone at some point in the semester.
 Measure the thing you can actually measure, not the thing you wish you could.

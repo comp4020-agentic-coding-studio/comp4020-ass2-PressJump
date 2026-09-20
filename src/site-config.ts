@@ -31,7 +31,5 @@ export const siteConfig = defineSiteConfig({
   licence: "CC-BY-NC-SA-4.0",
   socialImage: "/src/assets/images/card.png",
   socialImageAlt:
-    `${courseMeta.code}, Please Wait. A serpentine queue drawn as one folded ` +
-    `line of gold blocks on black, each block a person, the line doubling ` +
-    `back on itself five times before it reaches a single open counter.`,
+    `${courseMeta.code}. A single queue folded into five rows of gold blocks on a dark ground, each block one person, the line ending at one open counter with one server.`,
 });
