@@ -63,6 +63,19 @@ on me; see the rule on invented numbers below.
   a reader can see it is illustrative. Never invent a citation, a study, a
   statistic or an author. Slop University is fictional; its teaching is not
   allowed to be dishonest about evidence.
+- **The fiction may have its own publications; it may never borrow real ones.**
+  Staff profiles list papers, because a staff profile without them is not a
+  staff profile. Every one of them names an invented venue, no entry names a
+  real journal, a real author or a real paper, and the page says in writing
+  that none of it exists. The rule above is about not dressing invention up as
+  evidence for a claim the course makes; a fictional academic's fictional
+  bibliography is not that, as long as nobody could mistake it for real.
+- **A portrait of a fictional person says it is not a photograph of anybody.**
+  The faces on the people page are machine-generated and the page says so. A
+  photograph is the one thing on a course site a reader believes without
+  checking, so the site is the one that tells them. Alt text describes what is
+  actually in the image, checked against the file, and does not assert an
+  identity the picture cannot have.
 - **Second person, present tense, for anything a student does.** "You time
   thirty arrivals." Not "students will be required to time arrivals."
 

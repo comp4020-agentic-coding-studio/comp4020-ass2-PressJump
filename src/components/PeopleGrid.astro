@@ -5,20 +5,14 @@ import CardGrid from "astro-theme-university/components/CardGrid.astro";
 
 const people = await getPublishedCollection("people");
 
-const roleOrder: Record<string, number> = {
-  convenor: 0,
-  tutor: 1,
-  guest: 2,
-  other: 3,
-};
-
-// Map the role enum (convenor|tutor|guest|other) to display labels rather than
-// rendering the raw lowercase value.
-const roleLabels: Record<string, string> = {
-  convenor: "Convenor",
-  tutor: "Tutor",
-  guest: "Guest lecturer",
-  other: "",
+// `role` is free text in the schema, so it renders as written. The starter
+// sorted and labelled through a convenor|tutor|guest|other lookup, which meant
+// every role on this site ("Lecturer", "Field session tutor") fell through to
+// undefined and no card showed a role at all.
+const roleOrder = ["Convenor", "Lecturer", "Field session tutor", "Guest lecturer"];
+const rank = (role: string): number => {
+  const index = roleOrder.indexOf(role);
+  return index === -1 ? roleOrder.length : index;
 };
 
 // photoAlt rides the schema's passthrough (definePeopleCollection has no
@@ -29,10 +23,8 @@ function photoAlt(data: unknown): string | undefined {
 }
 
 const visible = people.sort((a, b) => {
-  const ra = roleOrder[a.data.role ?? "other"] ?? 99;
-  const rb = roleOrder[b.data.role ?? "other"] ?? 99;
-  if (ra !== rb) return ra - rb;
-  return a.data.title.localeCompare(b.data.title);
+  const ranked = rank(a.data.role) - rank(b.data.role);
+  return ranked !== 0 ? ranked : a.data.title.localeCompare(b.data.title);
 });
 ---
 
@@ -46,9 +38,9 @@ const visible = people.sort((a, b) => {
         image={person.data.photo ?? undefined}
         imageAlt={photoAlt(person.data)}
       >
-        {person.data.role && roleLabels[person.data.role] && (
+        {person.data.role && (
           <p>
-            <small>{roleLabels[person.data.role]}</small>
+            <small>{person.data.role}</small>
           </p>
         )}
         <p>{person.data.description}</p>
