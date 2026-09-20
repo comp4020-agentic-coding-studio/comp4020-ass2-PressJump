@@ -1,0 +1,87 @@
+---
+// A photograph from the manifest, with its caption and its credit.
+//
+// Takes a name rather than an import, so a page says `<Photo name="checkout">`
+// and the alt text and photographer come from src/lib/photos.mjs. Alt text
+// retyped at the call site is alt text that drifts from the picture, which has
+// already happened once on this site with the staff portraits.
+//
+// The caption is the page's job and the alt text is the file's. They are
+// different: alt says what is in the frame for somebody who cannot see it,
+// the caption says why it is on this page and is allowed to make a claim.
+import { Image } from "astro:assets";
+import { PHOTOS } from "../lib/photos.mjs";
+
+interface Props {
+  /** A key of PHOTOS. */
+  name: string;
+  /** Why the picture is here. Optional; without one this is decoration. */
+  caption?: string;
+  /** Override the manifest's alt, for a page that uses a photo differently. */
+  alt?: string;
+}
+
+const { name, caption, alt } = Astro.props;
+
+const photo = PHOTOS[name];
+if (!photo) {
+  throw new Error(
+    `<Photo name="${name}"> is not in src/lib/photos.mjs. Add it there and run scripts/fetch-photos.mjs.`,
+  );
+}
+
+// Eager rather than lazy: these sit inside prose and a lazy image that pops in
+// mid-paragraph shifts the text under the reader's eye.
+const images = import.meta.glob<{ default: ImageMetadata }>("../assets/photos/*.avif", {
+  eager: true,
+});
+const loaded = images[`../assets/photos/${name}.avif`];
+if (!loaded) {
+  throw new Error(`src/assets/photos/${name}.avif is missing. Run scripts/fetch-photos.mjs.`);
+}
+---
+
+<figure class="photo">
+  <Image
+    src={loaded.default}
+    alt={alt ?? photo.alt}
+    widths={[640, 960, 1400]}
+    sizes="(min-width: 48rem) 42rem, 100vw"
+    format="avif"
+    loading="lazy"
+  />
+  <figcaption>
+    {caption && <span class="caption">{caption}</span>}
+    <span class="credit">Photograph by {photo.credit}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .photo {
+    margin-block: 1.75rem;
+  }
+
+  .photo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--at-border);
+  }
+
+  figcaption {
+    margin-block-start: 0.6rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--at-text-secondary);
+  }
+
+  .caption {
+    display: block;
+  }
+
+  .credit {
+    display: block;
+    margin-block-start: 0.25rem;
+    font-size: 0.78rem;
+  }
+</style>
