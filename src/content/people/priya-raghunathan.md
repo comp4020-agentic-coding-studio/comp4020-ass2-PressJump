@@ -55,7 +55,9 @@ shop that has closed, weather, safety, or a queue that turns out to be four
 queues. Ask in week 1 rather than week 6; almost everything is fixable early
 and almost nothing is fixable late.
 
-Also the clipboard. People are embarrassed to ask how to hold it. Ask.
+Ask me about the clipboard as well. People are embarrassed to ask how to hold
+one, which is a shame, because it is a real question and it has a real
+answer.
 
 ## Consultation
 

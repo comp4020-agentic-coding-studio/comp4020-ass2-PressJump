@@ -16,8 +16,9 @@ spec:
   - you interview at least one person who is waiting, with their consent
 ---
 
-The only session that involves talking to people who are waiting, which is
-harder than it sounds and changes what students write for the rest of the
+This is the only session that involves actually talking to the people who are
+waiting. It is harder than it sounds, most people find the first approach
+uncomfortable, and it tends to change what students write for the rest of the
 semester.
 
 ## What happens
@@ -31,7 +32,7 @@ wait worse while looking like help. All three are common.
 queue this time, a room where people sit. A clinic reception, a service centre,
 a repair desk, the campus health centre. You audit the space, then you ask.
 
-Three questions, of anybody who agrees.
+Then you ask three questions of anybody who agrees to answer them.
 
 1. How long do you think you have been waiting.
 2. How long do you think you have left.

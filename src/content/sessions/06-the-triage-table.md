@@ -16,8 +16,8 @@ spec:
   - you name the group your scale treats worst and say whether that is defensible
 ---
 
-The only session that happens entirely in the room, and the one students talk
-about afterwards.
+This is the only session that happens entirely in the room, and going by past
+years it is also the one students end up talking about afterwards.
 
 ## What happens
 

@@ -58,7 +58,8 @@ through, or an assessment you think is unfair. The last of those is a real
 category and I would rather hear it in week 3 than read it in a survey in
 week 14.
 
-Not the arithmetic. Amos is better at it than I am and says so.
+Do not ask me about the arithmetic. Amos is better at it than I am, and he
+says so himself.
 
 ## Consultation
 

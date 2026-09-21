@@ -11,14 +11,14 @@ related:
   - assessments/whose-time-it-was
 ---
 
-Halfway. Weeks 2 to 4 were about how much waiting there is. From here the
-question is how it gets shared out, and this is the week the course stops
-being arithmetic.
+This is the halfway point. Weeks 2 to 4 were about how much waiting a queue
+produces, and from here the question becomes how that waiting gets shared out.
+It is the week the course stops being arithmetic.
 
-Priority is the most powerful lever in queueing and the most dangerous. Serve
-the short jobs first and the average wait across everybody drops, sometimes
-enormously. The arithmetic is unambiguous and it is used to justify a great
-deal.
+Priority is far and away the most powerful lever in queueing, and it is also
+the most dangerous one. Serve the short jobs first and the average wait across
+everybody drops, sometimes quite enormously. The arithmetic here is completely
+unambiguous, which is precisely why it gets used to justify a great deal.
 
 What the average hides is the tail. Shortest-job-first is optimal for the mean
 and brutal for the long job, which can wait forever while short work keeps
@@ -44,10 +44,10 @@ chooses, and it is what happens to your claim form.
 
 ## Paid priority
 
-Fast passes, priority boarding, expedited processing, the premium support
-queue. The seat you paid for is not a faster server. It is a place further
-forward, and the arithmetic says exactly how much slower everybody behind you
-got.
+Fast passes, priority boarding, expedited processing and the premium support
+queue are all one mechanism wearing four names. The seat you paid for does not
+buy you a faster server. It buys you a place further forward, and the
+arithmetic will say exactly how much slower everybody behind you got.
 
 We do that arithmetic on the board for a real airline boarding scheme. The
 number is smaller than most students expect, and the fact that it is small is

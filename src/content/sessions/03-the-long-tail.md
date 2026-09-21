@@ -17,8 +17,10 @@ spec:
   - you can say whether your queue is closer to a production line or a clinic
 ---
 
-You have a mean service time. This session is about how little that tells you,
-using your own data rather than a textbook's.
+By now you should have a mean service time of your own. This session is about
+how remarkably little that one number tells you, and we work it through using
+your data rather than a textbook's, which tends to make the point land
+harder.
 
 ## What happens
 
@@ -38,9 +40,9 @@ interesting.
 
 ## The thing to watch for
 
-Queues with a bimodal service time. A counter that does two different jobs,
-one taking forty seconds and one taking six minutes, has a mean nobody ever
-experiences. If your histogram has two humps you have found the single best
+Watch for a queue with a bimodal service time. A counter that does two
+different jobs, one taking forty seconds and the other six minutes, produces a
+mean that nobody standing in it has ever experienced. If your histogram has two humps you have found the single best
 thing to write about in The Measured Queue.
 
 ## Bring

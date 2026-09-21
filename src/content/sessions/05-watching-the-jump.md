@@ -17,7 +17,9 @@ spec:
   - you estimate the cost in seconds to the people behind
 ---
 
-Priority stops being a diagram this week. You go and watch it happen.
+This is the week where priority stops being a diagram on a board. You go out
+and watch it actually happen to people, which is a rather different
+experience.
 
 ## What happens
 

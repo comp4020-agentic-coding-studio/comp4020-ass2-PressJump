@@ -11,14 +11,17 @@ related:
   - assessments/the-queue-journal
 ---
 
-Almost everyone arrives at this course believing that a queue is what happens
-when a system runs out of capacity. That is not quite wrong, but it hides the
-interesting part. A queue is what a system does instead of turning people
-away, and the shape it takes is chosen.
+Almost everybody arrives at this course believing that a queue is simply what
+happens when a system runs out of capacity. That is not quite wrong, and it is
+a perfectly sensible place to start, but it does hide the interesting part. A
+queue is really what a system does instead of turning people away, and the
+shape it ends up taking is something that somebody, somewhere, actually
+chose.
 
-We open with the thing that feels least like a choice. First-come-first-served
-looks like the absence of a rule, the default you get when nobody has decided
-anything. It is not. It is a specific, defensible and quite unusual policy,
+We open with the thing that feels least like a choice at all.
+First-come-first-served looks for all the world like the absence of a rule,
+the default you end up with when nobody has decided anything. It really is
+not. It is a specific, defensible and quite unusual policy,
 and it has a history, and there are large parts of the world where it has
 never applied to anything that mattered.
 

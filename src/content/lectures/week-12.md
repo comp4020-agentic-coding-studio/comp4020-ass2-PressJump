@@ -12,12 +12,14 @@ related:
   - week-01
 ---
 
-No new material. The defences are on Wednesday and this hour is for the thing
-that is hard to put in an assessment.
+There is no new material this week, so you can relax a little. The defences
+are on Wednesday, and this last hour is set aside for the thing that is
+genuinely hard to put into an assessment.
 
-We go back to week 1 and the queue we took apart on the board, and we do it
-again with twelve weeks of vocabulary. It takes about nine minutes now and it
-took forty then, and the difference is the course.
+We go right back to week 1 and the queue we took apart on the board that day,
+and then we do the whole thing again with twelve weeks of vocabulary behind us.
+It usually takes about nine minutes now, where it took forty back then, and
+that difference is more or less the course.
 
 ## Three things I want you to leave with
 

@@ -16,8 +16,10 @@ spec:
   - you find at least one starved job and say what ageing would have done to it
 ---
 
-The one session with a keyboard in it, and the only place in the course where
-you get a complete record of a queue instead of an approximation of one.
+This is the one session with a keyboard in it, and it is the only place in the
+whole course where you get a complete record of a queue rather than an
+approximation of one. Make the most of it, because you will not see data this
+clean again.
 
 ## What happens
 
@@ -35,8 +37,9 @@ trace by plotting wait against load and watching it bend. Then find a starved
 job. There is always at least one and usually several, and the record shows
 exactly how long it sat there and exactly what kept going in front of it.
 
-Then the counterfactual. Apply ageing to the same trace and re-run. The starved
-job is served. Something else waits longer. Say what.
+Then you run the counterfactual. Apply ageing to the same trace, re-run it,
+and the starved job finally gets served. Something else now waits longer in its
+place, and your job is to say what.
 
 ## Why this is not a computing exercise
 
@@ -52,5 +55,5 @@ it and see the consequence before you propose it in The Redesign.
 
 ## What leaves the room
 
-The three quantities, a Little's Law check, one named starved job, and a
-before and after under ageing with the loser named.
+You leave with the three quantities, a Little's Law check, one named starved
+job, and a before and after under ageing that names who lost by it.

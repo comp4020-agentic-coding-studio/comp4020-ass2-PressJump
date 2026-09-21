@@ -15,8 +15,10 @@ import Figure from "../../components/Figure.astro";
 import Photo from "../../components/Photo.astro";
 import pooling from "../../assets/diagrams/pooling.svg";
 
-The first structural decision anybody makes about a queue. Five counters with
-five lines, or five counters with one line feeding all of them.
+This is the first genuinely structural decision anybody makes about a queue,
+and most places make it without noticing. You can have five counters with five
+separate lines in front of them, or you can have five counters with one line
+feeding all of them, and those two arrangements behave very differently.
 
 Pooling wins on the arithmetic and it wins by a lot. One line into five
 servers is dramatically better than five separate lines, not because the
@@ -36,8 +38,9 @@ badly run.
 
 ## The arithmetic
 
-We compare two systems formally. Several independent single-server queues
-against one queue feeding several servers, at the same total capacity.
+We compare two systems formally, setting several independent single-server
+queues against one queue that feeds several servers, at the same total
+capacity.
 
 The pooled system wins on mean wait at every load, and the gap widens as you
 approach capacity. It also wins on fairness in a way we can define precisely,

@@ -14,12 +14,14 @@ related:
 
 import Formula from "../../components/Formula.astro";
 
-Week 2 gave you averages. This week is about why averages are not enough, and
-it is the week most likely to change how you look at a workplace.
+Week 2 gave you averages to work with. This week is really about why averages
+on their own are not enough, and in our experience it is the week most likely
+to change how you look at a workplace.
 
-Two counters serve the same number of customers an hour. At one of them the
-wait is ninety seconds. At the other it is eleven minutes. Nothing about the
-average explains it. What explains it is that the second counter's customers
+Picture two counters serving exactly the same number of customers an hour. At
+one of them the wait comes out at ninety seconds, while at the other it is
+eleven minutes, and nothing whatsoever about the average will explain the
+difference to you. What explains it is that the second counter's customers
 arrive in clumps and take wildly different amounts of time, and a queue
 punishes both.
 
@@ -33,9 +35,10 @@ this, and most of them concluded they had a staff problem.
 
 ## The shape of the wall
 
-The utilisation term on its own, relative to a counter running at half
-capacity. This is arithmetic rather than measurement, so it is exact and it is
-also only half the story; the variability term is the multiplier on top.
+Take the utilisation term on its own and measure it against a counter running
+at half capacity. This is arithmetic rather than measurement, so it is exact,
+and it is also only half the story, because the variability term is the
+multiplier that sits on top of it.
 
 | Utilisation | Waiting time, relative to 50% |
 |---|---|
@@ -50,8 +53,8 @@ buys you four percent more throughput and costs you five times the wait.
 
 ## Kingman's formula
 
-An approximation, not an identity, and the most quietly devastating thing in
-the course.
+Kingman's formula is an approximation rather than an identity, and it is the
+most quietly devastating thing in the course.
 
 <Formula
   expression="W ≈ (ρ / (1 − ρ)) × variability × service time"

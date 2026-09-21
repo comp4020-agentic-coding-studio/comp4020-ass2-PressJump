@@ -51,8 +51,9 @@ counter running at 95 percent capacity is not a well-run counter.
 
 ## What to ask me about
 
-The arithmetic, obviously. Also the week 9 trace, which is the only complete
-record of a queue you will get all semester and which most people underuse.
+Ask me about the arithmetic, obviously. Ask me as well about the week 9 trace,
+which is the only complete record of a queue you will get all semester and
+which most people underuse.
 
 If you are stuck on Kingman, bring the numbers rather than the question. Nine
 times out of ten the problem is that the service times are bimodal and nobody

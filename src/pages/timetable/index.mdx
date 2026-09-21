@@ -3,30 +3,35 @@ layout: ../../layouts/PageLayout.astro
 title: Timetable
 description: "The whole semester on one page. Twelve weeks, what is taught, what you go and do, and what falls due."
 heroTitle: Timetable
+heroImage: /src/assets/images/hero-street-queue.avif
+heroImageAlt: "A street in gold and black, a queue of people with backpacks waiting behind a rope barrier along a shopfront under trees, with the road and pavement empty away to the left"
 ---
 
 import SemesterCalendar from "../../components/SemesterCalendar.astro";
 import SemesterTable from "../../components/SemesterTable.astro";
 
-Everything in one place, because the question students actually arrive with is
-not what the course is about, it is whether they can fit it around a Wednesday
-shift.
+We have put everything in one place here, largely because the question most
+students actually turn up with is not what the course is about at all. It is
+whether they can fit the thing around a Wednesday shift, and that is a
+perfectly reasonable question to want answered before you enrol.
 
 <SemesterCalendar />
 
 <SemesterTable />
 
 :::info[The shape of a week]
-Two contact hours plus a third you spend outside on your own queue. The
-Monday lecture is an hour and it is an argument, not a worked example. The
-Wednesday field session is two hours and most of them are not in a room.
+You should budget for two contact hours a week, plus roughly a third hour that
+you spend outside on your own queue in your own time. The Monday lecture runs
+for an hour and it is an argument rather than a worked example, so do come
+ready to disagree. The Wednesday field session is two hours long and most of
+them are not held in a room at all.
 :::
 
 ## What the dates commit to
 
-Nothing on this page is typed out. The table is built from the lecture,
-session and assessment pages themselves, so a date can only be wrong here if it
-is wrong there too, and `spec/course-shape.test.ts` fails the build if the
+None of the dates on this page are typed out by hand, which is deliberate. The
+table is generated from the lecture, session and assessment pages themselves,
+so a date can only be wrong here if it is also wrong there, and `spec/course-shape.test.ts` fails the build if the
 twelve weeks stop lining up with the course record.
 
 That is not a small thing on a course website. A timetable is the page students

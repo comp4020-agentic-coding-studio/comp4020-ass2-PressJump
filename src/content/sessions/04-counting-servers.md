@@ -16,15 +16,16 @@ spec:
   - you count the servers, and defend the count
 ---
 
-Monday said pooling wins. This session is a walk, and the question at every
-stop is how many servers there are, which turns out to be much harder than it
-sounds.
+Monday will have told you that pooling wins. This session is a walk, and the
+question we ask at every single stop is simply how many servers there are,
+which turns out to be a great deal harder than it sounds.
 
 ## What happens
 
-We walk together to four queues on or near campus. The library desk, the
-campus pharmacy, the largest supermarket within ten minutes, and the bus
-interchange. At each one, ten minutes of looking and ten minutes of arguing.
+We walk together to four queues on or near campus, which are the library desk,
+the campus pharmacy, the largest supermarket within ten minutes and the bus
+interchange. At each one you get ten minutes of looking followed by ten minutes
+of arguing about what you saw.
 
 Three questions at every stop.
 

@@ -16,14 +16,14 @@ spec:
   - you name the week of this course that would have caught it
 ---
 
-In the room, on paper, and quiet. Two hours with a document written after
-something went wrong.
+This session stays in the room, works on paper, and is a quiet one. You spend
+two hours with a document that somebody wrote after something went wrong.
 
 ## What happens
 
-Each group takes one published report. A crowd safety inquiry, a transport
-incident investigation, a health service capacity review, or a post-incident
-report from a large system outage. All of them are public documents and all of
+Each group takes one published report, which might be a crowd safety inquiry, a
+transport incident investigation, a health service capacity review or a
+post-incident report from a large system outage. All of them are public documents and all of
 them are about a queue.
 
 **Forty minutes, reading.** Alone, not as a group. You read the findings

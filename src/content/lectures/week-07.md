@@ -11,10 +11,11 @@ related:
   - assessments/whose-time-it-was
 ---
 
-Guest lecture, and the hinge of the semester.
+This one is a guest lecture, and it is the hinge of the semester.
 
-Everything up to the break was a queue you could see. You could count it,
-stand in it, time it. That property is unusual. Visa applications, social
+Everything up to the break has been a queue you could actually see. You could
+count it, stand in it and time it, and it is easy to assume that is normal.
+That property turns out to be quite unusual. Visa applications, social
 housing registers, court lists, insurance claims, specialist referrals and
 complaints to an ombudsman are all queues, and almost none of them will tell
 you your position, the length of the line, or the rate at which it moves.
@@ -39,15 +40,16 @@ people inside it who can.
 
 ## What it does to the office
 
-The half of this lecture that surprises people. An office whose backlog is
-invisible to the public is usually one whose backlog is poorly visible to
-itself, and the staff have their own version of the problem.
+This is the half of the lecture that surprises people. An office whose backlog
+is invisible to the public is usually an office whose backlog is poorly visible
+to itself, so the staff turn out to have their own version of the problem.
 
 ## Measuring anyway
 
-Three techniques for putting a number on a queue that publishes nothing.
-Freedom of information requests, cohort tracking from the outside, and the
-timestamp trail a system leaves whether it means to or not.
+There are three techniques for putting a number on a queue that publishes
+nothing. You can file freedom of information requests, you can track a cohort
+from the outside, and you can follow the timestamp trail a system leaves
+whether it means to or not.
 
 ## After this lecture
 

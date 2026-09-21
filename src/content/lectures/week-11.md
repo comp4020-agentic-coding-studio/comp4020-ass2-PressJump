@@ -11,12 +11,14 @@ related:
   - assessments/the-redesign
 ---
 
-The last teaching lecture, and the one that arms The Redesign.
+This is the last teaching lecture, and it is the one that arms The
+Redesign.
 
-There is a persistent belief that a well-designed system has no queue. It is
-worth taking seriously for an hour, because the alternatives to queueing are
-real, they are widely used, and every one of them is a different answer to
-the question the course opened with.
+There is a fairly persistent belief out there that a well-designed system
+simply has no queue at all. It is worth taking seriously for an hour, because
+the alternatives to queueing are real enough, they are very widely used, and
+each one of them turns out to be a different answer to the question we opened
+the course with.
 
 ## The four alternatives
 
@@ -26,10 +28,11 @@ provider and free to them. It also converts a queue into a set of deadlines,
 which introduces no-shows, which introduces overbooking, which introduces a
 queue.
 
-**Lotteries.** Allocate by chance rather than by arrival. Startlingly fair on
-one definition and unacceptable on another, and used for exactly the goods
-where we cannot agree on a ranking. Housing, visas, school places, festival
-tickets.
+**Lotteries.** Allocate by chance rather than by arrival. A lottery is
+startlingly fair on one definition of fairness and unacceptable on another,
+which is why it turns up for exactly those goods where we cannot agree on a
+ranking. Housing, visas, school places and festival tickets are all allocated
+this way somewhere.
 
 **Auctions and markets for position.** Let people pay to go first. The
 efficiency argument is strong and the objection is stronger, and both are

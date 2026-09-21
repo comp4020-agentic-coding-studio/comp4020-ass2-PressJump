@@ -17,8 +17,9 @@ spec:
   - you produce an outside estimate of the same three quantities
 ---
 
-Marta is here for this one, which makes it the only session with somebody in
-the room who has sat on the other side of the request you are writing.
+Marta joins us for this one, which makes it the only session of the semester
+with somebody in the room who has actually sat on the other side of the request
+you are busy writing. Do make use of her.
 
 ## What happens
 

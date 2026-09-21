@@ -17,10 +17,12 @@ spec:
   - you know who to ask for permission, if permission is needed
 ---
 
-The most consequential two hours of the semester, which is a strange thing to
-say about week 1. The queue you choose here is the queue in The Measured
-Queue, in most of Whose Time It Was, and in The Redesign. Choosing badly costs
-you the whole semester and it is very easy to do.
+These are probably the most consequential two hours of the whole semester,
+which is an odd thing to have to say about week 1. The queue you settle on here
+is the queue you will use in The Measured Queue, in most of Whose Time It Was,
+and again in The Redesign. Choosing badly really does cost you the rest of the
+semester, and it is a surprisingly easy mistake to make, so we spend the full
+two hours on it rather than rushing you.
 
 ## What happens
 
@@ -60,5 +62,6 @@ one-paragraph email that works.
 
 ## What leaves the room
 
-Your queue, written on the board and in the shared list, with its location and
-busy period. It does not change after week 2 without talking to Tessa.
+You leave with your queue written up on the board and in the shared list,
+along with its location and its busy period. After week 2 it does not change
+without you talking to Tessa first.

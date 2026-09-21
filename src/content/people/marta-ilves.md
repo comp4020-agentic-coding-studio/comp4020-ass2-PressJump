@@ -43,7 +43,8 @@ see its length, including what happens to the people running it.
 
 ## What to ask me about
 
-In the week 7 field session, anything. Bring the invisible queue you have
+In the week 7 field session you can ask me anything. Bring the invisible queue
+you have
 chosen and the request you have drafted, and I will tell you which parts of it
 will be refused and why. That is the useful hour and it only exists once.
 

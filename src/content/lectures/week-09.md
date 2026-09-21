@@ -11,12 +11,14 @@ related:
   - assessments/the-redesign
 ---
 
-The same object, in a system that keeps a complete log of itself.
+This week we look at the same object all over again, except this time inside a
+system that happens to keep a complete log of itself.
 
 A CPU scheduler is a priority queue serving jobs of wildly varying length
-under unpredictable arrivals. So is a passport office. The difference is that
-one of them records every arrival, every service and every wait to the
-microsecond, and publishes its source code.
+under unpredictable arrivals, and so, when you think about it, is a passport
+office. The only real difference is that one of them records every arrival,
+every service and every wait down to the microsecond, and then publishes its
+source code for anybody to read.
 
 This is the week where everything from weeks 2 to 5 comes back with real data
 attached. We take a scheduler trace and find Little's Law in it, and the

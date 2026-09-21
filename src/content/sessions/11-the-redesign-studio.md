@@ -17,13 +17,15 @@ spec:
   - you leave with either a defence or a different change
 ---
 
-Nine days before The Redesign is due. This is the session that makes the
-difference between a good mark and a bad one, and attendance is close to
-universal for a reason.
+This one falls nine days before The Redesign is due, which is not an accident.
+It is the session that tends to make the difference between a good mark and a
+disappointing one, and attendance is close to universal every year for exactly
+that reason.
 
 ## What happens
 
-Rotating groups of four. Everyone pitches once and critiques three times.
+You work in rotating groups of four, so everyone pitches once and critiques
+three times.
 
 **Five minutes to pitch.** Your queue, your one change, your predicted effect
 on the mean wait, and the arithmetic that got you there. The arithmetic has to

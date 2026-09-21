@@ -17,13 +17,15 @@ spec:
   - you answer at least one question you had not anticipated
 ---
 
-The last session. Everybody presents, nobody leaves early, and it runs to
-time because it has to.
+This is the last session of the semester. Everybody presents, nobody leaves
+early, and it runs strictly to time because with this many people it simply has
+to.
 
 ## What happens
 
-Eight minutes each, four minutes of questions, running across the full two
-hours with a short break. The order is drawn on the day.
+Everyone gets eight minutes, followed by four minutes of questions, and the
+whole thing runs across the full two hours with a short break in the middle.
+The order is drawn on the day.
 
 Three things have to appear in your eight minutes.
 

@@ -12,10 +12,12 @@ related:
   - week-05
 ---
 
-Last week before the break, and the week I care most about.
+This is the last week before the break, and it is the week I care most
+about.
 
-Week 5 left you with priority as a mechanism and a queasy feeling about who
-sets the classes. This week is about the one field that had to face that
+Week 5 will have left you with priority as a mechanism, and most likely with a
+slightly queasy feeling about who gets to set the classes in the first
+place. This week is about the one field that had to face that
 question head on, could not avoid it, and produced a public, documented,
 argued-over answer. Emergency triage is the most examined queue discipline in
 existence and almost nobody outside medicine has read it.
@@ -39,11 +41,12 @@ priority number, it is a promise in minutes, published, and audited against.
 | 4 | Potentially serious | Within 60 minutes |
 | 5 | Less urgent | Within 120 minutes |
 
-What each category promises, what evidence it was set from, how the promise is
-audited, and what happens to the categories under load.
+We work through what each category promises, what evidence that promise was
+set from, how it is audited afterwards, and what happens to the categories once
+the department comes under load.
 
-Then the part that is never in the summary. Triage does not rank people by how
-sick they are. It ranks them by how much the waiting will cost them, which is
+Then we reach the part that never makes it into the summary. Triage does not
+rank people by how sick they are. It ranks them by how much the waiting will cost them, which is
 a different and much stranger quantity, and it is why a person in agony can
 correctly be seen after somebody who looks fine.
 
@@ -71,4 +74,5 @@ than it sounds and it is the one the essay in week 8 is marked on.
 
 ## After the break
 
-Week 7 is the opposite case. Marta Ilves on the queues that publish nothing.
+Week 7 is the opposite case, and Marta Ilves comes in to take it. Her subject
+is the queues that publish nothing at all.

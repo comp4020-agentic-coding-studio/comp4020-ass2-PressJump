@@ -3,7 +3,7 @@ import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
-import heroImage from "../assets/images/hero-home.avif";
+import heroImage from "../assets/images/hero-street-queue.avif";
 import assessmentIcon from "../assets/icons/assessment.svg";
 import lecturesIcon from "../assets/icons/lectures.svg";
 import peopleIcon from "../assets/icons/people.svg";
@@ -21,7 +21,7 @@ import NavGroups from "../components/NavGroups.astro";
   title={`${courseMeta.code} ${courseMeta.title}`}
   description={courseMeta.description}
   heroImage={heroImage}
-  heroImageAlt="A single queue folded into five rows of gold blocks on a dark ground, each block one person, the line ending at one open counter with one server"
+  heroImageAlt="A street in gold and black, a queue of people with backpacks waiting behind a rope barrier along a shopfront under trees, with the road and pavement empty away to the left"
   {...siteConfig}
 >
   <ul class="course-tags" aria-label="Course tags">
@@ -29,47 +29,64 @@ import NavGroups from "../components/NavGroups.astro";
   </ul>
 
   <p class="lede">
-    Every queue you have stood in was designed by somebody, and almost none of
-    them told you how. You pick one in week 1 and keep it until week 12.
+    Every queue you have ever stood in was designed by somebody, and almost none
+    of them bothered to tell you how it was done. That is more or less the whole
+    problem, and it is what we spend the semester on. In week 1 you will pick a
+    queue of your own, and you will keep that same one all the way through to
+    week 12.
   </p>
 
   <CourseStats />
 
   <h2>What you will do</h2>
   <p>
-    In week 1 you pick a queue. A till, a counter, a platform, a help desk,
-    something you can physically stand next to twice a week. It is yours for
-    the semester.
+    In week 1 you will pick a queue to work on. It can be almost anything you
+    like, whether that is a till, a counter, a platform or a help desk, as long
+    as it is somewhere you can realistically stand next to twice a week without
+    it becoming a chore. Do take a bit of care over the choice, because whatever
+    you settle on is yours for the rest of the semester and swapping later is
+    more painful than it sounds.
   </p>
 
   <Photo
     name="shopfront-queue"
-    caption="Somebody chose how this works. How many serve at once, in what order, and what happens to the person who arrives at the wrong moment. By week 5 you can read all of it off the pavement."
+    caption="Somebody chose how this works, even if they would not put it that way themselves. They chose how many people serve at once, in what order, and what happens to the person who turns up at the wrong moment. It looks like nothing much from the outside, but by about week 5 you will be able to read most of it straight off the pavement."
   />
 
   <p>
-    You measure it by hand, with a pen, badly at first. You work out its
-    arrival rate and its service distribution and how much of the wait is the
-    tax you pay for variability. You record every time somebody is served out
-    of order and what it cost the people behind them. You write down what it
-    would take to change it, predict the effect before anybody tells you, and
-    then say out loud who waits longer after your change, because somebody
-    always does.
+    For the first fortnight you will be measuring the queue and its times by
+    hand, with a pen, and we fully expect everyone to measure it badly to begin
+    with. Please do not worry about that. Everybody gets better at it quite
+    quickly, and the early mess is genuinely part of the process rather than a
+    sign that you have picked the wrong site. By around week 4 most people can
+    work out their queue's arrival rate, the rough shape of its service times,
+    and how much of the wait is really the tax the queue pays for being
+    unpredictable rather than simply busy. Alongside all of that you will keep a
+    record of every time somebody gets served out of order, and of what that
+    cost the people standing behind them. The last step is the one the marking
+    cares about most. You write down what it would take to change the queue, you
+    predict the effect before anybody tells you the answer, and then you name
+    whoever ends up waiting longer once your change is in. Somebody always does,
+    and saying so plainly is most of what we are looking for.
   </p>
   <p>
-    In week 12 you defend that change in front of the room, and if you can
-    persuade them, in front of whoever runs the queue.
+    Then in week 12 you defend that change in front of the room. If you manage to
+    persuade the room, and a fair few of you do, the obvious next step is to take
+    it to whoever actually runs the queue.
   </p>
 
   <LittlesLaw />
 
   <h2>What the course thinks</h2>
   <p>
-    That the arithmetic is the easy half. There are four pieces of it here,
-    and they are enough to embarrass most people who design queues
-    professionally. Little's Law will tell you how long a line is waiting
-    without you timing anybody in it. Kingman will tell you why the counter got
-    worse after the efficiency drive.
+    Honestly, we think the arithmetic is the easy half. There are only four
+    results in the whole course, and between them they are more than enough to
+    embarrass most of the people who design queues for a living. Little's Law
+    will tell you how long a line has been waiting without you timing a single
+    person in it, which still feels like a trick the first time you do it.
+    Kingman will tell you why a counter got noticeably worse in the month after
+    somebody made it more efficient, which is the kind of thing that is very
+    satisfying to be able to explain.
   </p>
 
   <blockquote class="pull">
@@ -81,11 +98,14 @@ import NavGroups from "../components/NavGroups.astro";
   </blockquote>
 
   <p>
-    The hard half is the question none of the equations answer. A queue
-    discipline is a ranking of people, and nearly every one you meet was set
-    without saying so. Emergency triage is the honourable exception, which is
-    why we spend a week on it, and why we spend the week after that on the
-    queues that publish nothing at all.
+    The hard half is the question that none of those equations will answer for
+    you, and it is the one most people find genuinely uncomfortable. A queue
+    discipline is a ranking of people, and nearly every one you will come across
+    was set without anybody quite admitting that is what it is. Emergency triage
+    is the honourable exception here, because it ranks people openly and says
+    why, and that is exactly why we give a whole week to it. The week after that
+    goes to the opposite case, which is the queues that publish nothing at
+    all.
   </p>
 
   <h2>What students did with it</h2>
@@ -118,73 +138,90 @@ import NavGroups from "../components/NavGroups.astro";
 
   <h2>What you can do by week 12</h2>
   <p>
-    Six things, and they are the reason the weeks are in the order they are in.
+    There are six of them in the end, and between them they are the reason the
+    weeks run in the order they do rather than in some other order.
   </p>
   <ul class="outcomes">
     <li>
-      <strong>Put a number on a wait you never timed.</strong> Two counts and a
-      division, from thirty metres away, on any queue at all.
+      <strong>Put a number on a wait you never timed.</strong> It really is just
+      two counts and one division, and once you have the knack you can do it
+      from thirty metres away on more or less any queue at all.
     </li>
     <li>
       <strong>Say why a place got worse after it got busier.</strong> Waiting
-      does not rise in step with demand, it accelerates, and you can show
-      somebody where the cliff is on their own numbers.
+      does not rise neatly in step with demand, it accelerates, and you will be
+      able to show somebody where the cliff is using their own numbers rather
+      than an argument.
     </li>
     <li>
       <strong>Choose between one line and many, and defend it.</strong> Pooling
-      wins on the arithmetic every time, and there are five real reasons a
-      supermarket does not do it.
+      wins on the arithmetic every single time, and yet there are five perfectly
+      real reasons why your supermarket still does not do it.
     </li>
     <li>
       <strong>Name who a queue is charging.</strong> Every order of service is a
-      ranking of people, and you can work out what the ranking costs the person
-      at the back, in minutes.
+      ranking of people whether anybody says so or not, and you will be able to
+      work out what that ranking costs the person at the back, in minutes.
     </li>
     <li>
       <strong>Measure a queue that publishes nothing.</strong> Waiting lists,
-      backlogs, referral pathways. You can estimate the length of a line nobody
-      will tell you the length of.
+      backlogs and referral pathways all behave like queues underneath, so with
+      a bit of work you can estimate the length of a line that nobody is willing
+      to tell you the length of.
     </li>
     <li>
-      <strong>Change one and predict the result in advance.</strong> Written
-      down, with the arithmetic, before anybody tells you the answer.
+      <strong>Change one and predict the result in advance.</strong> You write
+      the prediction down, along with the arithmetic that produced it, before
+      anybody tells you whether you are right. That last part is harder than it
+      sounds and it is the whole point.
     </li>
   </ul>
 
   <h2>Who it is for</h2>
   <p class="lede-sm">
-    If you will ever have a say in how people wait, this is the course.
+    If you are ever going to have a say in how people wait, then this is
+    probably the course for you.
   </p>
   <p>
-    Some of the people who wait are waiting in a place somebody drew. A park
-    with one gate and four paths. A ride with a switchback that holds ninety
-    minutes of people. A festival with six bars and a toilet block at one end.
-    A station concourse, a stadium exit, a museum entrance on a wet Sunday. If
-    you are going to design public space, you are going to design a queue, and
-    the drawing decides it whether or not anybody in the room says the word.
+    Quite a lot of the people who wait are waiting in a place that somebody drew
+    on purpose. That might be a park with one gate and four paths leading to it,
+    or a ride with a switchback built to hold ninety minutes of people, or a
+    festival laid out with six bars at one end and the toilet block at the
+    other. Station concourses, stadium exits and museum entrances on a wet
+    Sunday all belong on the same list. The point is that if you are going to
+    design public space at all, then you are going to design a queue as well,
+    and the drawing tends to settle it whether or not anybody in the room ever
+    says the word out loud.
   </p>
   <p>
-    Some are waiting at a counter. Tills, help desks, pharmacy counters,
-    passport windows, triage in an emergency department, a phone line open
-    between nine and four. Some are waiting in a list they cannot see: housing
-    registers, visa subclasses, specialist referrals, an insurance claim. And
-    some are not people at all, which is why this course is also taken by
-    people who write schedulers, rate limiters and request queues.
+    Plenty of others are waiting at a counter of some kind, whether that is a
+    till, a help desk, a pharmacy window, passport control, triage in an
+    emergency department, or a phone line that only answers between nine and
+    four. Others again are waiting in a list they cannot see at all, such as a
+    housing register, a visa subclass, a specialist referral or an insurance
+    claim. Those are easily the hardest queues in the course, mostly because
+    nothing about them is on display and you have to work out how to measure
+    them anyway. And some of what waits is not a person at all, which is why we
+    get a good number of students who write schedulers, rate limiters and
+    request queues.
   </p>
   <p>
-    Third-year students in any degree. You need to be comfortable with algebra,
-    averages and a spreadsheet, and that is genuinely the whole prerequisite;
-    there is no calculus and no proof in the assessment. You do need to be
-    willing to stand outside a shop for an hour with a clipboard, in the cold,
-    being looked at.
+    The course is open to third-year students in any degree at all. You need to
+    be reasonably comfortable with algebra, averages and a spreadsheet, and that
+    really is the whole prerequisite, since there is no calculus anywhere in the
+    course and no proof anywhere in the assessment. What you do need, and we
+    would rather say this up front, is a willingness to stand outside a shop for
+    an hour with a clipboard, in the cold, while people look at you and wonder
+    what you are doing.
   </p>
 
   <h2>What it is not</h2>
   <p>
-    It is not a queueing theory course. A queueing theory course would spend
-    the semester on Markov chains and never send you outside. Four results
-    appear here, each one because you need it to say something about a real
-    line. There is no exam.
+    It is worth being clear that this is not a queueing theory course. A proper
+    queueing theory course would spend the whole semester on Markov chains and
+    never once send you outside. Only four results appear here, and each of them
+    earns its place because you genuinely need it to say something true about a
+    real line. There is also no exam, in case you were wondering.
   </p>
 
   <h2>Where to go next</h2>
@@ -195,7 +232,10 @@ import NavGroups from "../components/NavGroups.astro";
       image={timetableIcon}
       imageAlt="A grid of twelve weeks, one of them outlined"
     >
-      <p>The whole semester on one page, and the two busy stretches marked.</p>
+      <p>
+        The whole semester sits on one page, with the two busy stretches
+        marked so you can plan around them.
+      </p>
     </Card>
     <Card
       title="Lectures"
@@ -203,7 +243,10 @@ import NavGroups from "../components/NavGroups.astro";
       image={lecturesIcon}
       imageAlt="A board with three lines of writing, faced by a row of people"
     >
-      <p>The twelve weeks, and the claim each one makes.</p>
+      <p>
+        Twelve weeks, and each one makes a claim you could reasonably argue
+        with.
+      </p>
     </Card>
     <Card
       title={sessionLabels.plural}
@@ -211,7 +254,10 @@ import NavGroups from "../components/NavGroups.astro";
       image={sessionsIcon}
       imageAlt="A clipboard with two struck tally groups and a third in progress"
     >
-      <p>Two hours a week, mostly outdoors, mostly with a stopwatch.</p>
+      <p>
+        Two hours a week, spent mostly outdoors and usually with a stopwatch in
+        your hand.
+      </p>
     </Card>
     <Card
       title="Assessment"
