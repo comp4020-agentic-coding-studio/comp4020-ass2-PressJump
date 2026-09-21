@@ -30,11 +30,11 @@ less, and were they told. Every technique in this course is a way of answering
 the first half. Nothing in it answers the second half, and the second half is
 the one that makes people angry.
 
-**You will not be able to stop.** Several of you have already reported this as
-a complaint. The supermarket is ruined, the boarding gate is ruined, the
-phone menu was always ruined and now you know why. I am not going to apologise
-for it, and by week 4 next year somebody in this room will be doing it to
-somebody else.
+**The measurement is what makes the argument land.** An objection to a queue
+carries no weight on its own; nearly everybody has one and they are easy to
+dismiss. The same objection with an arrival rate, a service distribution and a
+named group who waits longer is a different conversation, and it is the one
+this course has been training you for. Take the numbers with you.
 
 ## Where this goes
 

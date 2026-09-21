@@ -62,4 +62,6 @@ things whether you meant it to or not.
 
 ## After this lecture
 
-You have the full menu. The Redesign is due in eleven days.
+You can name the four things a redesign can do instead of shortening a queue,
+and say which of them your own change is actually doing. That sentence is what
+The Redesign is marked on, and it is due in eleven days.

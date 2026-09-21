@@ -62,5 +62,6 @@ Not the arithmetic. Amos is better at it than I am and says so.
 
 ## Consultation
 
-Turn up. There is no booking sheet, and yes, that is a queue, and yes, it is
-first-come-first-served, and we will be talking about why by week 5.
+Tuesdays, 14:00 to 16:00, walk in. There is no booking sheet, because the
+questions worth having are usually the ones you had not planned to ask. If you
+need a guaranteed time, email me and we will fix one.

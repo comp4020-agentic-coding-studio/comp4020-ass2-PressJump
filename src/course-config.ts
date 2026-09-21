@@ -42,7 +42,7 @@ export const slopCourseMetaSchema = z
 // navigation label and /api/index.json all read this object.
 export const courseMeta = slopCourseMetaSchema.parse({
   code: "SLOP3068",
-  title: "Please Wait: A Semester in the Queue",
+  title: "Please Wait: The Design and Politics of Waiting",
   session: "Semester 1",
   year: 2027,
   level: 3,
