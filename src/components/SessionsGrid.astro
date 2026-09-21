@@ -3,10 +3,14 @@ import { getPublishedCollection } from "astro-course-university/content";
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import { formatCourseDate } from "../lib/dates";
+import WeekProgress from "./WeekProgress.astro";
 
 const sessions = await getPublishedCollection("sessions");
 const visible = sessions.sort((a, b) => a.data.week - b.data.week);
+const weeks = visible.map((session) => session.data.week);
 ---
+
+<WeekProgress weeks={weeks} track="sessions" noun="session" />
 
 <CardGrid columns={2}>
   {

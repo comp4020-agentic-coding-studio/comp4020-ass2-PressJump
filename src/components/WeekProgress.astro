@@ -1,0 +1,232 @@
+---
+// Tick off the weeks you have done, and see how far through you are.
+//
+// It sits above the grid rather than inside the cards, because the theme's
+// Card makes its whole surface a link and a button inside a link is both
+// invalid and unreachable: every word of it joins the link's accessible name.
+// Twelve toggles of its own stay out of that entirely.
+//
+// What you tick is kept in this browser and nowhere else. There is no account
+// on this site and nothing is submitted, so the tally is a reading aid rather
+// than a record anybody marks. The page says so, because a progress bar that
+// looks like it reports to a tutor and does not would be the site lying about
+// the work.
+interface Props {
+  /** Week numbers, in teaching order. */
+  weeks: number[];
+  /** Which list this is, so lectures and field sessions count separately. */
+  track: string;
+  /** What one ticked item is called, in the sentence that reports the tally. */
+  noun: string;
+}
+
+const { weeks, track, noun } = Astro.props;
+---
+
+<section class="progress" data-progress data-track={track} data-noun={noun} hidden>
+  <div class="head">
+    <p class="tally" data-tally></p>
+    <button type="button" class="reset" data-reset hidden>Clear</button>
+  </div>
+
+  <div
+    class="bar"
+    role="progressbar"
+    aria-valuemin="0"
+    aria-valuemax={String(weeks.length)}
+    aria-valuenow="0"
+    data-bar
+  >
+    <span class="fill" data-fill></span>
+  </div>
+
+  <div class="weeks" role="group" aria-label={`Mark a week as read`}>
+    {
+      weeks.map((week) => (
+        <button type="button" class="week" data-week={String(week)} aria-pressed="false">
+          <span class="visually-hidden">Week </span>
+          {week}
+        </button>
+      ))
+    }
+  </div>
+
+  <p class="note">Kept in this browser only. Nothing here is submitted or marked.</p>
+</section>
+
+<style>
+  .progress {
+    margin-block: 1.25rem 1.75rem;
+    padding: 0.75rem 0.8rem;
+    border: 1px solid var(--at-border);
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .tally {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .reset {
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--at-border);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+
+  .reset:hover,
+  .reset:focus-visible {
+    border-color: var(--at-primary);
+    color: var(--at-primary);
+  }
+
+  .bar {
+    height: 0.4rem;
+    margin-block: 0.55rem;
+    border: 1px solid var(--at-border);
+  }
+
+  .fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--at-primary);
+    transition: width 160ms ease;
+  }
+
+  .weeks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .week {
+    min-width: 2rem;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid var(--at-border);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+
+  .week:hover,
+  .week:focus-visible {
+    border-color: var(--at-primary);
+  }
+
+  .week[aria-pressed="true"] {
+    border-color: var(--at-primary);
+    background: var(--at-primary);
+    color: var(--at-bg);
+    font-weight: 600;
+  }
+
+  .note {
+    margin-block: 0.55rem 0;
+    font-size: 0.75rem;
+    color: var(--at-text-secondary);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  // Re-runs on `astro:page-load`. The theme turns on <ClientRouter>, so a link
+  // click swaps the document instead of reloading it, and a module script
+  // executes once per URL and never again.
+  const setup = () => {
+    for (const root of document.querySelectorAll<HTMLElement>("[data-progress]")) {
+      if (root.dataset.ready === "1") continue;
+      root.dataset.ready = "1";
+
+      const key = `slop3068:${root.dataset.track ?? "track"}`;
+      const noun = root.dataset.noun ?? "week";
+      const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-week]")];
+      const tally = root.querySelector<HTMLElement>("[data-tally]");
+      const bar = root.querySelector<HTMLElement>("[data-bar]");
+      const fill = root.querySelector<HTMLElement>("[data-fill]");
+      const reset = root.querySelector<HTMLButtonElement>("[data-reset]");
+      if (!tally || !bar || !fill || !reset || buttons.length === 0) continue;
+
+      // Private browsing and blocked site data both make localStorage throw on
+      // access rather than return nothing, so every touch of it is guarded and
+      // the track simply works for the session instead of taking the page down.
+      const read = (): Set<string> => {
+        try {
+          const raw = window.localStorage.getItem(key);
+          return new Set<string>(raw ? (JSON.parse(raw) as string[]) : []);
+        } catch {
+          return new Set<string>();
+        }
+      };
+      const write = (done: Set<string>): void => {
+        try {
+          window.localStorage.setItem(key, JSON.stringify([...done]));
+        } catch {
+          /* nothing to do: the page still works, it just forgets. */
+        }
+      };
+
+      const paint = (done: Set<string>): void => {
+        for (const button of buttons) {
+          button.setAttribute("aria-pressed", String(done.has(button.dataset.week ?? "")));
+        }
+        const total = buttons.length;
+        const count = done.size;
+        tally.textContent =
+          count === 0
+            ? `None of ${total} ${noun}s ticked off yet`
+            : `${count} of ${total} ${noun}${count === 1 ? "" : "s"} ticked off`;
+        fill.style.width = `${(count / total) * 100}%`;
+        bar.setAttribute("aria-valuenow", String(count));
+        reset.hidden = count === 0;
+      };
+
+      for (const button of buttons) {
+        button.addEventListener("click", () => {
+          const done = read();
+          const week = button.dataset.week ?? "";
+          if (done.has(week)) done.delete(week);
+          else done.add(week);
+          write(done);
+          paint(done);
+        });
+      }
+
+      reset.addEventListener("click", () => {
+        write(new Set<string>());
+        paint(new Set<string>());
+      });
+
+      root.hidden = false;
+      paint(read());
+    }
+  };
+
+  setup();
+  document.addEventListener("astro:page-load", setup);
+</script>
