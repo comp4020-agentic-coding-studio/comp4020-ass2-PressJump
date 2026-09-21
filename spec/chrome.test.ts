@@ -89,3 +89,50 @@ describe("site chrome", () => {
     );
   });
 })
+
+// The theme turns on <ClientRouter>, so a link click swaps the document
+// instead of reloading it. Astro executes a module script once per URL, so
+// anything that set itself up at parse time never runs again: the nav came
+// back ungrouped, the calendar lost its paging and the forms went inert on
+// every page reached by clicking, while every page reached by reloading was
+// fine. Every script the theme itself ships binds to `astro:page-load`.
+//
+// This reads the source rather than the build because that is where the
+// mistake is made, and because a script that never re-runs is invisible in
+// the rendered HTML: the markup is identical either way.
+describe("client scripts survive a view transition", () => {
+  const roots = ["src/components", "src/pages", "src/layouts"];
+
+  const walk = (dir: string): string[] => {
+    const out: string[] = [];
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, entry.name);
+      if (entry.isDirectory()) out.push(...walk(full));
+      else if (entry.name.endsWith(".astro")) out.push(full);
+    }
+    return out;
+  };
+
+  const withScripts = roots
+    .flatMap((root) => walk(resolve(root)))
+    .map((file) => ({ file, source: readFileSync(file, "utf8") }))
+    .filter(({ source }) => /<script[^>]*>/.test(source));
+
+  it("finds the components that ship a script", () => {
+    expect(withScripts.length, "no component ships a script").toBeGreaterThanOrEqual(4);
+  });
+
+  it("binds every one of them to astro:page-load", () => {
+    // The listener, not the string. Every one of these files explains the
+    // binding in a comment, so `includes("astro:page-load")` matched even
+    // after I deleted the listener; the planted regression stayed green.
+    const bound = /addEventListener\(\s*["']astro:page-load["']/;
+    const missing = withScripts
+      .filter(({ source }) => !bound.test(source))
+      .map(({ file }) => relative(resolve("."), file).split(sep).join("/"));
+    expect(
+      missing.join(", "),
+      "these run once and go inert on every page reached by clicking a link",
+    ).toBe("");
+  });
+});

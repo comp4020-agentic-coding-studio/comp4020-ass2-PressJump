@@ -138,21 +138,27 @@
   inset-inline-end: 0;
 }
 
-/* From 44rem up, two things change together and they have to stay together.
+/* From the theme's own 640px breakpoint up, two things change together and
+ * they have to stay together.
  *
  * The theme scrolls the bar sideways with `overflow: auto hidden`, which also
  * clips anything hanging below it, so an open panel was rendered and invisible.
  * CSS cannot clip one axis and leave the other: set either to a non-visible
  * value and the other computes to auto. So the clipping is lifted rather than
- * narrowed, and only here. At the theme's own 640px breakpoint the bar needs
- * 570px in a 535px container and taking the scroll away pushed the page 35px
- * wide, which is exactly what that scroll is for.
+ * narrowed, and only here.
+ *
+ * This used to start at 44rem, because an earlier version of the bar needed
+ * 570px in the 535px container 640px gives it and lifting the scroll there
+ * pushed the page 35px wide. That version had six top-level items; five named
+ * groups need 488px and fit with room. The gap mattered: between 640 and 704
+ * every page showed the theme's flat nine-link bar scrolling sideways, which
+ * looks exactly like the grouping never shipped.
  *
  * And the theme tightens its nav links to `--at-spacing-xs --at-spacing-sm` at
  * this width. A button still carrying the stacked-drawer padding stands 43px
  * tall in a row of 34px links, which is what made the group buttons look
  * bigger than everything beside them. */
-@media (width >= 44rem) {
+@media (width >= 640px) {
   .at-nav-links {
     overflow: visible;
     /* And the mask has to go with it. The theme fades the ends of the bar with

@@ -427,6 +427,11 @@ const reasons = [
 </style>
 
 <script>
+  // Re-runs on `astro:page-load`. The theme turns on <ClientRouter>, so a link
+  // click swaps the document instead of reloading it, and a module script
+  // executes once per URL and never again. Without this the panel worked on a
+  // page you reloaded and was inert on the same page reached by clicking.
+  const setup = () => {
   interface Option {
     id: string;
     title: string;
@@ -447,6 +452,8 @@ const reasons = [
   });
 
   for (const root of document.querySelectorAll<HTMLElement>("[data-extension]")) {
+    if (root.dataset.ready === "1") continue;
+    root.dataset.ready = "1";
     const form = root.querySelector<HTMLFormElement>("[data-form]");
     const sent = root.querySelector<HTMLElement>("[data-sent]");
     if (!form || !sent) continue;
@@ -574,4 +581,8 @@ const reasons = [
 
     refresh();
   }
+  };
+
+  setup();
+  document.addEventListener("astro:page-load", setup);
 </script>

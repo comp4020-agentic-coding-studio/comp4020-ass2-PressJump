@@ -300,12 +300,19 @@ import NavGroups from "../../components/NavGroups.astro";
 </style>
 
 <script>
+  // Re-runs on `astro:page-load`. The theme turns on <ClientRouter>, so a link
+  // click swaps the document instead of reloading it, and a module script
+  // executes once per URL and never again. Without this the panel worked on a
+  // page you reloaded and was inert on the same page reached by clicking.
+  const setup = () => {
   // Posting appends the reply to the thread on this page, the way a forum
   // does before the server has answered. Nothing is stored and a reload
   // returns the thread to what is in the repo, which is the honest behaviour
   // for a site that is a set of files: no `action`, so nothing navigates to a
   // path that is not served.
   for (const composer of document.querySelectorAll<HTMLElement>("[data-composer]")) {
+    if (composer.dataset.ready === "1") continue;
+    composer.dataset.ready = "1";
     const form = composer.querySelector<HTMLFormElement>("[data-reply-form]");
     const list = document.querySelector<HTMLOListElement>("[data-replies]");
     const error = composer.querySelector<HTMLElement>("[data-reply-error]");
@@ -357,4 +364,8 @@ import NavGroups from "../../components/NavGroups.astro";
       item.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   }
+  };
+
+  setup();
+  document.addEventListener("astro:page-load", setup);
 </script>

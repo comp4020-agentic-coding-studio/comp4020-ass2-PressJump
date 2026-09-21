@@ -158,6 +158,18 @@ and the register is the tell.
   Hover does not exist on a phone and half the marking happens there. A panel
   attached to a link goes beside the link, never inside it, or every word of it
   joins the link's accessible name.
+- **Every client script binds to `astro:page-load`.** The theme turns on
+  `<ClientRouter>`, so a link click swaps the document instead of reloading
+  it, and Astro runs a module script once per URL. A script that sets itself
+  up at parse time never runs again: the nav came back ungrouped, the
+  calendar lost its paging and both forms went inert on every page reached by
+  clicking, while every page reached by reloading was perfect. That is the
+  signature of this bug and it is worth recognising, because the markup is
+  identical either way and nothing in the built HTML shows it.
+  Setup has to be idempotent as well as re-run, because the event fires on
+  first load too; mark the element you enhanced and skip it if the mark is
+  there. `spec/chrome.test.ts` fails on a component that ships a `<script>`
+  without the binding.
 - **Never hand-edit anything under `dist/`.**
 
 ## Rules for working

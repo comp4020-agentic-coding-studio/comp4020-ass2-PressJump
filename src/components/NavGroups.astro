@@ -12,10 +12,18 @@
 // declared in `siteConfig`. What ships is the theme's flat list of links in a
 // nav landmark; with no JavaScript that is the whole navigation, just wider.
 //
-// Only from 44rem up. Below that the theme is either showing its own stacked
-// drawer, where a dropdown inside a drawer is two disclosures deep for
-// nothing, or scrolling the bar sideways in a container that would clip a
-// panel hanging out of it.
+// Only from 640px up, which is the theme's own breakpoint between its stacked
+// drawer and its horizontal bar, and the same threshold site.css uses to stop
+// the bar clipping the panel. One threshold: any gap between them is a band of
+// widths where the bar is a desktop bar and the grouping has not happened,
+// which looks like the grouping never shipped.
+//
+// Re-runs on `astro:page-load`. The theme turns on <ClientRouter>, so clicking
+// a link swaps the document rather than reloading it, and a script that only
+// runs at parse time never runs again. The nav came back ungrouped on every
+// page you reached by clicking and correct on every page you reloaded, which
+// is exactly how that bug presents. Every script the theme ships binds to this
+// event; so does every script in this repo now.
 
 interface Props {
   /** Each group's button label and the hrefs it folds, base path not needed. */
@@ -27,8 +35,12 @@ const { groups } = Astro.props;
 
 <script is:inline define:vars={{ groups }}>
   (() => {
+    const setup = () => {
     const nav = document.querySelector(".at-nav-links");
-    if (!nav) return;
+    // The swapped-in nav is a fresh element without the marker, so it gets
+    // grouped again; a nav the theme chose to persist keeps it and is skipped.
+    if (!nav || nav.dataset.navGrouped === "1") return;
+    nav.dataset.navGrouped = "1";
 
     /** Match on the end of the href. There is no <base> tag on these pages and
      *  stripping a prefix off the front needs to know the deployment path;
@@ -143,9 +155,18 @@ const { groups } = Astro.props;
       }
     };
 
-    const wide = window.matchMedia("(min-width: 44rem)");
+    const wide = window.matchMedia("(min-width: 640px)");
     const apply = () => (wide.matches ? group() : flatten());
     wide.addEventListener("change", apply);
     apply();
+    };
+
+    setup();
+    // Bound once. An inline script can be re-inserted by the router, and
+    // stacking a listener per navigation would regroup the bar N times.
+    if (!window.__navGroupsBound) {
+      window.__navGroupsBound = true;
+      document.addEventListener("astro:page-load", setup);
+    }
   })();
 </script>

@@ -225,6 +225,11 @@ const presets = [
 </style>
 
 <script>
+  // Re-runs on `astro:page-load`. The theme turns on <ClientRouter>, so a link
+  // click swaps the document instead of reloading it, and a module script
+  // executes once per URL and never again. Without this the panel worked on a
+  // page you reloaded and was inert on the same page reached by clicking.
+  const setup = () => {
   interface Preset {
     label: string;
     people: number;
@@ -241,6 +246,8 @@ const presets = [
   }
 
   for (const root of document.querySelectorAll<HTMLElement>("[data-littles]")) {
+    if (root.dataset.ready === "1") continue;
+    root.dataset.ready = "1";
     const peopleInput = root.querySelector<HTMLInputElement>("[data-people]");
     const rateInput = root.querySelector<HTMLInputElement>("[data-rate]");
     const answer = root.querySelector<HTMLElement>("[data-answer]");
@@ -287,4 +294,8 @@ const presets = [
     rateInput.addEventListener("input", update);
     update();
   }
+  };
+
+  setup();
+  document.addEventListener("astro:page-load", setup);
 </script>
