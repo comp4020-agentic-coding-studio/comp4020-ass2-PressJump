@@ -5,17 +5,17 @@
 register. Each is one claim held for a semester rather than a survey with a
 reading list attached. So before any content I wrote four positions into
 `CLAUDE.md` and, against each, whether I would enforce it or carry it myself
-([`44082ce`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/44082ce)).
+([`a00a20b`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/a00a20b)).
 The sentence at the top of that file, that every queue is a decision about whose
 time counts for less, is what the agent tests every paragraph against.
 
 **What I encoded.** Position three, assessment is the curriculum, is the
 sequencing call I would defend hardest. The four briefs were written before any
 lecture
-([`e25892c`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/e25892c)),
+([`42afe72`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/42afe72)),
 so the weeks exist to make them possible rather than the other way round. The
 check that protects it is `needs:`
-([`0c59fec`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/0c59fec)).
+([`9ef8338`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/9ef8338)).
 Every assessment names the lectures whose methods it cannot be attempted
 without; the test resolves the refs and fails if any of them is taught on or
 after the due date. The obvious check was weights summing to 100. I wrote that
@@ -33,7 +33,7 @@ shape did more work than any test. A Bring heading and a What leaves the room
 heading killed three sessions I had drafted, because "the ethics of priority"
 had nothing to bring and nothing leaving the room, which told me it was a
 lecture wearing a different label
-([`6eedf27`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/6eedf27)).
+([`9ac6a56`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/9ac6a56)).
 
 **The call I nearly got wrong.** My em dash check went red on the platform
 rather than on my prose: the theme builds every document title with one in it,
@@ -41,7 +41,7 @@ and the theme is fixed. The tempting fix was demoting the rule to a
 warning. I moved its scope instead, so it reads the body and not the head, since
 a check that fails on something I am not allowed to change only ever teaches me
 to weaken it
-([`2ce17a0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/2ce17a0)).
+([`f442e04`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/f442e04)).
 The same commit fixed the real offender, which was my own component. I also
 dropped the blanket colon ban I carried from C5; the tell was never the colon.
 
@@ -51,10 +51,10 @@ test: week 11 dragged past The Redesign's deadline, a weight moved from 20 to
 build's axe pass complained about one page. Rather than delete it I went
 looking, and found four `.mdx` pages shipping with no `<html lang>`, no
 `<title>` and no navigation
-([`2ecc3e9`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/2ecc3e9)).
+([`99c70b1`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/99c70b1)).
 Last, reading the rendered pages, I found my opening paragraph restating the
 description the hero already prints
-([`46c44f3`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/46c44f3)).
+([`f131fbf`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/f131fbf)).
 The 390px screenshots looked broken and were not; Chrome's headless mode will
 not make a window narrower than about 500px on Windows, so it crops rather than
 reflows. I measured `scrollWidth` against `clientWidth` in a real 390px iframe
