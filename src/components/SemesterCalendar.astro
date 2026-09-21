@@ -142,21 +142,96 @@ const kindLabel: Record<Kind, string> = {
 ---
 
 <div class="calendar" data-calendar data-start={String(startIndex)}>
-  {/* Hidden until the script runs. Without JavaScript every month stays on
-      the page and these buttons would be three dead controls above them. */}
-  <div class="toolbar" hidden data-toolbar>
-    <button type="button" class="step" data-prev>
-      <span aria-hidden="true">&larr;</span>
-      <span class="visually-hidden">Previous month</span>
-    </button>
-    {/* The month name moves here once paging is on, and announces itself when
-        it changes; a button press that silently swaps the grid underneath is
-        a change a screen reader never hears about. */}
-    <p class="current" data-current aria-live="polite" aria-atomic="true"></p>
-    <button type="button" class="step" data-next>
-      <span aria-hidden="true">&rarr;</span>
-      <span class="visually-hidden">Next month</span>
-    </button>
+  <div class="frame">
+    {/* The header bar of the calendar, not a strip of controls above it. It
+        carries the month and the two steps on one line, shares the frame's
+        border with the grid below, and stays hidden until the script runs,
+        because without JavaScript every month is on the page and these would
+        be two dead buttons. */}
+    <div class="toolbar" hidden data-toolbar>
+      <button type="button" class="step" data-prev>
+        <span aria-hidden="true">&larr;</span>
+        <span class="visually-hidden">Previous month</span>
+      </button>
+      {/* The month name lives here once paging is on, and announces itself
+          when it changes; a button press that silently swaps the grid
+          underneath is a change a screen reader never hears about. */}
+      <p class="current" data-current aria-live="polite" aria-atomic="true"></p>
+      <button type="button" class="step" data-next>
+        <span aria-hidden="true">&rarr;</span>
+        <span class="visually-hidden">Next month</span>
+      </button>
+    </div>
+
+    {
+      months.map((month) => (
+        <section class="month" data-month={month.label} aria-label={month.label}>
+          <h2 class="month-name">{month.label}</h2>
+          <table class="grid">
+            <caption class="visually-hidden">{month.label}</caption>
+            <thead>
+              <tr>
+                {weekdays.map((day) => (
+                  <th scope="col" abbr={day}>
+                    <span aria-hidden="true">{day.slice(0, 1)}</span>
+                    <span class="visually-hidden">{day}</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {month.weeks.map((week) => (
+                <tr>
+                  {week.map((day) => {
+                    const events = day ? (byDay.get(iso(day)) ?? []) : [];
+                    const inTerm = day !== null && withinTerm(day);
+                    return (
+                      <td
+                        class:list={[
+                          "day",
+                          { "day--empty": day === null },
+                          { "day--off": day !== null && !inTerm },
+                          { "day--busy": events.length > 0 },
+                        ]}
+                      >
+                        {day && <span class="date">{day.getUTCDate()}</span>}
+                        {events.map((event) => (
+                          <>
+                            <a
+                              class:list={["chip", `chip--${event.kind}`]}
+                              href={withBase(event.href)}
+                            >
+                              <span class="visually-hidden">
+                                {kindLabel[event.kind]}, {dayLabel.format(day!)}:{" "}
+                              </span>
+                              <span class="chip-title">{event.title}</span>
+                              {event.badge && <span class="chip-badge">{event.badge}</span>}
+                            </a>
+                            {/* A sibling of the link rather than a child of it.
+                                Nested, every word below joins the link's
+                                accessible name, so a screen reader announces the
+                                whole description before it gets to where the
+                                link goes. */}
+                            <span class="panel">
+                              <span class="panel-kind">
+                                {kindLabel[event.kind]} &middot; Week {event.week}
+                              </span>
+                              <span class="panel-title">{event.title}</span>
+                              <span class="panel-detail">{event.detail}</span>
+                              <span class="panel-go">Read the page</span>
+                            </span>
+                          </>
+                        ))}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+    ))
+    }
   </div>
 
   <p class="key" aria-hidden="true">
@@ -164,76 +239,6 @@ const kindLabel: Record<Kind, string> = {
     <span class="swatch swatch--session"></span> Field session
     <span class="swatch swatch--due"></span> Assessment due
   </p>
-
-  {
-    months.map((month) => (
-      <section class="month" data-month={month.label} aria-label={month.label}>
-        <h3 class="month-name">{month.label}</h3>
-        <table class="grid">
-          <caption class="visually-hidden">{month.label}</caption>
-          <thead>
-            <tr>
-              {weekdays.map((day) => (
-                <th scope="col" abbr={day}>
-                  <span aria-hidden="true">{day.slice(0, 1)}</span>
-                  <span class="visually-hidden">{day}</span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {month.weeks.map((week) => (
-              <tr>
-                {week.map((day) => {
-                  const events = day ? (byDay.get(iso(day)) ?? []) : [];
-                  const inTerm = day !== null && withinTerm(day);
-                  return (
-                    <td
-                      class:list={[
-                        "day",
-                        { "day--empty": day === null },
-                        { "day--off": day !== null && !inTerm },
-                        { "day--busy": events.length > 0 },
-                      ]}
-                    >
-                      {day && <span class="date">{day.getUTCDate()}</span>}
-                      {events.map((event) => (
-                        <>
-                          <a
-                            class:list={["chip", `chip--${event.kind}`]}
-                            href={withBase(event.href)}
-                          >
-                            <span class="visually-hidden">
-                              {kindLabel[event.kind]}, {dayLabel.format(day!)}:{" "}
-                            </span>
-                            <span class="chip-title">{event.title}</span>
-                            {event.badge && <span class="chip-badge">{event.badge}</span>}
-                          </a>
-                          {/* A sibling of the link rather than a child of it.
-                              Nested, every word below joins the link's
-                              accessible name, so a screen reader announces the
-                              whole description before it gets to where the
-                              link goes. */}
-                          <span class="panel">
-                            <span class="panel-kind">
-                              {kindLabel[event.kind]} &middot; Week {event.week}
-                            </span>
-                            <span class="panel-title">{event.title}</span>
-                            <span class="panel-detail">{event.detail}</span>
-                            <span class="panel-go">Read the page</span>
-                          </span>
-                        </>
-                      ))}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-    ))
-  }
 </div>
 
 <style>
@@ -259,7 +264,7 @@ const kindLabel: Record<Kind, string> = {
     gap: 0.4rem 0.9rem;
     color: var(--at-text-secondary);
     font-size: 0.85rem;
-    margin-block-end: 1.25rem;
+    margin-block-start: 0.7rem;
   }
 
   .swatch {
@@ -289,11 +294,26 @@ const kindLabel: Record<Kind, string> = {
     );
   }
 
+  /* The calendar is one object with a header on it, not a grid with three
+     controls parked above. The frame draws the outline; the toolbar is its top
+     bar and shares that outline, so the month and its two steps read as part
+     of the thing they page rather than as page furniture. */
+  .frame {
+    border: 1px solid var(--at-border);
+  }
+
   .toolbar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
-    margin-block-end: 1rem;
+    padding: 0.45rem 0.5rem;
+    border-block-end: 1px solid var(--at-border);
+    background: color-mix(in srgb, var(--at-primary) 7%, transparent);
+  }
+
+  .month {
+    padding: 0.7rem;
   }
 
   .step {
@@ -324,13 +344,15 @@ const kindLabel: Record<Kind, string> = {
   }
 
   .current {
+    flex: 1;
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
+    text-align: center;
   }
 
   .month + .month {
-    margin-block-start: 2rem;
+    border-block-start: 1px solid var(--at-border);
   }
 
   /* Once the script has taken over, the month names live in the toolbar and
@@ -340,7 +362,7 @@ const kindLabel: Record<Kind, string> = {
   }
 
   .calendar--paged .month + .month {
-    margin-block-start: 0;
+    border-block-start: 0;
   }
 
   .month-name {
