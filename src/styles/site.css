@@ -1,3 +1,20 @@
+/*
+ * `hidden` has to win.
+ *
+ * The user agent's `[hidden] { display: none }` is the weakest rule in the
+ * cascade, so any component that sets `display` on the same element silently
+ * overrides it and ships something that is hidden in the DOM and painted on
+ * the page. That has now happened twice on this site and both times the DOM
+ * said the right thing while the page did not: the forum filter set `hidden`
+ * on rows that never moved, because `.thread` is a grid, and the post
+ * confirmation showed before anybody had posted, because `.posted` is a flex
+ * row. Checking the attribute is not checking the page; this rule is why the
+ * two agree from here on.
+ */
+[hidden] {
+  display: none !important;
+}
+
 /* Site-wide overrides, on top of the theme and the Slop brand tokens.
  *
  * Imported from src/site-config.ts rather than from a layout. Pages here

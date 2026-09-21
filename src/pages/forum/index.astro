@@ -1,14 +1,21 @@
 ---
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import heroImage from "../../assets/images/hero-street-queue.avif";
 import { withBase } from "astro-theme-university/url";
 import { getPublishedCollection } from "astro-course-university/content";
 import { lastActivity, lastPost, postDate, posterLookup } from "../../lib/forum";
+import ForumCompose from "../../components/ForumCompose.astro";
 import { navGroups, siteConfig } from "../../site-config";
 
-const [threads, poster] = await Promise.all([
+const [threads, lectures, poster] = await Promise.all([
   getPublishedCollection("forum"),
+  getPublishedCollection("lectures"),
   posterLookup(),
 ]);
+
+// Read off the course record rather than typed here, so the week field on the
+// compose form cannot outlive a change to how long the course runs.
+const teachingWeeks = Math.max(...lectures.map((lecture) => lecture.data.week));
 
 // One list, pinned at the top, then whatever moved most recently. Split into a
 // "Pinned" section and a "Discussion" section it read as a notice board with a
@@ -27,31 +34,23 @@ const rows = sorted.map((thread) => ({
 }));
 
 const categories = [...new Set(threads.map((thread) => thread.data.category))].sort();
-const totalPosts = threads.reduce((sum, thread) => sum + 1 + thread.data.replies.length, 0);
 import NavGroups from "../../components/NavGroups.astro";
 ---
 
 <ContentLayout
   title="Forum"
-  description="Where the course argues with itself. Announcements, fieldwork problems, and the arithmetic questions everybody turns out to have."
+  description={null}
+  heroImage={heroImage}
+  heroImageAlt="A street in gold and black, a queue of people with backpacks waiting behind a rope barrier along a shopfront under trees, with the road and pavement empty away to the left"
   {...siteConfig}
 >
-  <p>
-    Announcements stay at the top and everything else is in the order it last
-    moved. Staff read this daily during the teaching period, and most questions
-    here get answered by another student first, which is usually the better
-    answer.
-  </p>
+  <meta
+    slot="head"
+    name="description"
+    content="The SLOP3068 course forum. Announcements, fieldwork problems and the arithmetic questions everybody turns out to have."
+  />
 
-  <p class="rules">
-    One rule. Post the numbers, not the summary of the numbers. Half the
-    questions on this page were solved by somebody pasting their actual counts
-    and spotting the mistake on the way.
-  </p>
-
-  <p class="totals">
-    {threads.length} topics &middot; {totalPosts} posts &middot; {categories.join(", ")}
-  </p>
+  <ForumCompose categories={categories} weeks={teachingWeeks} />
 
   <div class="board">
     <div class="head" aria-hidden="true">
@@ -61,12 +60,16 @@ import NavGroups from "../../components/NavGroups.astro";
       <span>Last reply</span>
     </div>
 
-    <ul class="threads">
+    <ul class="threads" data-threads>
       {
         rows.map(({ thread, started, latest, answered }) => {
           const latestWho = poster(latest);
           return (
-            <li class:list={["thread", { "thread--pinned": thread.data.pinned }]}>
+            <li
+              class:list={["thread", { "thread--pinned": thread.data.pinned }]}
+              data-thread
+              data-category={thread.data.category}
+            >
               <div class="topic">
                 <p class="flags">
                   {thread.data.pinned && (
@@ -121,6 +124,42 @@ import NavGroups from "../../components/NavGroups.astro";
         })
       }
     </ul>
+
+    {/* The shape a topic you start takes. Rendered here rather than assembled
+        in the script, because Astro scopes these styles with a
+        `data-astro-cid` attribute and an element built with createElement
+        never gets one: the row lands on the board completely unstyled, which
+        is exactly what it did the first time. Cloning a server-rendered
+        template carries the scope with it. */}
+    <template data-thread-template>
+      <li class="thread thread--yours" data-thread>
+        <div class="topic">
+          <p class="flags">
+            <span class="tag" data-slot="category"></span>
+            <span class="tag tag--yours">Yours</span>
+          </p>
+          <h2 data-slot="title"></h2>
+          <p class="excerpt" data-slot="body"></p>
+          <p class="started">
+            <span data-slot="started"></span>
+            <span class="sep">&middot;</span>
+            <span data-slot="week"></span>
+          </p>
+        </div>
+
+        <p class="num">
+          <span class="figure">0</span> <span class="unit">replies</span>
+        </p>
+
+        <p class="num">
+          <span class="figure">1</span> <span class="unit">views</span>
+        </p>
+
+        <p class="latest">
+          <span class="when">just now</span> <span class="who" data-slot="who"></span>
+        </p>
+      </li>
+    </template>
   </div>
 
   <NavGroups groups={navGroups} />
@@ -135,19 +174,6 @@ import NavGroups from "../../components/NavGroups.astro";
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
-  }
-
-  .rules {
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--at-border);
-    background: var(--at-bg-alt);
-    font-size: 0.95rem;
-  }
-
-  .totals {
-    margin-block: 1.5rem 0.5rem;
-    font-size: 0.85rem;
-    color: var(--at-text-secondary);
   }
 
   .board {
@@ -195,6 +221,19 @@ import NavGroups from "../../components/NavGroups.astro";
     background: color-mix(in srgb, var(--at-primary) 5%, transparent);
   }
 
+  /* A topic you started in this session. The script builds the row to the same
+     shape the page renders server-side, so everything here is the difference
+     and nothing else needs restating. */
+  .thread--yours {
+    background: color-mix(in srgb, var(--at-primary) 10%, transparent);
+  }
+
+  .thread--yours .topic h2 {
+    font-size: 1.05rem;
+    line-height: 1.35;
+    margin: 0 0 0.3rem;
+  }
+
   .flags {
     display: flex;
     flex-wrap: wrap;
@@ -217,7 +256,8 @@ import NavGroups from "../../components/NavGroups.astro";
   }
 
   .tag--announcement,
-  .tag--answered {
+  .tag--answered,
+  .tag--yours {
     border-color: var(--at-primary);
     color: var(--at-primary);
     font-weight: 600;

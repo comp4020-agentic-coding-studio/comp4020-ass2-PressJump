@@ -1,0 +1,588 @@
+---
+// Starting a topic, and narrowing the board to one category.
+//
+// The form has no `action` and no `method`. There is no backend, so a form
+// that posts navigates the reader to a path this site does not serve and a
+// half-written question lands on a 404. The submit handler takes over, puts
+// the topic at the top of the board where a reader would go looking for it,
+// and says it is there. A topic that appears when you post it is the same
+// fiction as the office numbers and the consultation hours; what this must
+// never do is lose the post by navigating away from it.
+//
+// The filter is built server-side and hidden until the script runs, because a
+// row of buttons that filter nothing is worse than no buttons.
+interface Props {
+  /** Every category already on the board, for the select and the filter. */
+  categories: string[];
+  /** Teaching weeks, so the week field cannot ask for week 19. */
+  weeks: number;
+}
+
+const { categories, weeks } = Astro.props;
+---
+
+<section class="tools" data-forum-tools data-weeks={String(weeks)}>
+  {/* Hidden until the script runs. A filter that filters nothing and a button
+      that opens nothing are worse than neither, so without JavaScript the
+      board is just the board and the note below says why. */}
+  <div class="bar" hidden data-bar>
+    {/* The group keeps a name now the visible "Show" label has gone, or a
+        screen reader reaches six unexplained buttons. */}
+    <div class="pills" role="group" aria-label="Filter topics by category">
+      <button type="button" class="pill" data-category="" aria-pressed="true">
+        Everything
+      </button>
+      {
+        categories.map((category) => (
+          <button type="button" class="pill" data-category={category} aria-pressed="false">
+            {category}
+          </button>
+        ))
+      }
+    </div>
+    <p class="count" data-filter-count aria-live="polite"></p>
+    <button
+      type="button"
+      class="new"
+      data-new
+      aria-expanded="false"
+      aria-controls="forum-composer"
+    >
+      <span class="plus" aria-hidden="true">+</span>
+      <span>New topic</span>
+    </button>
+  </div>
+
+  <noscript>
+    <p class="no-script">
+      Starting a topic here needs JavaScript. Without it, bring the question to
+      the Wednesday field session or email the convenor.
+    </p>
+  </noscript>
+
+  <div class="composer" id="forum-composer" hidden data-composer>
+    <div class="composer-head">
+      <h2 class="composer-title">Start a topic</h2>
+      <button type="button" class="close" data-close>
+        <span aria-hidden="true">&times;</span>
+        <span class="visually-hidden">Close the composer</span>
+      </button>
+    </div>
+
+    <form class="compose-form" data-form novalidate>
+      <p class="hint">
+        Post the numbers, not the summary of the numbers. A count somebody can
+        check gets answered faster than a description of one.
+      </p>
+
+      <div class="row">
+        <p class="field">
+          <label for="forum-name">Your name</label>
+          <input id="forum-name" name="name" type="text" autocomplete="name" required />
+        </p>
+
+        <p class="field">
+          <label for="forum-category">Category</label>
+          <select id="forum-category" name="category" required>
+            {
+              categories
+                .filter((category) => category !== "Announcements")
+                .map((category) => <option value={category}>{category}</option>)
+            }
+          </select>
+        </p>
+
+        <p class="field field--week">
+          <label for="forum-week">Week</label>
+          <input
+            id="forum-week"
+            name="week"
+            type="number"
+            min="1"
+            max={String(weeks)}
+            step="1"
+            value="1"
+            required
+          />
+        </p>
+      </div>
+
+      <p class="field">
+        <label for="forum-title">Title</label>
+        <input
+          id="forum-title"
+          name="title"
+          type="text"
+          maxlength="90"
+          placeholder="What you counted, and what does not add up"
+          required
+        />
+      </p>
+
+      <p class="field">
+        <label for="forum-body">Your post</label>
+        <textarea id="forum-body" name="body" rows="5" maxlength="600" required></textarea>
+        <span class="counter" data-counter aria-live="polite"></span>
+      </p>
+
+      <p class="error" data-error role="alert" hidden></p>
+
+      <p class="actions">
+        <button type="submit" class="post">Post topic</button>
+        <button type="button" class="cancel" data-close>Cancel</button>
+      </p>
+    </form>
+  </div>
+
+  <div class="posted" data-posted hidden role="status">
+    <p class="tick" aria-hidden="true">&check;</p>
+    <div>
+      <p class="posted-title">Your topic is up.</p>
+      <p class="posted-detail" data-posted-detail></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tools {
+    margin-block: 1.5rem;
+  }
+
+  /* The board's toolbar: what you are looking at on the left, and the one
+     action that adds to it on the right. Canvas puts the add button on the
+     same rail as the filters and so does this. */
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--at-border);
+    margin-block-end: 1rem;
+  }
+
+  .count {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  .count {
+    white-space: nowrap;
+  }
+
+  /* The pills take the room that is left and wrap inside themselves, so the
+     add button stays on the first line at the right where it is looked for
+     rather than dropping under the filters. */
+  /* One line, always. The six categories do not fit beside the count and the
+     add button on a laptop, so rather than dropping Fieldwork onto a second
+     row they stay inline and the strip scrolls. `min-width: 0` is what keeps
+     that scroll inside the bar instead of widening the page. */
+  .pills {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-block-end: 1px;
+  }
+
+  .pill {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--at-border);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+
+  .pill:hover,
+  .pill:focus-visible {
+    border-color: var(--at-primary);
+  }
+
+  .pill[aria-pressed="true"] {
+    border-color: var(--at-primary);
+    background: var(--at-primary);
+    color: var(--at-bg);
+  }
+
+  .new {
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--at-primary);
+    border-radius: 0;
+    background: var(--at-primary);
+    color: var(--at-bg);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .new:hover,
+  .new:focus-visible {
+    background: transparent;
+    color: var(--at-primary);
+  }
+
+  .plus {
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .composer {
+    border: 1px solid var(--at-primary);
+    margin-block-end: 1rem;
+  }
+
+  .composer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem 0.5rem 0.8rem;
+    border-block-end: 1px solid var(--at-border);
+    background: color-mix(in srgb, var(--at-primary) 7%, transparent);
+  }
+
+  .composer-title {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .close:hover,
+  .close:focus-visible {
+    border-color: var(--at-primary);
+    color: var(--at-primary);
+  }
+
+  .cancel {
+    margin-inline-start: 0.5rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--at-border);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .cancel:hover,
+  .cancel:focus-visible {
+    border-color: var(--at-primary);
+    color: var(--at-primary);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .compose-form,
+  .no-script {
+    padding: 0.9rem 0.8rem;
+  }
+
+  .hint {
+    margin-block: 0 1rem;
+    font-size: 0.85rem;
+    color: var(--at-text-secondary);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1 1 12rem;
+    margin-block: 0 0.85rem;
+  }
+
+  .field--week {
+    flex: 0 0 6rem;
+  }
+
+  label {
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--at-border);
+    border-radius: 0;
+    background: var(--at-bg);
+    color: inherit;
+    font: inherit;
+    font-size: 0.9rem;
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 1px;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .counter {
+    font-size: 0.75rem;
+    color: var(--at-text-secondary);
+  }
+
+  .error {
+    margin-block: 0 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--at-primary);
+    font-size: 0.85rem;
+  }
+
+  .actions {
+    margin: 0;
+  }
+
+  .post {
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--at-primary);
+    border-radius: 0;
+    background: var(--at-primary);
+    color: var(--at-bg);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .post:hover,
+  .post:focus-visible {
+    background: transparent;
+    color: var(--at-primary);
+  }
+
+  .posted {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-block-start: 1rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--at-primary);
+  }
+
+  .tick {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: var(--at-primary);
+  }
+
+  .posted-title {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .posted-detail {
+    margin-block: 0.2rem 0;
+    font-size: 0.9rem;
+    color: var(--at-text-secondary);
+  }
+
+  @media (max-width: 30rem) {
+    .field--week {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+<script>
+  // Re-runs on `astro:page-load`. The theme turns on <ClientRouter>, so a link
+  // click swaps the document instead of reloading it, and a module script
+  // executes once per URL and never again. Without this the form is inert on
+  // every page reached by clicking and perfect on every page reloaded, which
+  // is the signature of that bug and invisible in the built HTML.
+  const setup = () => {
+    for (const root of document.querySelectorAll<HTMLElement>("[data-forum-tools]")) {
+      if (root.dataset.ready === "1") continue;
+      root.dataset.ready = "1";
+
+      const board = document.querySelector<HTMLElement>("[data-threads]");
+      const form = root.querySelector<HTMLFormElement>("[data-form]");
+      const bar = root.querySelector<HTMLElement>("[data-bar]");
+      const composer = root.querySelector<HTMLElement>("[data-composer]");
+      const openNew = root.querySelector<HTMLButtonElement>("[data-new]");
+      const posted = root.querySelector<HTMLElement>("[data-posted]");
+      const postedDetail = root.querySelector<HTMLElement>("[data-posted-detail]");
+      const error = root.querySelector<HTMLElement>("[data-error]");
+      const filterCount = root.querySelector<HTMLElement>("[data-filter-count]");
+      const counter = root.querySelector<HTMLElement>("[data-counter]");
+      if (!board || !form || !posted || !postedDetail || !error) continue;
+      if (!bar || !composer || !openNew) continue;
+
+      // The composer opens from the toolbar and closes from its own header,
+      // its Cancel button, or Escape. Focus lands on the first field, because
+      // a panel that appears and leaves focus behind is a panel a keyboard
+      // never reaches.
+      const firstField = form.querySelector<HTMLInputElement>("#forum-name")!;
+      const setOpen = (open: boolean): void => {
+        composer.hidden = !open;
+        openNew.setAttribute("aria-expanded", String(open));
+        if (open) firstField.focus();
+        else openNew.focus();
+      };
+
+      openNew.addEventListener("click", () => {
+        setOpen(openNew.getAttribute("aria-expanded") !== "true");
+      });
+      for (const close of root.querySelectorAll<HTMLButtonElement>("[data-close]")) {
+        close.addEventListener("click", () => setOpen(false));
+      }
+      composer.addEventListener("keydown", (event) => {
+        if ((event as KeyboardEvent).key === "Escape") setOpen(false);
+      });
+
+      const threads = (): HTMLElement[] => [
+        ...board.querySelectorAll<HTMLElement>("[data-thread]"),
+      ];
+
+      // --- the filter -------------------------------------------------------
+      if (filterCount) {
+        const pills = [...bar.querySelectorAll<HTMLButtonElement>("[data-category]")];
+
+        const apply = (wanted: string): void => {
+          let shown = 0;
+          for (const thread of threads()) {
+            const match = wanted === "" || thread.dataset.category === wanted;
+            thread.hidden = !match;
+            if (match) shown += 1;
+          }
+          for (const pill of pills) {
+            pill.setAttribute(
+              "aria-pressed",
+              String((pill.dataset.category ?? "") === wanted),
+            );
+          }
+          filterCount.textContent =
+            wanted === ""
+              ? `${shown} ${shown === 1 ? "topic" : "topics"}`
+              : `${shown} ${shown === 1 ? "topic" : "topics"} in ${wanted}`;
+        };
+
+        for (const pill of pills) {
+          pill.addEventListener("click", () => apply(pill.dataset.category ?? ""));
+        }
+        apply("");
+      }
+
+      bar.hidden = false;
+
+      // --- the character counter -------------------------------------------
+      const body = form.querySelector<HTMLTextAreaElement>("#forum-body")!;
+      if (counter) {
+        const max = Number(body.getAttribute("maxlength") ?? "600");
+        const tick = (): void => {
+          counter.textContent = `${body.value.length} of ${max} characters`;
+        };
+        body.addEventListener("input", tick);
+        tick();
+      }
+
+      // --- posting ----------------------------------------------------------
+      const template = document.querySelector<HTMLTemplateElement>("[data-thread-template]");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const name = (form.querySelector<HTMLInputElement>("#forum-name")!).value.trim();
+        const category = (form.querySelector<HTMLSelectElement>("#forum-category")!).value;
+        const week = (form.querySelector<HTMLInputElement>("#forum-week")!).value;
+        const title = (form.querySelector<HTMLInputElement>("#forum-title")!).value.trim();
+        const said = body.value.trim();
+        const weeks = Number(root.dataset.weeks ?? "12");
+
+        const missing: string[] = [];
+        if (!name) missing.push("your name");
+        if (!title) missing.push("a title");
+        if (!said) missing.push("something in the post");
+        if (!(Number(week) >= 1 && Number(week) <= weeks)) {
+          missing.push(`a week between 1 and ${weeks}`);
+        }
+
+        if (missing.length > 0) {
+          error.textContent = `This needs ${missing.join(", ")} before it can go up.`;
+          error.hidden = false;
+          return;
+        }
+        error.hidden = true;
+        if (!template) return;
+
+        const row = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+        row.dataset.category = category;
+        const fill = (slot: string, value: string): void => {
+          const node = row.querySelector<HTMLElement>(`[data-slot="${slot}"]`);
+          if (node) node.textContent = value;
+        };
+        fill("category", category);
+        fill("title", title);
+        fill("body", said);
+        fill("started", `Started by ${name}`);
+        fill("week", `week ${week}`);
+        fill("who", `by ${name}`);
+
+        // Under the pinned announcements, which stay at the top of the board.
+        const firstLoose = threads().find((thread) => !thread.classList.contains("thread--pinned"));
+        if (firstLoose) board.insertBefore(row, firstLoose);
+        else board.append(row);
+
+        postedDetail.textContent = `"${title}" is at the top of the board, under ${category}, week ${week}. Nobody has replied yet.`;
+        posted.hidden = false;
+        setOpen(false);
+        form.reset();
+        if (counter) counter.textContent = "";
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  };
+
+  setup();
+  document.addEventListener("astro:page-load", setup);
+</script>
