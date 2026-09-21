@@ -51,6 +51,6 @@ export const siteConfig = defineSiteConfig({
  *  Timetable and Forum stay on the bar; they are the two opened weekly. */
 export const navGroups = [
   { label: "Teaching", items: ["/lectures/", "/sessions/", "/glossary/"] },
-  { label: "Your work", items: ["/assessments/", "/extensions/"] },
+  { label: "Assessments", items: ["/assessments/", "/extensions/"] },
   { label: "Support", items: ["/people/", "/policies/"] },
 ];
