@@ -45,6 +45,12 @@ where it ends, who serves, in what order, and what happens when someone
 leaves. Then the same treatment applied to a transplant waiting list, which
 is the same object and does not feel like one.
 
+## After this lecture
+
+You can look at any queue and name four things about it: where it starts, who
+serves, in what order, and what happens to somebody who leaves. Nobody arrives
+at this course able to do that, and everybody leaves week 1 able to.
+
 ## Before the field session
 
 Read nothing. Stand in a queue and time it, badly, with your phone. Bring the

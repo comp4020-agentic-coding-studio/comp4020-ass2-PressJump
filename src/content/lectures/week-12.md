@@ -43,6 +43,12 @@ want to keep going. Operations, service design, transport and crowd safety,
 systems performance, and public administration, which needs it most and asks
 for it least.
 
+## After this lecture
+
+You can walk into a place you have never been, watch a line for ten minutes,
+and say how long it is, why it is that long, who is paying for it and what one
+change would do. That is the whole course and it is a skill you keep.
+
 ## Then
 
 Wednesday, eight minutes each, and whoever you brought.

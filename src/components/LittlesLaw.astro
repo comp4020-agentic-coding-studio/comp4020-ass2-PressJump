@@ -1,11 +1,12 @@
 ---
 // Little's Law, live, on the home page.
 //
-// The point of putting it here rather than on the week 2 page is that it is
-// the fastest honest answer to "what is this course actually like". A visitor
-// counts heads in a queue they can picture, types two numbers, and gets a
-// waiting time they never measured. That is the whole first half of the
-// course in about fifteen seconds.
+// This is the fastest honest answer to "what is this course actually like", so
+// it has to work for somebody who has not decided to take the course yet. The
+// first version was two labelled boxes and an answer, which assumed the reader
+// already knew what the boxes were for. It is three numbered steps now, the
+// third is the sum written out the way you would write it on paper, and no
+// word on it needs week 2 to have happened.
 //
 // The initial numbers and the first answer are rendered server-side, so the
 // panel reads as a worked example with no script and becomes live with one.
@@ -33,64 +34,114 @@ function spoken(minutes: number): string {
 
 const initial = spoken(people / rate);
 
-// Three queues a reader can picture, with plausible shapes. The numbers are
-// illustrative and the panel says so; nothing here is presented as measured.
+// Queues anyone can picture, including one that is plainly bad, so the panel
+// shows the interesting case and not only the comfortable one.
 const presets = [
   { label: "Coffee cart", people: 6, rate: 3 },
   { label: "Supermarket till", people: 9, rate: 2 },
+  { label: "Theme park ride", people: 60, rate: 10 },
   { label: "Passport counter", people: 40, rate: 2 },
 ];
 ---
 
 <section class="calc" data-littles data-presets={JSON.stringify(presets)}>
-  <h2>Try the only equation that matters</h2>
+  <h2>Work out a wait without timing anybody</h2>
   <p class="intro">
-    Stand where you can see a queue. Count how many people are in it, then count
-    how many join in a minute. That is enough.
+    Two counts and one division. It takes a minute, you never follow a single
+    person, and it works on any queue that is not growing without bound. Try it
+    on the next queue you are in.
   </p>
+
+  <ol class="steps">
+    <li class="step">
+      <span class="num" aria-hidden="true">1</span>
+      <div class="body">
+        <label for="ll-people">Count the people in the line.</label>
+        <p class="hint">
+          Just heads, including whoever is being served right now. No stopwatch.
+        </p>
+        <input id="ll-people" type="number" min="1" max="999" step="1" value={people} data-people />
+      </div>
+    </li>
+
+    <li class="step">
+      <span class="num" aria-hidden="true">2</span>
+      <div class="body">
+        <label for="ll-rate">Watch for one minute. Count how many join the back.</label>
+        <p class="hint">
+          Only the ones who actually join. Somebody who looks at the line and
+          walks away does not count.
+        </p>
+        <input id="ll-rate" type="number" min="0.5" max="120" step="0.5" value={rate} data-rate />
+      </div>
+    </li>
+
+    <li class="step">
+      <span class="num" aria-hidden="true">3</span>
+      <div class="body">
+        <p class="label">Divide the first by the second. That is the wait.</p>
+        <div class="sum">
+          <p class="sum-line">
+            <span class="figure" data-sum-people>{people}</span>
+            <span class="unit">people in the line</span>
+          </p>
+          <p class="sum-line">
+            <span class="figure">
+              <span aria-hidden="true">&divide;</span>
+              <span class="visually-hidden">divided by</span>
+              <span data-sum-rate>{rate}</span>
+            </span>
+            <span class="unit">joining each minute</span>
+          </p>
+          <p class="sum-line sum-answer">
+            <span class="figure">
+              <span aria-hidden="true">=</span>
+              <span class="visually-hidden">equals</span>
+            </span>
+            <output class="answer" for="ll-people ll-rate" aria-live="polite" data-answer
+              >{initial}</output
+            >
+          </p>
+        </div>
+        <p class="said">That is how long each person in that line is waiting.</p>
+      </div>
+    </li>
+  </ol>
 
   <div class="presets">
     <span class="presets-label" id="preset-label">Or borrow a queue</span>
     <div class="preset-buttons" role="group" aria-labelledby="preset-label">
-      {presets.map((preset, index) => (
-        <button type="button" data-preset={String(index)}>{preset.label}</button>
-      ))}
+      {
+        presets.map((preset, index) => (
+          <button type="button" data-preset={String(index)}>
+            {preset.label}
+          </button>
+        ))
+      }
     </div>
   </div>
-
-  <div class="inputs">
-    <div class="field">
-      <label for="ll-people">People in the queue</label>
-      <input id="ll-people" type="number" min="1" max="999" step="1" value={people} data-people />
-    </div>
-    <div class="field">
-      <label for="ll-rate">Joining per minute</label>
-      <input id="ll-rate" type="number" min="0.1" max="120" step="0.1" value={rate} data-rate />
-    </div>
-  </div>
-
-  <p class="answer">
-    <span class="answer-label">Each of them waits about</span>
-    <output class="answer-value" for="ll-people ll-rate" aria-live="polite" data-answer>
-      {initial}
-    </output>
-  </p>
-
-  <p class="working" data-working>
-    <strong>{people}</strong> in the queue divided by <strong>{rate}</strong> joining
-    per minute.
-  </p>
 
   <p class="caveat">
-    That is Little's Law, and it holds for any queue that is neither growing
-    without bound nor draining, whatever order it serves people in. Week 2 is
-    about the three ways it goes wrong. The numbers behind the buttons above are
-    illustrative, not measured; measuring your own is{" "}
+    That is Little's Law. It holds for any queue that is neither growing without
+    bound nor draining, whatever order it serves people in and however many
+    counters are open. Week 2 is the hour on the three ways it goes wrong. The
+    numbers behind the buttons are illustrative rather than measured; measuring
+    your own is{" "}
     <a href={withBase("/sessions/02-the-clipboard/")}>the week 2 field session</a>.
   </p>
 </section>
 
 <style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .calc {
     margin-block: 2rem 2.5rem;
     padding: 1.4rem 1.5rem;
@@ -103,12 +154,126 @@ const presets = [
   }
 
   .intro {
-    margin-block: 0 1.25rem;
+    margin-block: 0 1.5rem;
     color: var(--at-text-secondary);
   }
 
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0 1rem;
+    padding-block-end: 1.4rem;
+  }
+
+  .num {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--at-primary);
+    border-radius: 50%;
+    color: var(--at-primary);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  label,
+  .label {
+    display: block;
+    margin-block: 0.25rem 0.2rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+
+  .hint {
+    margin-block: 0 0.6rem;
+    font-size: 0.9rem;
+    color: var(--at-text-secondary);
+  }
+
+  input {
+    width: 100%;
+    max-width: 8rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--at-border);
+    border-radius: 0;
+    background: var(--at-bg);
+    color: var(--at-text);
+    font: inherit;
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  input:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 1px;
+  }
+
+  /* The sum, set out the way you would write it on paper. */
+  .sum {
+    margin-block: 0.5rem 0.6rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--at-border);
+    background: var(--at-bg);
+  }
+
+  .sum-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin: 0;
+  }
+
+  .sum-line + .sum-line {
+    margin-block-start: 0.35rem;
+  }
+
+  .figure {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    min-width: 4rem;
+    text-align: end;
+    font-size: 1.35rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--at-text);
+  }
+
+  .unit {
+    font-size: 0.95rem;
+    color: var(--at-text-secondary);
+  }
+
+  .sum-answer {
+    margin-block-start: 0.6rem;
+    padding-block-start: 0.6rem;
+    border-block-start: 2px solid var(--at-primary);
+  }
+
+  .answer {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--at-primary);
+  }
+
+  .said {
+    margin-block: 0;
+    font-size: 0.95rem;
+  }
+
   .presets {
-    margin-block-end: 1.25rem;
+    margin-block: 0.25rem 1.25rem;
+    padding-block-start: 1.1rem;
+    border-block-start: 1px solid var(--at-border);
   }
 
   .presets-label {
@@ -140,71 +305,10 @@ const presets = [
   }
 
   button:hover,
-  button:focus-visible {
-    background: var(--at-primary);
-    color: var(--at-bg);
-  }
-
+  button:focus-visible,
   button[aria-pressed="true"] {
     background: var(--at-primary);
     color: var(--at-bg);
-  }
-
-  .inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  label {
-    display: block;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-block-end: 0.3rem;
-  }
-
-  input {
-    width: 100%;
-    padding: 0.5rem 0.6rem;
-    border: 1px solid var(--at-border);
-    border-radius: 0;
-    background: var(--at-bg);
-    color: var(--at-text);
-    font: inherit;
-    font-variant-numeric: tabular-nums;
-  }
-
-  input:focus-visible {
-    outline: 2px solid var(--at-primary);
-    outline-offset: 1px;
-  }
-
-  .answer {
-    margin-block: 1.4rem 0.3rem;
-    padding-block-start: 1.2rem;
-    border-block-start: 1px solid var(--at-border);
-  }
-
-  .answer-label {
-    display: block;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--at-text-secondary);
-  }
-
-  .answer-value {
-    display: block;
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1.1;
-    color: var(--at-primary);
-  }
-
-  .working {
-    margin-block: 0 1rem;
-    font-size: 0.9rem;
-    color: var(--at-text-secondary);
   }
 
   .caveat {
@@ -214,12 +318,19 @@ const presets = [
   }
 
   @media (width < 44rem) {
-    .inputs {
-      grid-template-columns: 1fr;
+    .step {
+      grid-template-columns: 1.7rem 1fr;
+      gap: 0 0.75rem;
     }
 
-    .answer-value {
-      font-size: 1.8rem;
+    .num {
+      width: 1.7rem;
+      height: 1.7rem;
+      font-size: 0.9rem;
+    }
+
+    .answer {
+      font-size: 1.35rem;
     }
   }
 </style>
@@ -230,70 +341,69 @@ const presets = [
   // executes once per URL and never again. Without this the panel worked on a
   // page you reloaded and was inert on the same page reached by clicking.
   const setup = () => {
-  interface Preset {
-    label: string;
-    people: number;
-    rate: number;
-  }
-
-  function spoken(minutes: number): string {
-    if (!Number.isFinite(minutes) || minutes <= 0) return "no wait at all";
-    if (minutes < 1) return `${Math.round(minutes * 60)} seconds`;
-    const whole = Math.floor(minutes);
-    const seconds = Math.round((minutes - whole) * 60);
-    if (seconds === 0) return `${whole} minute${whole === 1 ? "" : "s"}`;
-    return `${whole} min ${seconds} sec`;
-  }
-
-  for (const root of document.querySelectorAll<HTMLElement>("[data-littles]")) {
-    if (root.dataset.ready === "1") continue;
-    root.dataset.ready = "1";
-    const peopleInput = root.querySelector<HTMLInputElement>("[data-people]");
-    const rateInput = root.querySelector<HTMLInputElement>("[data-rate]");
-    const answer = root.querySelector<HTMLElement>("[data-answer]");
-    const working = root.querySelector<HTMLElement>("[data-working]");
-    if (!peopleInput || !rateInput || !answer || !working) continue;
-
-    const presets: Preset[] = JSON.parse(root.dataset.presets ?? "[]");
-    const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-preset]")];
-
-    const update = (): void => {
-      const people = Number(peopleInput.value);
-      const rate = Number(rateInput.value);
-      answer.textContent = spoken(people / rate);
-      working.innerHTML = "";
-      working.append(
-        Object.assign(document.createElement("strong"), { textContent: String(people) }),
-        " in the queue divided by ",
-        Object.assign(document.createElement("strong"), { textContent: String(rate) }),
-        " joining per minute.",
-      );
-
-      // A preset stays lit only while both numbers still match it, so typing
-      // over one of them does not leave a button claiming these are its
-      // numbers.
-      for (const button of buttons) {
-        const preset = presets[Number(button.dataset.preset)];
-        const matches = preset && preset.people === people && preset.rate === rate;
-        button.setAttribute("aria-pressed", String(Boolean(matches)));
-      }
-    };
-
-    for (const button of buttons) {
-      button.setAttribute("aria-pressed", "false");
-      button.addEventListener("click", () => {
-        const preset = presets[Number(button.dataset.preset)];
-        if (!preset) return;
-        peopleInput.value = String(preset.people);
-        rateInput.value = String(preset.rate);
-        update();
-      });
+    interface Preset {
+      label: string;
+      people: number;
+      rate: number;
     }
 
-    peopleInput.addEventListener("input", update);
-    rateInput.addEventListener("input", update);
-    update();
-  }
+    function spoken(minutes: number): string {
+      if (!Number.isFinite(minutes) || minutes <= 0) return "no wait at all";
+      if (minutes < 1) return `${Math.round(minutes * 60)} seconds`;
+      const whole = Math.floor(minutes);
+      const seconds = Math.round((minutes - whole) * 60);
+      if (seconds === 0) return `${whole} minute${whole === 1 ? "" : "s"}`;
+      return `${whole} min ${seconds} sec`;
+    }
+
+    for (const root of document.querySelectorAll<HTMLElement>("[data-littles]")) {
+      if (root.dataset.ready === "1") continue;
+      root.dataset.ready = "1";
+
+      const peopleInput = root.querySelector<HTMLInputElement>("[data-people]");
+      const rateInput = root.querySelector<HTMLInputElement>("[data-rate]");
+      const answer = root.querySelector<HTMLElement>("[data-answer]");
+      const sumPeople = root.querySelector<HTMLElement>("[data-sum-people]");
+      const sumRate = root.querySelector<HTMLElement>("[data-sum-rate]");
+      if (!peopleInput || !rateInput || !answer || !sumPeople || !sumRate) continue;
+
+      const presets: Preset[] = JSON.parse(root.dataset.presets ?? "[]");
+      const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-preset]")];
+
+      const update = (): void => {
+        const people = Number(peopleInput.value);
+        const rate = Number(rateInput.value);
+        // The sum restates the inputs, so somebody who changed a box can see
+        // which number moved without looking back up the page.
+        sumPeople.textContent = String(people);
+        sumRate.textContent = String(rate);
+        answer.textContent = spoken(people / rate);
+
+        // A preset stays lit only while both numbers still match it, so typing
+        // over one of them does not leave a button claiming these are its
+        // numbers.
+        for (const button of buttons) {
+          const preset = presets[Number(button.dataset.preset)];
+          const matches = preset && preset.people === people && preset.rate === rate;
+          button.setAttribute("aria-pressed", String(Boolean(matches)));
+        }
+      };
+
+      for (const button of buttons) {
+        button.setAttribute("aria-pressed", "false");
+        button.addEventListener("click", () => {
+          const preset = presets[Number(button.dataset.preset)];
+          if (!preset) return;
+          peopleInput.value = String(preset.people);
+          rateInput.value = String(preset.rate);
+          update();
+        });
+      }
+
+      peopleInput.addEventListener("input", update);
+      rateInput.addEventListener("input", update);
+      update();
+    }
   };
 
   setup();

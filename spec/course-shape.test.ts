@@ -115,6 +115,32 @@ describe("no week is another week wearing a different hat", () => {
   });
 });
 
+// Position 2 in CLAUDE.md: a week earns its place by adding a capability.
+// The untestable half is whether the capability is real. The testable half is
+// whether the week claims one at all, and two weeks had quietly stopped doing
+// so while the other ten carried it.
+describe("every week says what you can do afterwards", () => {
+  const headingsOf = (id: string, type: "lectures" | "sessions"): string[] => {
+    const slug = id.replace(/^(lectures|sessions)\//, "");
+    const html = readFileSync(resolve("dist", type, slug, "index.html"), "utf8");
+    return [...html.matchAll(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi)].map((match) =>
+      match[1]
+        .replace(/<[^>]+>/g, "")
+        .replace(/#\s*$/, "")
+        .trim(),
+    );
+  };
+
+  it("gives every lecture an 'After this lecture' section", () => {
+    for (const lecture of lectures) {
+      expect(
+        headingsOf(lecture.id, "lectures"),
+        `${lecture.id} never says what you can do that you could not do before`,
+      ).toContain("After this lecture");
+    }
+  });
+});
+
 describe("a field session is a thing you go and do", () => {
   // The generated API carries frontmatter, not page bodies, so this reads the
   // page that shipped. That is the better source anyway: a heading that exists

@@ -63,6 +63,12 @@ in units, in public, and then measure whether you kept it.
 
 Hold that against the next queue that quietly sorts you.
 
+## After this lecture
+
+You can read a published service standard and say what it promises, in units,
+to whom, and how anybody would know if it were broken. That is a rarer skill
+than it sounds and it is the one the essay in week 8 is marked on.
+
 ## After the break
 
 Week 7 is the opposite case. Marta Ilves on the queues that publish nothing.
