@@ -25,12 +25,18 @@ a glossary, and a forum laid out like one people use [4]
 The nav got long so I grouped it into named collapsible menus
 ([`714c353`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/714c353)).
 
-![The forum index, topics on the left, replies and last reply on the right](docs/forum-index.png)
+![The semester calendar paged to March 2027, a lecture chip every Monday, a field session every Wednesday and one assessment due on the 26th](docs/timetable-calendar.png)
+
+![The extension form's confirmation, with a reference number, the assessment, its current due date, the date requested and who decides it](docs/extension-confirmation.png)
+
+![The forum index, the category filter pills and a New topic button above the board, replies, views and last reply on the right](docs/forum-index.png)
 
 Assignment 1 taught me to let a reader work something out rather than read about it, so instead of explaining Little's Law [5] I built the home page around a calculator the student drives
 ([`e3b60c0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/e3b60c0)),
 with tables, callouts, pull quotes and a weight bar around it
 ([`3b46ab0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/3b46ab0)).
+
+![The home page calculator, twenty-four people in the line divided by three joining each minute, reading eight minutes](docs/home-calculator.png)
 
 The writing was what the checks could not reach. spec/voice.test.ts stayed green while the text the agent had written still unfortunately read like agent slop. Reading through the site, everything came out as flat statements one after the other, litterally it was just statement slop, the kind of writing that is technically correct but its very direct and contains no softening and nobody in real life every say or write. I personally believe a course site should sound like a person and give clear directions as to push students for better learning soft guidence is incredibly important. So I went through and made it more personal, adding in the filler words and asides a lecturer would actually use when talking to a student which removed that slop feel
 ([`b905f35`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/b905f35))
@@ -42,6 +48,8 @@ and cut writing that sounds impressive and says nothing which is very common in 
 I planted four bugs and watched each fail its own test. The rest I found by clicking around myself. The navigation was missing on every page I reached by clicking a link but came back if I reloaded. After a good amount of debugging, it turned out the theme had Astro's `<ClientRouter>` [6] turned on, so a link click swaps the document in place and a module script runs once per URL, leaving the nav grouping, calendar paging, calculator and both forms dead. The fix bound every script to `astro:page-load`
 ([`63961a9`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-PressJump/commit/63961a9)).
 Every check stayed green throughout, because the shipped HTML is identical either way. Every real defect I found by clicking, not by reading the diff which showed me the importance of testing by hand than relying on green testing checkmarks all the time.
+
+![The site header over the hero with the Teaching menu open, listing lectures, field sessions and the glossary](docs/nav-groups.png)
 
 ![The home page at 1440px](docs/home-1440.png)
 
